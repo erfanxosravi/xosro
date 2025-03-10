@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بازگشت به ربات</title>
+    <style>
+        /* استایل‌های کلی صفحه */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            font-family: Arial, sans-serif;
+        }
+
+        /* استایل دکمه */
+        .button {
+            padding: 20px 40px;
+            background-color: #FF5722; /* رنگ نارنجی */
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease;
+        }
+
+        /* افکت تغییر رنگ دکمه */
+        .button:hover {
+            background-color: #FF3D00;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- دکمه بازگشت به ربات -->
+    <a href="tg://resolve?domain=chat_four_gpt_bot&start=paid" class="button">
+        بازگشت به ربات
+    </a>
+
+</body>
+</html>
