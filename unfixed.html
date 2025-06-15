@@ -485,7 +485,7 @@
     </div>
     <h2 class="text-2xl font-bold mb-4">سرمایه‌گذاری‌ها</h2>
     <div class="glass-card p-4 flex flex-col space-y-4">
-      <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">� طلا و سکه</button>
+      <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💰 طلا و سکه</button>
       <button id="stocks_bourse-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📈 سهام بورس</button>
       <button id="cryptocurrency-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">₿ ارز دیجیتال</button>
       <button id="investment_land-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏡 زمین و املاک</button>
@@ -939,8 +939,19 @@
     window.showActivitiesMenu = function() {
       console.log('[showActivitiesMenu] Called');
       const activitiesMenu = document.getElementById('activities-menu');
+      const activitiesMenuContent = document.querySelector('#activities-menu .modal-content');
+
+      // Log the activitiesMenu element for more detail
       console.log('[showActivitiesMenu] activitiesMenu element:', activitiesMenu); 
-      
+      if (activitiesMenu) {
+          const rect = activitiesMenu.getBoundingClientRect();
+          console.log(`[showActivitiesMenu] activitiesMenu dimensions: Width=${rect.width}, Height=${rect.height}, Top=${rect.top}, Left=${rect.left}`);
+      }
+      if (activitiesMenuContent) {
+          const contentRect = activitiesMenuContent.getBoundingClientRect();
+          console.log(`[showActivitiesMenu] activitiesMenuContent dimensions: Width=${contentRect.width}, Height=${contentRect.height}, Top=${contentRect.top}, Left=${contentRect.left}`);
+      }
+
       if (!activitiesMenu) {
           console.error('[showActivitiesMenu] Activities menu element not found!');
           showMessageModal('خطا: منوی فعالیت‌ها یافت نشد.');
@@ -964,7 +975,12 @@
       activitiesMenu.style.display = 'flex'; // Display the modal (نمایش مودال)
       // TEST: Temporarily change background to red for visibility (تست: تغییر موقت پس‌زمینه به قرمز برای مشاهده‌پذیری)
       activitiesMenu.style.backgroundColor = 'rgba(255, 0, 0, 0.75)'; 
-      console.log(`[showActivitiesMenu] activities-menu display set to flex and background to red`);
+      if (activitiesMenuContent) { // Apply green background and blue border to content
+          activitiesMenuContent.style.backgroundColor = 'rgba(0, 255, 0, 0.5)';
+          activitiesMenuContent.style.border = '2px solid blue';
+      }
+
+      console.log(`[showActivitiesMenu] activities-menu display set to flex, backgrounds/borders applied.`);
       console.log(`[showActivitiesMenu] Current activities-menu computed style display:`, window.getComputedStyle(activitiesMenu).display); // Verify
     }
 
@@ -972,6 +988,8 @@
     window.hideActivitiesMenu = function() {
       console.log('[hideActivitiesMenu] Called');
       const activitiesMenu = document.getElementById('activities-menu');
+      const activitiesMenuContent = document.querySelector('#activities-menu .modal-content');
+
       if (!activitiesMenu) {
           console.error('[hideActivitiesMenu] Activities menu element not found!');
           return;
@@ -980,7 +998,12 @@
       activitiesMenu.style.display = 'none'; // Hide the modal (پنهان کردن مودال)
       // Revert background color (بازگرداندن رنگ پس‌زمینه)
       activitiesMenu.style.backgroundColor = 'rgba(0, 0, 0, 0.75)'; 
-      console.log(`[hideActivitiesMenu] activities-menu display set to none and background reverted`);
+      if (activitiesMenuContent) { // Revert content styles
+          activitiesMenuContent.style.backgroundColor = ''; // Revert to original CSS
+          activitiesMenuContent.style.border = ''; // Revert to original CSS
+      }
+
+      console.log(`[hideActivitiesMenu] activities-menu display set to none and backgrounds/borders reverted`);
       console.log(`[hideActivitiesMenu] Current activities-menu computed style display:`, window.getComputedStyle(activitiesMenu).display); // Verify
       
       // Re-show the page that was active before the modal was opened (نمایش مجدد صفحه‌ای که قبل از باز شدن مودال فعال بود)
@@ -1979,7 +2002,7 @@
         console.error(`Could not find h2 for investment page: ${type}-page`);
       }
 
-      // Populate owned investments (پر کردن سرمایه‌گذاری‌های موجود)
+      // Populate owned investments (پر کردن سرمایایه‌گذاری‌های موجود)
       const ownedListId = `owned-${type}-list`;
       const ownedListElement = document.getElementById(ownedListId);
       const ownedInvestments = gameState.investments.filter(a => a.type === type);
