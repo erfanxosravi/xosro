@@ -12,7 +12,7 @@
     /* Ensure html and body take full height and do not scroll (اطمینان از اشغال کامل ارتفاع و عدم اسکرول برای html و body) */
     html, body {
       height: 100%;
-      overflow: hidden;
+      overflow: hidden; /* جلوگیری از اسکرول کلی صفحه */
       margin: 0;
       padding: 0;
     }
@@ -21,7 +21,7 @@
       font-family: 'Vazir', sans-serif;
       background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow-x: hidden; /* جلوگیری از اسکرول افقی */
       display: flex;
       flex-direction: column;
       color: white; /* Default text color (رنگ پیش‌فرض متن) */
@@ -52,10 +52,9 @@
       transform: scale(1.05);
     }
     .status-bar {
-      height: 16px; /* Increased height for "thicker" bars (ارتفاع برای نوارهای "ضخیم‌تر" افزایش یافت) */
-      border-radius: 8px; /* Adjusted border-radius for new height (شعاع مرزی برای ارتفاع جدید تنظیم شد) */
+      height: 100%; /* ارتفاع نوار رنگی برابر با ارتفاع والدش باشد */
+      border-radius: 8px; /* شعاع مرزی برای نوار رنگی */
       transition: width 0.3s ease;
-      /* width: 100%; Removed this from here, now it's dynamically set by JS based on value */
     }
     .animate-slide-in {
       animation: slideIn 0.5s ease-out;
@@ -73,80 +72,92 @@
     #dashboard {
       display: flex;
       flex-direction: column;
-      height: 100vh; /* Ensure it takes full viewport height (اطمینان از اشغال کامل ارتفاع ویوپورت) */
-      overflow: hidden; /* Prevent dashboard itself from scrolling (جلوگیری از اسکرول خود داشبورد) */
+      height: 100vh; /* اطمینان از اشغال کامل ارتفاع ویوپورت */
+      overflow: hidden; /* جلوگیری از اسکرول خود داشبورد */
     }
 
     /* Header Section - Now part of flex flow (بخش هدر - اکنون بخشی از جریان فلکس) */
     .header-section {
       height: 8rem; /* 128px - Tailwind h-32 */
-      flex-shrink: 0; /* Prevents shrinking (جلوگیری از کوچک شدن) */
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Add shadow for separation (افزودن سایه برای جداسازی) */
-      z-index: 10; /* Ensure header is above scrolling content (اطمینان از قرارگیری هدر بالای محتوای اسکرولی) */
+      flex-shrink: 0; /* جلوگیری از کوچک شدن */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* افزودن سایه برای جداسازی */
+      z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
     }
 
     /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
     #main-dashboard-content {
-      flex-grow: 1; /* Takes remaining vertical space (فضای عمودی باقی‌مانده را اشغال می‌کند) */
+      flex-grow: 1; /* فضای عمودی باقی‌مانده را اشغال می‌کند */
       padding: 1rem; /* p-4 (پدینگ کلی برای فضای داخلی) */
-      display: flex; /* Make it a flex container (آن را به کانتینر فلکس تبدیل کنید) */
-      flex-direction: column; /* Stack children vertically (فرزندان را به صورت عمودی پشته کنید) */
-      justify-content: flex-start; /* Align content to the top within this area (محتوا را در بالای این ناحیه همتراز کنید) */
-      align-items: center; /* Center content horizontally (محتوا را به صورت افقی وسط قرار دهید) */
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS (اسکرول روان در iOS) */
+      display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
+      flex-direction: column; /* فرزندان را به صورت عمودی پشته کنید */
+      justify-content: flex-start; /* محتوا را در بالای این ناحیه همتراز کنید */
+      align-items: center; /* محتوا را به صورت افقی وسط قرار دهید */
+      -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
     }
     
     /* Styles for the glass-card containing life-log (استایل‌ها برای glass-card شامل گزارش زندگی) */
     #life-log-scroll-container { /* New ID for direct targeting (آی‌دی جدید برای هدف‌گیری مستقیم) */
-      flex-grow: 1; /* Make this glass-card take available space within main-dashboard-content (این glass-card فضای موجود را در main-dashboard-content اشغال می‌کند) */
-      display: flex; /* Make it a flex container (آن را به کانتینر فلکس تبدیل کنید) */
-      flex-direction: column; /* Stack children vertically (فرزندان را به صورت عمودی پشته کنید) */
-      width: 100%; /* Ensure it fills the width (اطمینان از پر کردن عرض) */
-      max-width: 768px; /* Optional: limit max width for better readability on larger screens (اختیاری: محدود کردن حداکثر عرض برای خوانایی بهتر در صفحات بزرگتر) */
-      overflow-y: auto; /* This glass-card will now handle its own scrolling (این گلس-کارد اکنون اسکرول خودش را مدیریت خواهد کرد) */
-      min-height: 0; /* Crucial for scrollable flex items in a flex column (حیاتی برای عناصر فلکس قابل اسکرول در یک ستون فلکس) */
-      /* Calculate remaining height: 100vh - header height - status bar height - tab bar height - main-dashboard-content padding (محاسبه ارتفاع باقی‌مانده: 100vh - ارتفاع هدر - ارتفاع نوار وضعیت - نوار تب - پدینگ main-dashboard-content) */
+      flex-grow: 1; /* این glass-card فضای موجود را در main-dashboard-content اشغال می‌کند */
+      display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
+      flex-direction: column; /* فرزندان را به صورت عمودی پشته کنید */
+      width: 100%; /* اطمینان از پر کردن عرض */
+      max-width: 768px; /* اختیاری: محدود کردن حداکثر عرض برای خوانایی بهتر در صفحات بزرگتر */
+      overflow-y: auto; /* این گلس-کارد اکنون اسکرول خودش را مدیریت خواهد کرد */
+      min-height: 0; /* حیاتی برای عناصر فلکس قابل اسکرول در یک ستون فلکس */
+      /* محاسبه ارتفاع باقی‌مانده: 100vh - ارتفاع هدر - ارتفاع نوار وضعیت - نوار تب - پدینگ main-dashboard-content */
       max-height: calc(100vh - 8rem - 180px - 60px - 2rem); 
     }
 
     /* Styles for the actual life-log content area (استایل‌ها برای ناحیه محتوای گزارش زندگی واقعی) */
     #life-log {
-      space-y-4; /* Keep spacing (فاصله را حفظ کنید) */
+      space-y-4; /* فاصله را حفظ کنید */
       /* Content within life-log will now cause its parent life-log-scroll-container to scroll (محتوای داخل life-log اکنون باعث اسکرول گلس-کارد والد خود می‌شود) */
     }
 
     /* Bottom Sections - Now part of flex flow (بخش‌های پایین - اکنون بخشی از جریان فلکس) */
     .status-bars-section {
-      height: 180px; /* Explicit height set (ارتفاع صریح تنظیم شده است) */
-      flex-shrink: 0; /* Prevents shrinking (جلوگیری از کوچک شدن) */
+      height: 180px; /* ارتفاع صریح تنظیم شده است */
+      flex-shrink: 0; /* جلوگیری از کوچک شدن */
       padding: 1rem; /* p-4 */
-      background: rgba(255, 255, 255, 0.08); /* glass-card background (پس‌زمینه glass-card) */
+      background: rgba(255, 255, 255, 0.08); /* پس‌زمینه glass-card */
       backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1); /* Top border for separation (حاشیه بالا برای جداسازی) */
-      border-radius: 12px 12px 0 0; /* Rounded top corners (گوشه‌های بالایی گرد) */
-      z-index: 10; /* Ensure status bars are above scrolling content (اطمینان از قرارگیری نوارهای وضعیت بالای محتوای اسکرولی) */
+      border-top: 1px solid rgba(255, 255, 255, 0.1); /* حاشیه بالا برای جداسازی */
+      border-radius: 12px 12px 0 0; /* گوشه‌های بالایی گرد */
+      z-index: 10; /* اطمینان از قرارگیری نوارهای وضعیت بالای محتوای اسکرولی */
     }
 
     .tab-bar {
-      height: 60px; /* Explicit height set (ارتفاع صریح تنظیم شده است) */
-      flex-shrink: 0; /* Prevents shrinking (جلوگیری از کوچک شدن) */
+      height: 60px; /* ارتفاع صریح تنظیم شده است */
+      flex-shrink: 0; /* جلوگیری از کوچک شدن */
       padding-top: 0.5rem; /* py-2 */
       padding-bottom: 0.5rem; /* py-2 */
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
       border-top: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px 12px 0 0; /* Rounded top corners (گوشه‌های بالایی گرد) */
-      z-index: 10; /* Ensure tab bar is above scrolling content (اطمینان از قرارگیری نوار تب بالای محتوای اسکرولی) */
+      border-radius: 12px 12px 0 0; /* گوشه‌های بالایی گرد */
+      z-index: 10; /* اطمینان از قرارگیری نوار تب بالای محتوای اسکرولی */
+      display: grid; /* استفاده از گرید برای کنترل دقیق‌تر جای‌گیری دکمه‌ها */
+      grid-template-columns: repeat(5, 1fr); /* تقسیم به 5 ستون مساوی */
+      gap: 0.5rem; /* فاصله کم بین دکمه‌ها */
+      justify-items: center; /* وسط قرار دادن آیتم‌ها در ستون‌های گرید */
+      align-items: center; /* وسط قرار دادن آیتم‌ها به صورت عمودی */
     }
     /* Styling for tab bar buttons - Adjusted emoji size and made text bold (استایل‌دهی برای دکمه‌های نوار تب - تنظیم اندازه ایموجی و بولد کردن متن) */
-    .tab-bar button span {
-      font-size: 1.5rem; /* Reduced emoji size for tab bar (اندازه ایموجی برای نوار تب کاهش یافت) */
-      line-height: 1; /* Adjust line height for better alignment (تنظیم ارتفاع خط برای تراز بهتر) */
-      margin-bottom: 0.2rem; /* Small margin between emoji and text (فاصله کم بین ایموجی و متن) */
-    }
     .tab-bar button {
-      font-weight: 700; /* Bold text (متن بولد) */
-      font-size: 0.65rem; /* Further reduced font size for tab bar text (اندازه فونت متن نوار تب بیشتر کاهش یافت) */
+      display: flex; /* دکمه‌ها به صورت فلکس نمایش داده شوند */
+      flex-direction: column; /* محتویات دکمه (ایموجی و متن) به صورت عمودی چیده شوند */
+      align-items: center; /* محتویات دکمه در مرکز قرار گیرند */
+      padding: 0.5rem; /* پدینگ دکمه‌ها کاهش یافت */
+      border-radius: 0.5rem;
+      transition: background 0.2s ease;
+      width: 100%; /* اطمینان از پر کردن عرض ستون گرید */
+      font-weight: 700; /* متن بولد */
+      font-size: 0.75rem; /* text-xs - اندازه فونت متن نوار تب */
+    }
+    .tab-bar button span:first-child { /* ایموجی دکمه‌ها */
+      font-size: 1.25rem; /* text-xl - اندازه ایموجی برای نوار تب کاهش یافت */
+      line-height: 1; /* تنظیم ارتفاع خط برای تراز بهتر */
+      margin-bottom: 0.1rem; /* فاصله بسیار کم بین ایموجی و متن */
     }
 
     .modal-overlay {
@@ -199,23 +210,25 @@
     }
     /* Ensure scrollability for content within pages (اطمینان از قابلیت اسکرول برای محتوای درون صفحات) */
     .page-content-scroll {
-      max-height: calc(100vh - (5rem + 1rem) - (60px + 16px)); /* Recalculate based on specific page fixed elements */
+      /* ارتفاع بر اساس ارتفاع کل صفحه - ارتفاع هدر - ارتفاع نوار تب */
+      max-height: calc(100vh - 8rem - 60px); 
       overflow-y: auto;
-      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS (اسکرول روان در iOS) */
+      -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
+      padding-bottom: 1rem; /* برای جلوگیری از بریده شدن محتوا در پایین */
     }
     .back-button-container {
         display: flex;
-        justify-content: flex-start; /* Align to the left (همتراز کردن به چپ) */
-        margin-bottom: 1rem; /* Space below the button (فضای زیر دکمه) */
+        justify-content: flex-start; /* همتراز کردن به چپ */
+        margin-bottom: 1rem; /* فضای زیر دکمه */
     }
     /* Styling for activity menu buttons - Adjusted emoji size and made text bold (استایل‌دهی برای دکمه‌های منوی فعالیت - تنظیم اندازه ایموجی و بولد کردن متن) */
     #activities-menu .glass-card span:first-child {
-      font-size: 2.2rem; /* Slightly smaller emoji size for activities menu (اندازه ایموجی کمی کوچکتر برای منوی فعالیت‌ها) */
+      font-size: 2.2rem; /* اندازه ایموجی کمی کوچکتر برای منوی فعالیت‌ها */
       line-height: 1;
-      margin-bottom: 0.5rem; /* Add some space below the emoji (افزودن مقداری فاصله زیر ایموجی) */
+      margin-bottom: 0.5rem; /* افزودن مقداری فاصله زیر ایموجی */
     }
     #activities-menu .glass-card span:last-child {
-      font-weight: 700; /* Bold text (متن بولد) */
+      font-weight: 700; /* متن بولد */
     }
 
 
@@ -223,9 +236,9 @@
     #main-dashboard-content::-webkit-scrollbar, 
     .page-content-scroll::-webkit-scrollbar,
     #life-log-full::-webkit-scrollbar,
-    #life-log-scroll-container::-webkit-scrollbar, /* Target the new dashboard scroll container (کانتینر اسکرول جدید داشبورد را هدف قرار دهید) */
+    #life-log-scroll-container::-webkit-scrollbar, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
     #full-log-scroll-area::-webkit-scrollbar,
-    .asset-list-container::-webkit-scrollbar { /* Target asset list containers (کانتینرهای لیست دارایی را هدف قرار دهید) */
+    .asset-list-container::-webkit-scrollbar { /* کانتینرهای لیست دارایی را هدف قرار دهید */
       display: none;
     }
 
@@ -233,22 +246,21 @@
     #main-dashboard-content, 
     .page-content-scroll,
     #life-log-full,
-    #life-log-scroll-container, /* Target the new dashboard scroll container (کانتینر اسکرول جدید داشبورد را هدف قرار دهید) */
+    #life-log-scroll-container, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
     #full-log-scroll-area,
-    .asset-list-container { /* Target asset list containers (کانتینرهای لیست دارایی را هدف قرار دهید) */
+    .asset-list-container { /* کانتینرهای لیست دارایی را هدف قرار دهید */
       scrollbar-width: none; /* Firefox */
     }
 
     /* Styling for the new full log page scroll area (استایل‌دهی برای ناحیه اسکرول جدید صفحه گزارش کامل) */
     #full-log-scroll-area {
         overflow-y: auto;
-        flex-grow: 1; /* Takes remaining space within its flex parent (فضای باقی‌مانده را در والد فلکس خود اشغال می‌کند) */
-        min-height: 0; /* Important for flex items with overflow (مهم برای آیتم‌های فلکس با قابلیت overflow) */
+        flex-grow: 1; /* فضای باقی‌مانده را در والد فلکس خود اشغال می‌کند */
+        min-height: 0; /* مهم برای آیتم‌های فلکس با قابلیت overflow */
         /* Calculation: 100vh (total) - 2rem (log-page p-4) - 2.5rem (h2 margin/approx height) - 2rem (glass-card p-4) - 3rem (filter buttons margin/approx height) */
-        max-height: calc(100vh - 2rem - 2.5rem - 2rem - 3rem); /* Adjust as needed (در صورت نیاز تنظیم شود) */
+        max-height: calc(100vh - 2rem - 2.5rem - 2rem - 3rem); /* در صورت نیاز تنظیم شود */
     }
 
-    /* Removed #assets-detail-modal specific styling as it's replaced by pages (استایل‌دهی خاص #assets-detail-modal حذف شد زیرا با صفحات جایگزین شده است) */
   </style>
 </head>
 <body>
@@ -319,56 +331,56 @@
     <!-- Status bars (نوارهای وضعیت) -->
     <div id="status-bars-container" class="status-bars-section"> 
       <div class="flex flex-col space-y-2 text-sm">
-        <!-- Status Bar Item (آیتم نوار وضعیت) -->
+        <!-- Status Bar Item (آیتم نوار وضعیت) - هر آیتم نوار وضعیت اکنون از یک flex container برای توزیع فضا استفاده می‌کند -->
         <div class="flex items-center justify-between">
-          <span class="flex-shrink-0 w-24 text-base">😊 شادی</span>
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- Added h-4 for height, mx-2 for spacing (h-4 برای ارتفاع، mx-2 برای فاصله اضافه شد) -->
-            <div id="happiness-bar" class="status-bar bg-blue-500 w-full"></div>
+          <span class="flex-shrink-0 w-28 text-base">😊 شادی</span> <!-- عرض ثابت برای اموجی و متن -->
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- flex-grow برای اشغال فضای باقی‌مانده توسط نوار اصلی -->
+            <div id="happiness-bar" class="status-bar bg-blue-500"></div>
           </div>
-          <span id="happiness-value" class="text-right font-medium w-12"></span> <!-- Added font-medium, w-12 for consistent width (font-medium و w-12 برای عرض ثابت اضافه شد) -->
+          <span id="happiness-value" class="text-right font-medium w-12"></span> <!-- عرض ثابت برای درصد و بولد کردن -->
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="flex-shrink-0 w-24 text-base">💪 سلامت</span>
+          <span class="flex-shrink-0 w-28 text-base">💪 سلامت</span>
           <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="health-bar" class="status-bar bg-red-500 w-full"></div>
+            <div id="health-bar" class="status-bar bg-red-500"></div>
           </div>
           <span id="health-value" class="text-right font-medium w-12"></span>
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="flex-shrink-0 w-24 text-base">🧠 هوش</span>
+          <span class="flex-shrink-0 w-28 text-base">🧠 هوش</span>
           <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="smarts-bar" class="status-bar bg-purple-500 w-full"></div>
+            <div id="smarts-bar" class="status-bar bg-purple-500"></div>
           </div>
           <span id="smarts-value" class="text-right font-medium w-12"></span>
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="flex-shrink-0 w-24 text-base">😎 ظاهر</span>
+          <span class="flex-shrink-0 w-28 text-base">😎 ظاهر</span>
           <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="looks-bar" class="status-bar bg-yellow-500 w-full"></div>
+            <div id="looks-bar" class="status-bar bg-yellow-500"></div>
           </div>
           <span id="looks-value" class="text-right font-medium w-12"></span>
         </div>
 
         <div class="flex items-center justify-between">
-          <span class="flex-shrink-0 w-24 text-base">🕌 معنویت</span>
+          <span class="flex-shrink-0 w-28 text-base">🕌 معنویت</span>
           <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="spirituality-bar" class="status-bar bg-teal-500 w-full"></div>
+            <div id="spirituality-bar" class="status-bar bg-teal-500"></div>
           </div>
           <span id="spirituality-value" class="text-right font-medium w-12"></span>
         </div>
       </div>
     </div>
 
-    <div class="tab-bar flex justify-around"> 
+    <div class="tab-bar"> <!-- استفاده از گرید برای تنظیم بهتر دکمه‌های منو در موبایل -->
       <!-- New Tab Buttons (دکمه‌های تب جدید) -->
-      <button id="career-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
-      <button id="assets-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
-      <button id="age-up-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
-      <button id="relationships-main-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
-      <button id="activities-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button> <!-- Changed emoji to three dots (تغییر ایموجی به سه نقطه) -->
+      <button id="career-tab" class="hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
+      <button id="assets-tab" class="hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
+      <button id="age-up-tab" class="hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
+      <button id="relationships-main-tab" class="hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
+      <button id="activities-tab" class="hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button>
     </div>
 
     <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
@@ -1305,7 +1317,7 @@
       // Status Bars (نوارهای وضعیت)
       const updateStatusBar = (id, value) => {
         document.getElementById(`${id}-value`).textContent = `${value}%`;
-        // The inner status-bar div always has w-full now, its parent controls the overall length
+        // عرض نوار رنگی اکنون توسط مقدار value تنظیم می‌شود و به انتهای سمت راست می‌چسبد
         document.getElementById(`${id}-bar`).style.width = `${value}%`; 
       };
       updateStatusBar('happiness', gameState.happiness);
