@@ -12,6 +12,7 @@
     /* Ensure html and body take full height and do not scroll (اطمینان از اشغال کامل ارتفاع و عدم اسکرول برای html و body) */
     html, body {
       height: 100%;
+      width: 100%;
       overflow: hidden; /* جلوگیری از اسکرول کلی صفحه */
       margin: 0;
       padding: 0;
@@ -20,12 +21,27 @@
     body {
       font-family: 'Vazir', sans-serif;
       background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
+      display: flex; /* برای مرکز کردن game-container */
+      justify-content: center; /* مرکز افقی */
+      align-items: center; /* مرکز عمودی */
       min-height: 100vh;
       overflow-x: hidden; /* جلوگیری از اسکرول افقی */
-      display: flex;
-      flex-direction: column;
       color: white; /* Default text color (رنگ پیش‌فرض متن) */
     }
+
+    /* New game container for scaling the entire game (کانتینر جدید بازی برای مقیاس‌بندی کل بازی) */
+    #game-container {
+      position: relative; /* برای transform: translate در JS */
+      width: 375px; /* عرض پایه برای ابعاد طراحی موبایل (مثلاً آیفون ۶/۷/۸) */
+      height: 667px; /* ارتفاع پایه برای ابعاد طراحی موبایل (مثلاً آیفون ۶/۷/۸) */
+      overflow: hidden; /* پنهان کردن محتوایی که از ابعاد پایه خارج می‌شود */
+      background: linear-gradient(135deg, #121212 0%, #1a202c 100%); /* پس‌زمینه را به کانتینر اصلی منتقل کنید */
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); /* افزودن سایه برای جلوه بهتر */
+      transform-origin: center center; /* مقیاس‌بندی از مرکز */
+      transform: scale(var(--scale-factor, 1)); /* عامل مقیاس‌بندی توسط JS تنظیم می‌شود */
+      border-radius: 12px; /* گرد کردن گوشه‌ها برای کانتینر اصلی */
+    }
+
     .glass-card {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
@@ -72,11 +88,11 @@
     #dashboard {
       display: flex;
       flex-direction: column;
-      height: 100vh; /* اطمینان از اشغال کامل ارتفاع ویوپورت */
-      overflow: hidden; /* جلوگیری از اسکرول خود داشبورد */
+      height: 100%; /* اکنون ۱۰۰٪ از game-container را اشغال می‌کند */
+      /* overflow: hidden از اینجا حذف شد، game-container آن را مدیریت می‌کند */
     }
 
-    /* Header Section - Now part of flex flow (بخش هدر - اکنون بخشی از جریان فلکس) */
+    /* Header Section (بخش هدر) */
     .header-section {
       height: 6rem; /* 96px - کاهش ارتفاع هدر برای فضای بیشتر */
       flex-shrink: 0; /* جلوگیری از کوچک شدن */
@@ -92,26 +108,20 @@
       flex-direction: column; /* فرزندان را به صورت عمودی پشته کنید */
       justify-content: flex-start; /* محتوا را در بالای این ناحیه همتراز کنید */
       align-items: center; /* محتوا را به صورت افقی وسط قرار دهید */
+      overflow-y: auto; /* این بخش اصلی اکنون اسکرول خودش را مدیریت خواهد کرد */
       -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
     }
     
     /* Styles for the glass-card containing life-log (استایل‌ها برای glass-card شامل گزارش زندگی) */
     #life-log-scroll-container { /* New ID for direct targeting (آی‌دی جدید برای هدف‌گیری مستقیم) */
-      flex-grow: 1; /* این glass-card فضای موجود را در main-dashboard-content اشغال می‌کند */
-      display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
-      flex-direction: column; /* فرزندان را به صورت عمودی پشته کنید */
       width: 100%; /* اطمینان از پر کردن عرض */
       max-width: 768px; /* اختیاری: محدود کردن حداکثر عرض برای خوانایی بهتر در صفحات بزرگتر */
-      overflow-y: auto; /* این گلس-کارد اکنون اسکرول خودش را مدیریت خواهد کرد */
-      min-height: 0; /* حیاتی برای عناصر فلکس قابل اسکرول در یک ستون فلکس */
-      /* محاسبه دقیق ارتفاع: کل ارتفاع دید - ارتفاع هدر - ارتفاع بخش وضعیت - ارتفاع نوار تب - پدینگ بالا و پایین کانتینر محتوا */
-      max-height: calc(100vh - 6rem - 180px - 60px - 1rem); /* 6rem=96px, 1rem=16px */
+      /* ارتفاع توسط محتوای داخل آن و overflow-y در والد مدیریت می‌شود */
     }
 
     /* Styles for the actual life-log content area (استایل‌ها برای ناحیه محتوای گزارش زندگی واقعی) */
     #life-log {
-      space-y-4; /* فاصله را حفظ کنید */
-      /* Content within life-log will now cause its parent life-log-scroll-container to scroll (محتوای داخل life-log اکنون باعث اسکرول گلس-کارد والد خود می‌شود) */
+      space-y: 4; /* فاصله را حفظ کنید */
     }
 
     /* Bottom Sections - Now part of flex flow (بخش‌های پایین - اکنون بخشی از جریان فلکس) */
@@ -126,7 +136,7 @@
       z-index: 10; /* اطمینان از قرارگیری نوارهای وضعیت بالای محتوای اسکرولی */
     }
     .status-bars-section .flex-col {
-        space-y-1; /* کاهش فاصله بین آیتم‌های نوار وضعیت */
+        space-y: 1; /* کاهش فاصله بین آیتم‌های نوار وضعیت */
     }
     .status-bars-section .flex-shrink-0.w-24 { /* Adjust width for labels */
         width: 5rem; /* w-20 = 80px */
@@ -172,7 +182,7 @@
     }
 
     .modal-overlay {
-      position: fixed;
+      position: fixed; /* باید نسبت به viewport ثابت بماند */
       inset: 0;
       background-color: rgba(0, 0, 0, 0.75);
       display: flex;
@@ -221,16 +231,19 @@
     }
     /* Ensure scrollability for content within pages (اطمینان از قابلیت اسکرول برای محتوای درون صفحات) */
     .page-content-scroll {
-      /* محاسبه دقیق ارتفاع: کل ارتفاع دید - ارتفاع هدر - ارتفاع نوار تب - پدینگ بالا و پایین صفحه */
-      max-height: calc(100vh - 6rem - 60px - 1rem); /* 6rem=96px, 1rem=16px */
-      overflow-y: auto;
+      display: flex; /* اکنون اینها نیز فلکس کانتینر هستند */
+      flex-direction: column;
+      height: 100%; /* ۱۰۰٪ ارتفاع کانتینر والد خود (game-container) را اشغال می‌کنند */
+      overflow-y: auto; /* اسکرول داخلی برای محتوا */
       -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
+      padding: 0.5rem; /* کاهش پدینگ برای فضای بیشتر محتوا */
       padding-bottom: 1rem; /* برای جلوگیری از بریده شدن محتوا در پایین */
     }
     .back-button-container {
         display: flex;
         justify-content: flex-start; /* همتراز کردن به چپ */
         margin-bottom: 0.5rem; /* فضای زیر دکمه کاهش یافت */
+        flex-shrink: 0; /* از کوچک شدن دکمه بازگشت جلوگیری می‌کند */
     }
     /* Styling for activity menu buttons - Adjusted emoji size and made text bold (استایل‌دهی برای دکمه‌های منوی فعالیت - تنظیم اندازه ایموجی و بولد کردن متن) */
     #activities-menu .glass-card span:first-child {
@@ -264,13 +277,19 @@
     }
 
     /* Styling for the new full log page scroll area (استایل‌دهی برای ناحیه اسکرول جدید صفحه گزارش کامل) */
-    #full-log-scroll-area {
+    #log-page .glass-card { /* والد #full-log-scroll-area */
+        flex-grow: 1; /* این گلس-کارد فضای باقی‌مانده را اشغال می‌کند */
+        display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
+        flex-direction: column; /* محتویات داخلی را به صورت عمودی پشته کنید */
+        min-height: 0; /* برای آیتم‌های فلکس با overflow ضروری است */
+    }
+    #log-page .glass-card > .flex.space-x-2.mb-2 { /* کانتینر دکمه‌های فیلتر */
+        flex-shrink: 0; /* از کوچک شدن دکمه‌ها جلوگیری می‌کند */
+    }
+    #full-log-scroll-area { 
         overflow-y: auto;
         flex-grow: 1; /* فضای باقی‌مانده را در والد فلکس خود اشغال می‌کند */
         min-height: 0; /* مهم برای آیتم‌های فلکس با قابلیت overflow */
-        /* Calculation: Adjusted based on reduced paddings/margins in log-page */
-        max-height: calc(100vh - 1rem - 2rem - 0.5rem - 2rem - 0.5rem - 1rem); /* 1rem (page p-2) + 2rem (back btn) + 0.5rem (h2 mb) + 2rem (filter btns approx) + 0.5rem (filter mb) + 1rem (glass-card p-4) */
-        max-height: calc(100vh - 7rem); /* Adjusted for simpler calculation */
     }
     /* Further reductions for log-page elements */
     #log-page {
@@ -278,6 +297,7 @@
     }
     #log-page h2 {
         margin-bottom: 0.5rem; /* mb-2 */
+        flex-shrink: 0; /* جلوگیری از کوچک شدن عنوان */
     }
     #log-page .glass-card > .flex.space-x-2.mb-4 { /* Filter buttons container */
         margin-bottom: 0.5rem; /* mb-2 */
@@ -285,516 +305,519 @@
   </style>
 </head>
 <body>
-  <div id="start-screen" class="flex flex-col items-center justify-center min-h-screen p-4">
-    <img src="https://placehold.co/150x120/10b981/ffffff?text=لوگو" alt="لوگو بازی" class="h-32 mb-5 animate-slide-in rounded-lg">
-    <div class="glass-card p-6 w-11/12 max-w-md text-center">
-      <h1 class="text-3xl font-bold mb-4">زندگی ایرانی</h1>
-      <input id="name-input" type="text" placeholder="نام خود را وارد کنید" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" value="عرفان خسروی">
-      <select id="gender-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        <option value="male" selected>مرد 👨</option>
-        <option value="female">زن 👩</option>
-      </select>
-      <select id="province-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        <option value="tehran" selected>تهران - پایتخت، امکانات زیاد</option>
-        <option value="isfahan">اصفهان - تاریخی، فرهنگی</option>
-        <option value="shiraz">شیراز - ادبی، خوش آب‌وهوا</option>
-        <option value="mashhad">مشهد - مذهبی، زیارتی</option>
-        <option value="tabriz">تبریز - صنعتی، تاریخی</option>
-      </select>
-      <select id="family-status" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-        <option value="normal" selected>خانواده معمولی</option>
-        <option value="wealthy">خانواده ثروتمند</option>
-        <option value="rural">خانواده روستایی</option>
-        <option value="poor">خانواده با مشکلات مالی</option>
-      </select>
-      <button id="start-new-life" class="btn-primary w-4/5 py-3 rounded-full text-lg font-semibold mb-3 shadow-lg">شروع زندگی جدید</button>
-      <button id="continue-life" class="btn-secondary w-4/5 py-3 rounded-full text-md shadow-lg">ادامه زندگی قبلی</button>
-    </div>
-    <!-- Removed settings button from start screen (دکمه تنظیمات از صفحه شروع حذف شد) -->
-    <div class="absolute bottom-5 right-5">
-      <select id="language-select" class="bg-gray-800 p-2 rounded-lg text-sm">
-        <option value="fa" selected>فارسی</option>
-      </select>
-    </div>
-  </div>
-
-  <div id="dashboard" style="display: none;" class="flex-1 flex flex-col">
-    <!-- Header Section (بخش هدر) -->
-    <div class="header-section glass-card p-4 flex flex-col justify-center items-center">
-      <div class="flex justify-between w-full items-center">
-        <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
-        <div class="text-right flex-1 pr-2">
-          <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
-          <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
-        </div>
-
-        <!-- Center Section: Game Title (بخش مرکزی: عنوان بازی) -->
-        <h1 class="text-2xl font-bold text-white flex-none">زندگی ایرانی</h1> 
-
-        <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
-        <div class="text-left flex-1 pl-2 flex flex-col items-end">
-          <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- New settings icon (آیکون تنظیمات جدید) -->
-          <p id="dashboard-char-money" class="text-lg text-emerald-400"></p>
-          <p id="dashboard-char-job" class="text-sm text-gray-300"></p>
-        </div>
+  <!-- New: Main game container for scaling -->
+  <div id="game-container">
+    <div id="start-screen" class="flex flex-col items-center justify-center h-full p-4"> <!-- Changed min-h-screen to h-full -->
+      <img src="https://placehold.co/150x120/10b981/ffffff?text=لوگو" alt="لوگو بازی" class="h-32 mb-5 animate-slide-in rounded-lg">
+      <div class="glass-card p-6 w-11/12 max-w-md text-center">
+        <h1 class="text-3xl font-bold mb-4">زندگی ایرانی</h1>
+        <input id="name-input" type="text" placeholder="نام خود را وارد کنید" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" value="عرفان خسروی">
+        <select id="gender-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="male" selected>مرد 👨</option>
+          <option value="female">زن 👩</option>
+        </select>
+        <select id="province-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="tehran" selected>تهران - پایتخت، امکانات زیاد</option>
+          <option value="isfahan">اصفهان - تاریخی، فرهنگی</option>
+          <option value="shiraz">شیراز - ادبی، خوش آب‌وهوا</option>
+          <option value="mashhad">مشهد - مذهبی، زیارتی</option>
+          <option value="tabriz">تبریز - صنعتی، تاریخی</option>
+        </select>
+        <select id="family-status" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          <option value="normal" selected>خانواده معمولی</option>
+          <option value="wealthy">خانواده ثروتمند</option>
+          <option value="rural">خانواده روستایی</option>
+          <option value="poor">خانواده با مشکلات مالی</option>
+        </select>
+        <button id="start-new-life" class="btn-primary w-4/5 py-3 rounded-full text-lg font-semibold mb-3 shadow-lg">شروع زندگی جدید</button>
+        <button id="continue-life" class="btn-secondary w-4/5 py-3 rounded-full text-md shadow-lg">ادامه زندگی قبلی</button>
       </div>
-    </div>
-
-    <!-- Main Content Area - This will be the scrollable part (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) -->
-    <div id="main-dashboard-content"> 
-      <div id="life-log-scroll-container" class="glass-card p-4 flex flex-col flex-grow h-full">
-        <!-- Removed "گزارش زندگی" header as requested (هدر "گزارش زندگی" طبق درخواست حذف شد) -->
-        <div id="life-log" class="space-y-4"></div>
-      </div>
-    </div>
-
-    <!-- Bottom Status Bars & Tab Bar (نوارهای وضعیت و نوار تب پایین) -->
-    <!-- Status bars (نوارهای وضعیت) -->
-    <div id="status-bars-container" class="status-bars-section"> 
-      <div class="flex flex-col space-y-1 text-sm"> <!-- space-y-1 برای کاهش فاصله عمودی -->
-        <!-- Status Bar Item (آیتم نوار وضعیت) - هر آیتم نوار وضعیت اکنون از یک flex container برای توزیع فضا استفاده می‌کند -->
-        <div class="flex items-center justify-between h-8"> <!-- افزایش ارتفاع برای جا دادن متن و نوار در یک خط -->
-          <span class="flex-shrink-0 w-20 text-base">😊 شادی</span> <!-- عرض ثابت برای اموجی و متن -->
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- flex-grow برای اشغال فضای باقی‌مانده توسط نوار اصلی -->
-            <div id="happiness-bar" class="status-bar bg-blue-500"></div>
-          </div>
-          <span id="happiness-value" class="text-right font-bold text-sm w-10"></span> <!-- عرض ثابت برای درصد و بولد کردن -->
-        </div>
-
-        <div class="flex items-center justify-between h-8">
-          <span class="flex-shrink-0 w-20 text-base">💪 سلامت</span>
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="health-bar" class="status-bar bg-red-500"></div>
-          </div>
-          <span id="health-value" class="text-right font-bold text-sm w-10"></span>
-        </div>
-
-        <div class="flex items-center justify-between h-8">
-          <span class="flex-shrink-0 w-20 text-base">🧠 هوش</span>
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="smarts-bar" class="status-bar bg-purple-500"></div>
-          </div>
-          <span id="smarts-value" class="text-right font-bold text-sm w-10"></span>
-        </div>
-
-        <div class="flex items-center justify-between h-8">
-          <span class="flex-shrink-0 w-20 text-base">😎 ظاهر</span>
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="looks-bar" class="status-bar bg-yellow-500"></div>
-          </div>
-          <span id="looks-value" class="text-right font-bold text-sm w-10"></span>
-        </div>
-
-        <div class="flex items-center justify-between h-8">
-          <span class="flex-shrink-0 w-20 text-base">🕌 معنویت</span>
-          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-            <div id="spirituality-bar" class="status-bar bg-teal-500"></div>
-          </div>
-          <span id="spirituality-value" class="text-right font-bold text-sm w-10"></span>
-        </div>
-      </div>
-    </div>
-
-    <div class="tab-bar"> <!-- استفاده از گرید برای تنظیم بهتر دکمه‌های منو در موبایل -->
-      <!-- New Tab Buttons (دکمه‌های تب جدید) -->
-      <button id="career-tab" class="hover:bg-gray-700 transition"><span>💼</span><span>حرفه</span></button>
-      <button id="assets-tab" class="hover:bg-gray-700 transition"><span>💰</span><span>دارایی‌ها</span></button>
-      <button id="age-up-tab" class="hover:bg-gray-700 transition"><span>⏭️</span><span>یک سال بگذرون</span></button>
-      <button id="relationships-main-tab" class="hover:bg-gray-700 transition"><span>❤️</span><span>روابط</span></button>
-      <button id="activities-tab" class="hover:bg-gray-700 transition"><span>...</span><span>فعالیت‌ها</span></button>
-    </div>
-
-    <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
-      <div class="modal-content text-white">
-        <h2 class="text-xl font-bold mb-4">گزینه‌های بیشتر</h2>
-        <div class="grid grid-cols-2 gap-4">
-          <button id="education-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-            <span class="text-2xl">🎓</span>
-            <span>تحصیلات</span>
-          </button>
-          <button id="health-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-            <span class="text-2xl">🏥</span>
-            <span>سلامت</span>
-          </button>
-          <button id="investments-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-            <span class="text-2xl">📈</span>
-            <span>سرمایه‌گذاری</span>
-          </button>
-          <!-- Removed settings button from activities menu (دکمه تنظیمات از منوی فعالیت‌ها حذف شد) -->
-        </div>
-        <button id="close-activities-menu" class="btn-secondary w-full py-2 mt-4 rounded-lg">بستن</button> <!-- Renamed ID -->
-      </div>
-    </div>
-  </div>
-
-  <div id="character-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Character Page, returns to Dashboard (دکمه بازگشت برای صفحه شخصیت، به داشبورد برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">اطلاعات شخصیت</h2>
-    <div class="glass-card p-4 mb-4">
-      <p><strong>نام:</strong> <span id="char-name"></span></p>
-      <p><strong>جنسیت:</strong> <span id="char-gender"></span></p>
-      <p><strong>محل تولد:</strong> <span id="char-province"></span></p>
-      <p><strong>وضعیت خانوادگی:</strong> <span id="char-family"></span></p>
-      <p><strong>سن:</strong> <span id="char-age"></span></p>
-    </div>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">خانواده</h3>
-      <ul id="family-list" class="space-y-2"></ul>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">ویژگی‌ها</h3>
-      <p>هوش: <span id="char-smarts"></span></p>
-      <p>ظاهر: <span id="char-looks"></span></p>
-      <p>معنویت: <span id="char-spirituality"></span></p>
-    </div>
-  </div>
-
-  <div id="log-page" style="display: none;" class="min-h-screen p-2"> <!-- Padding reduced here -->
-    <div class="back-button-container">
-        <!-- Back button for Log Page, returns to Activities Menu (دکمه بازگشت برای صفحه تاریخچه، به منوی فعالیت‌ها برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-2">تاریخچه زندگی</h2> <!-- Margin bottom reduced here -->
-    <div class="glass-card p-4 flex flex-col"> <!-- Added flex flex-col to parent glass-card -->
-      <div class="flex space-x-2 mb-2 overflow-x-auto pb-2 flex-shrink-0"> <!-- Margin bottom reduced here -->
-        <button id="log-filter-all" class="btn-primary px-4 py-2 rounded-lg flex-shrink-0">همه</button>
-        <button id="log-filter-career" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">شغل</button>
-        <button id="log-filter-family" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">خانواده</button>
-        <button id="log-filter-health" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">سلامت</button>
-        <button id="log-filter-education" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">تحصیلات</button>
-      </div>
-      <div id="full-log-scroll-area"> <!-- New scrollable container for the full log (کانتینر قابل اسکرول جدید برای گزارش کامل) -->
-        <ul id="life-log-full" class="space-y-4"></ul>
-      </div>
-    </div>
-  </div>
-
-  <div id="education-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Education Page, returns to Activities Menu (دکمه بازگشت برای صفحه تحصیلات، به منوی فعالیت‌ها برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">تحصیلات</h2>
-    <div class="glass-card p-4">
-      <div class="flex space-x-2 mb-4">
-        <button id="school-tab" class="btn-primary px-4 py-2 rounded-lg">مدرسه</button>
-        <button id="university-tab" class="btn-secondary px-4 py-2 rounded-lg">دانشگاه</button>
-      </div>
-      <div id="education-content"></div>
-    </div>
-  </div>
-
-  <div id="relationships-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Relationships Page, returns to Dashboard (دکمه بازگشت برای صفحه روابط، به داشبورد برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">روابط</h2>
-    <div id="relationships-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-    <div class="glass-card p-4 mt-4">
-      <h3 class="text-lg font-semibold mb-2">روابط عاطفی</h3>
-      <div id="romantic-relationships" class="space-y-2"></div>
-      <button id="find-partner-btn" class="btn-primary px-4 py-2 rounded-lg mt-4">پیدا کردن شریک عاطفی</button>
-    </div>
-  </div>
-
-  <div id="health-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Health Page, returns to Activities Menu (دکمه بازگشت برای صفحه سلامت، به منوی فعالیت‌ها برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">سلامت</h2>
-    <div class="glass-card p-4">
-      <p><strong>وضعیت سلامت:</strong> <span id="health-status"></span></p>
-      <p><strong>بیماری‌ها:</strong> <span id="illnesses"></span></p>
-      <div class="flex space-x-2 mt-4 flex-wrap gap-2">
-        <button id="visit-doctor" class="btn-primary px-4 py-2 rounded-lg">مراجعه به پزشک عمومی</button>
-        <button id="visit-specialist" class="btn-primary px-4 py-2 rounded-lg">مراجعه به متخصص</button>
-        <button id="go-gym" class="btn-primary px-4 py-2 rounded-lg">ورزش</button>
-        <button id="meditate" class="btn-primary px-4 py-2 rounded-lg">مراقبه</button>
-      </div>
-    </div>
-    <div class="glass-card p-4 mt-4">
-      <h3 class="text-lg font-semibold mb-2">بیماری‌ها و درمان‌ها</h3>
-      <ul id="illness-list" class="space-y-2"></ul>
-    </div>
-  </div>
-
-  <div id="career-categories-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت به داشبورد</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-6 text-center">انتخاب مسیر شغلی</h2>
-    <div id="career-category-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      <!-- Job categories will be populated here by JavaScript -->
-    </div>
-  </div>
-
-  <div id="job-listing-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button id="back-to-career-categories-btn" class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('career-categories-page')">بازگشت به دسته‌بندی مشاغل</button>
-    </div>
-    <h2 id="job-listing-title" class="text-2xl font-bold mb-6 text-center">لیست مشاغل</h2>
-    <div id="job-list-container" class="space-y-4">
-      <!-- Jobs for the selected category will be populated here by JavaScript -->
-    </div>
-  </div>
-
-  <div id="job-details-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button id="back-to-job-listing-btn" class="btn-secondary px-4 py-2 rounded-lg">بازگشت به لیست مشاغل</button> 
-        <!-- The onclick for this button will be set dynamically by JavaScript to include current category -->
-    </div>
-    <div class="glass-card p-6">
-      <h2 id="job-detail-title" class="text-3xl font-bold mb-4 text-center">نام شغل</h2>
-      <p id="job-detail-description" class="text-gray-300 mb-4">توضیحات شغل در اینجا قرار می‌گیرد.</p>
-      
-      <div class="mb-4">
-        <h3 class="text-xl font-semibold mb-2">اطلاعات پایه:</h3>
-        <p><strong>حقوق ماهیانه:</strong> <span id="job-detail-salary"></span> تومان</p>
-        <p><strong>حداقل سن:</strong> <span id="job-detail-minAge"></span> سال</p>
-      </div>
-
-      <div class="mb-4">
-        <h3 class="text-xl font-semibold mb-2">تحصیلات مورد نیاز:</h3>
-        <p id="job-detail-educationReq"></p>
-      </div>
-
-      <div class="mb-4">
-        <h3 class="text-xl font-semibold mb-2">مهارت‌های مورد نیاز:</h3>
-        <ul id="job-detail-skillRequirements" class="list-disc list-inside text-gray-300">
-          <!-- Skill requirements will be populated here -->
-        </ul>
-      </div>
-      
-      <div id="job-detail-promotion-info" class="mb-4" style="display: none;"> <!-- Hidden by default -->
-        <h3 class="text-xl font-semibold mb-2">مسیر ارتقا:</h3>
-        <p><strong>شغل بعدی:</strong> <span id="job-detail-promotionTo"></span></p>
-        <p><strong>تجربه لازم برای ارتقا:</strong> <span id="job-detail-experienceForPromotion"></span> سال</p>
-      </div>
-
-      <button id="apply-job-btn" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold mt-6">درخواست برای این شغل</button>
-    </div>
-  </div>
-
-  <!-- New Investment Page (صفحه جدید سرمایه‌گذاری) -->
-  <div id="investment-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">سرمایه‌گذاری‌ها</h2>
-    <div class="glass-card p-4 flex flex-col space-y-4">
-      <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💰 طلا و سکه</button>
-      <button id="stocks_bourse-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📈 سهام بورس</button>
-      <button id="cryptocurrency-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">₿ ارز دیجیتال</button>
-      <button id="investment_land-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏡 زمین و املاک</button>
-      <button id="raw_materials-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📦 مواد اولیه</button>
-    </div>
-    <div class="glass-card p-4 mt-4">
-      <h3 class="text-lg font-semibold mb-2">سرمایه‌گذاری‌های فعلی شما:</h3>
-      <ul id="current-investments-summary" class="mt-4 space-y-2"></ul>
-    </div>
-  </div>
-
-  <!-- New detailed investment pages (صفحات جزئیات سرمایه‌گذاری جدید) -->
-  <div id="gold_coins-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">💰 طلا و سکه</h2>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-gold_coins-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-gold_coins-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <div id="stocks_bourse-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">📈 سهام بورس</h2>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-stocks_bourse-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-stocks_bourse-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <div id="cryptocurrency-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">₿ ارز دیجیتال</h2>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-cryptocurrency-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-cryptocurrency-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <div id="investment_land-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">🏡 زمین و املاک (سرمایه‌گذاری)</h2>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-investment_land-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-investment_land-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <div id="raw_materials-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">📦 مواد اولیه</h2>
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-raw_materials-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-raw_materials-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-
-  <div id="assets-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Assets Page, returns to Dashboard (دکمه بازگشت برای صفحه دارایی‌ها، به داشبورد برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">دارایی‌ها</h2>
-    <!-- Vertical list of asset categories (لیست عمودی دسته‌بندی‌های دارایی) -->
-    <div id="assets-category-list" class="glass-card p-4 flex flex-col space-y-4">
-      <button id="properties-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏠 املاک</button>
-      <button id="vehicles-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🚗 خودروها</button>
-      <button id="plane_boat-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">✈️/⛵ هواپیما/قایق</button>
-      <button id="jewelry-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💎 جواهرات</button>
-      <button id="instruments-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🎸 سازها</button>
-      <!-- Removed investments-category-btn from assets, now in activities menu (سرمایه‌گذاری‌ها از دارایی‌ها حذف شد، اکنون در منوی فعالیت‌ها است) -->
-    </div>
-  </div>
-
-  <!-- Asset Category Pages (pages for properties, vehicles, etc.) -->
-  <!-- Property Page -->
-  <div id="properties-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-properties-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-properties-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <!-- Vehicles Page -->
-  <div id="vehicles-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-vehicles-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-vehicles-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <!-- Plane/Boat Page -->
-  <div id="plane_boat-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-plane_boat-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-plane_boat-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <!-- Jewelry Page -->
-  <div id="jewelry-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-jewelry-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-jewelry-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <!-- Instruments Page -->
-  <div id="instruments-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
-    <div class="glass-card p-4 mb-4">
-      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-      <div id="owned-instruments-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-    </div>
-    <div class="glass-card p-4">
-      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-      <div id="buy-instruments-list" class="space-y-2 asset-list-container"></div>
-    </div>
-  </div>
-
-  <div id="settings-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
-    <div class="back-button-container">
-        <!-- Back button for Settings Page, returns to Dashboard (دکمه بازگشت برای صفحه تنظیمات، به داشبورد برمی‌گردد) -->
-        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-    </div>
-    <h2 class="text-2xl font-bold mb-4">تنظیمات</h2>
-    <div class="glass-card p-4">
-      <div class="mb-4">
-        <label class="block mb-2">تم</label>
-        <select id="theme-select" class="w-full p-2 bg-gray-800 rounded-lg">
-          <option value="dark" selected>تیره</option>
-          <option value="light">روشن</option>
+      <!-- Removed settings button from start screen (دکمه تنظیمات از صفحه شروع حذف شد) -->
+      <div class="absolute bottom-5 right-5">
+        <select id="language-select" class="bg-gray-800 p-2 rounded-lg text-sm">
+          <option value="fa" selected>فارسی</option>
         </select>
       </div>
-      <div class="flex space-x-2 flex-wrap gap-2">
-        <button id="save-game" class="btn-primary px-4 py-2 rounded-lg">ذخیره</button>
-        <button id="load-game" class="btn-primary px-4 py-2 rounded-lg">بارگذاری</button>
-        <button id="reset-game" class="btn-secondary px-4 py-2 rounded-lg">ریست</button>
+    </div>
+
+    <div id="dashboard" style="display: none;">
+      <!-- Header Section (بخش هدر) -->
+      <div class="header-section glass-card p-4 flex flex-col justify-center items-center">
+        <div class="flex justify-between w-full items-center">
+          <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
+          <div class="text-right flex-1 pr-2">
+            <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
+            <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
+          </div>
+
+          <!-- Center Section: Game Title (بخش مرکزی: عنوان بازی) -->
+          <h1 class="text-2xl font-bold text-white flex-none">زندگی ایرانی</h1> 
+
+          <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
+          <div class="text-left flex-1 pl-2 flex flex-col items-end">
+            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- New settings icon (آیکون تنظیمات جدید) -->
+            <p id="dashboard-char-money" class="text-lg text-emerald-400"></p>
+            <p id="dashboard-char-job" class="text-sm text-gray-300"></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Area - This will be the scrollable part (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) -->
+      <div id="main-dashboard-content"> 
+        <div id="life-log-scroll-container" class="glass-card p-4 h-full">
+          <!-- Removed "گزارش زندگی" header as requested (هدر "گزارش زندگی" طبق درخواست حذف شد) -->
+          <div id="life-log" class="space-y-4"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Status Bars & Tab Bar (نوارهای وضعیت و نوار تب پایین) -->
+      <!-- Status bars (نوارهای وضعیت) -->
+      <div id="status-bars-container" class="status-bars-section"> 
+        <div class="flex flex-col space-y-1 text-sm"> <!-- space-y-1 برای کاهش فاصله عمودی -->
+          <!-- Status Bar Item (آیتم نوار وضعیت) - هر آیتم نوار وضعیت اکنون از یک flex container برای توزیع فضا استفاده می‌کند -->
+          <div class="flex items-center justify-between h-8"> <!-- افزایش ارتفاع برای جا دادن متن و نوار در یک خط -->
+            <span class="flex-shrink-0 w-20 text-base">😊 شادی</span> <!-- عرض ثابت برای اموجی و متن -->
+            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- flex-grow برای اشغال فضای باقی‌مانده توسط نوار اصلی -->
+              <div id="happiness-bar" class="status-bar bg-blue-500"></div>
+            </div>
+            <span id="happiness-value" class="text-right font-bold text-sm w-10"></span> <!-- عرض ثابت برای درصد و بولد کردن -->
+          </div>
+
+          <div class="flex items-center justify-between h-8">
+            <span class="flex-shrink-0 w-20 text-base">💪 سلامت</span>
+            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+              <div id="health-bar" class="status-bar bg-red-500"></div>
+            </div>
+            <span id="health-value" class="text-right font-bold text-sm w-10"></span>
+          </div>
+
+          <div class="flex items-center justify-between h-8">
+            <span class="flex-shrink-0 w-20 text-base">🧠 هوش</span>
+            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+              <div id="smarts-bar" class="status-bar bg-purple-500"></div>
+            </div>
+            <span id="smarts-value" class="text-right font-bold text-sm w-10"></span>
+          </div>
+
+          <div class="flex items-center justify-between h-8">
+            <span class="flex-shrink-0 w-20 text-base">😎 ظاهر</span>
+            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+              <div id="looks-bar" class="status-bar bg-yellow-500"></div>
+            </div>
+            <span id="looks-value" class="text-right font-bold text-sm w-10"></span>
+          </div>
+
+          <div class="flex items-center justify-between h-8">
+            <span class="flex-shrink-0 w-20 text-base">🕌 معنویت</span>
+            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+              <div id="spirituality-bar" class="status-bar bg-teal-500"></div>
+            </div>
+            <span id="spirituality-value" class="text-right font-bold text-sm w-10"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-bar"> <!-- استفاده از گرید برای تنظیم بهتر دکمه‌های منو در موبایل -->
+        <!-- New Tab Buttons (دکمه‌های تب جدید) -->
+        <button id="career-tab" class="hover:bg-gray-700 transition"><span>💼</span><span>حرفه</span></button>
+        <button id="assets-tab" class="hover:bg-gray-700 transition"><span>💰</span><span>دارایی‌ها</span></button>
+        <button id="age-up-tab" class="hover:bg-gray-700 transition"><span>⏭️</span><span>یک سال بگذرون</span></button>
+        <button id="relationships-main-tab" class="hover:bg-gray-700 transition"><span>❤️</span><span>روابط</span></button>
+        <button id="activities-tab" class="hover:bg-gray-700 transition"><span>...</span><span>فعالیت‌ها</span></button>
+      </div>
+
+      <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
+        <div class="modal-content text-white">
+          <h2 class="text-xl font-bold mb-4">گزینه‌های بیشتر</h2>
+          <div class="grid grid-cols-2 gap-4">
+            <button id="education-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
+              <span class="text-2xl">🎓</span>
+              <span>تحصیلات</span>
+            </button>
+            <button id="health-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
+              <span class="text-2xl">🏥</span>
+              <span>سلامت</span>
+            </button>
+            <button id="investments-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
+              <span class="text-2xl">📈</span>
+              <span>سرمایه‌گذاری</span>
+            </button>
+            <!-- Removed settings button from activities menu (دکمه تنظیمات از منوی فعالیت‌ها حذف شد) -->
+          </div>
+          <button id="close-activities-menu" class="btn-secondary w-full py-2 mt-4 rounded-lg">بستن</button> <!-- Renamed ID -->
+        </div>
       </div>
     </div>
-  </div>
+
+    <div id="character-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Character Page, returns to Dashboard (دکمه بازگشت برای صفحه شخصیت، به داشبورد برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">اطلاعات شخصیت</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <p><strong>نام:</strong> <span id="char-name"></span></p>
+        <p><strong>جنسیت:</strong> <span id="char-gender"></span></p>
+        <p><strong>محل تولد:</strong> <span id="char-province"></span></p>
+        <p><strong>وضعیت خانوادگی:</strong> <span id="char-family"></span></p>
+        <p><strong>سن:</strong> <span id="char-age"></span></p>
+      </div>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">خانواده</h3>
+        <ul id="family-list" class="space-y-2"></ul>
+      </div>
+      <div class="glass-card p-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">ویژگی‌ها</h3>
+        <p>هوش: <span id="char-smarts"></span></p>
+        <p>ظاهر: <span id="char-looks"></span></p>
+        <p>معنویت: <span id="char-spirituality"></span></p>
+      </div>
+    </div>
+
+    <div id="log-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Log Page, returns to Activities Menu (دکمه بازگشت برای صفحه تاریخچه، به منوی فعالیت‌ها برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-2 flex-shrink-0">تاریخچه زندگی</h2> <!-- Margin bottom reduced here -->
+      <div class="glass-card p-4 flex flex-col flex-grow"> <!-- Added flex flex-col and flex-grow to parent glass-card -->
+        <div class="flex space-x-2 mb-2 overflow-x-auto pb-2 flex-shrink-0"> <!-- Margin bottom reduced here -->
+          <button id="log-filter-all" class="btn-primary px-4 py-2 rounded-lg flex-shrink-0">همه</button>
+          <button id="log-filter-career" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">شغل</button>
+          <button id="log-filter-family" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">خانواده</button>
+          <button id="log-filter-health" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">سلامت</button>
+          <button id="log-filter-education" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">تحصیلات</button>
+        </div>
+        <div id="full-log-scroll-area"> <!-- New scrollable container for the full log (کانتینر قابل اسکرول جدید برای گزارش کامل) -->
+          <ul id="life-log-full" class="space-y-4"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="education-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Education Page, returns to Activities Menu (دکمه بازگشت برای صفحه تحصیلات، به منوی فعالیت‌ها برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">تحصیلات</h2>
+      <div class="glass-card p-4 flex-grow"> <!-- Added flex-grow -->
+        <div class="flex space-x-2 mb-4 flex-shrink-0">
+          <button id="school-tab" class="btn-primary px-4 py-2 rounded-lg">مدرسه</button>
+          <button id="university-tab" class="btn-secondary px-4 py-2 rounded-lg">دانشگاه</button>
+        </div>
+        <div id="education-content"></div>
+      </div>
+    </div>
+
+    <div id="relationships-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Relationships Page, returns to Dashboard (دکمه بازگشت برای صفحه روابط، به داشبورد برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">روابط</h2>
+      <div id="relationships-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0"></div>
+      <div class="glass-card p-4 mt-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">روابط عاطفی</h3>
+        <div id="romantic-relationships" class="space-y-2"></div>
+        <button id="find-partner-btn" class="btn-primary px-4 py-2 rounded-lg mt-4">پیدا کردن شریک عاطفی</button>
+      </div>
+    </div>
+
+    <div id="health-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Health Page, returns to Activities Menu (دکمه بازگشت برای صفحه سلامت، به منوی فعالیت‌ها برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">سلامت</h2>
+      <div class="glass-card p-4 flex-shrink-0">
+        <p><strong>وضعیت سلامت:</strong> <span id="health-status"></span></p>
+        <p><strong>بیماری‌ها:</strong> <span id="illnesses"></span></p>
+        <div class="flex space-x-2 mt-4 flex-wrap gap-2">
+          <button id="visit-doctor" class="btn-primary px-4 py-2 rounded-lg">مراجعه به پزشک عمومی</button>
+          <button id="visit-specialist" class="btn-primary px-4 py-2 rounded-lg">مراجعه به متخصص</button>
+          <button id="go-gym" class="btn-primary px-4 py-2 rounded-lg">ورزش</button>
+          <button id="meditate" class="btn-primary px-4 py-2 rounded-lg">مراقبه</button>
+        </div>
+      </div>
+      <div class="glass-card p-4 mt-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">بیماری‌ها و درمان‌ها</h3>
+        <ul id="illness-list" class="space-y-2"></ul>
+      </div>
+    </div>
+
+    <div id="career-categories-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت به داشبورد</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-6 text-center flex-shrink-0">انتخاب مسیر شغلی</h2>
+      <div id="career-category-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-grow overflow-y-auto">
+        <!-- Job categories will be populated here by JavaScript -->
+      </div>
+    </div>
+
+    <div id="job-listing-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button id="back-to-career-categories-btn" class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('career-categories-page')">بازگشت به دسته‌بندی مشاغل</button>
+      </div>
+      <h2 id="job-listing-title" class="text-2xl font-bold mb-6 text-center flex-shrink-0">لیست مشاغل</h2>
+      <div id="job-list-container" class="space-y-4 flex-grow overflow-y-auto">
+        <!-- Jobs for the selected category will be populated here by JavaScript -->
+      </div>
+    </div>
+
+    <div id="job-details-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button id="back-to-job-listing-btn" class="btn-secondary px-4 py-2 rounded-lg">بازگشت به لیست مشاغل</button> 
+          <!-- The onclick for this button will be set dynamically by JavaScript to include current category -->
+      </div>
+      <div class="glass-card p-6 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
+        <h2 id="job-detail-title" class="text-3xl font-bold mb-4 text-center">نام شغل</h2>
+        <p id="job-detail-description" class="text-gray-300 mb-4">توضیحات شغل در اینجا قرار می‌گیرد.</p>
+        
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">اطلاعات پایه:</h3>
+          <p><strong>حقوق ماهیانه:</strong> <span id="job-detail-salary"></span> تومان</p>
+          <p><strong>حداقل سن:</strong> <span id="job-detail-minAge"></span> سال</p>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">تحصیلات مورد نیاز:</h3>
+          <p id="job-detail-educationReq"></p>
+        </div>
+
+        <div class="mb-4">
+          <h3 class="text-xl font-semibold mb-2">مهارت‌های مورد نیاز:</h3>
+          <ul id="job-detail-skillRequirements" class="list-disc list-inside text-gray-300">
+            <!-- Skill requirements will be populated here -->
+          </ul>
+        </div>
+        
+        <div id="job-detail-promotion-info" class="mb-4" style="display: none;"> <!-- Hidden by default -->
+          <h3 class="text-xl font-semibold mb-2">مسیر ارتقا:</h3>
+          <p><strong>شغل بعدی:</strong> <span id="job-detail-promotionTo"></span></p>
+          <p><strong>تجربه لازم برای ارتقا:</strong> <span id="job-detail-experienceForPromotion"></span> سال</p>
+        </div>
+
+        <button id="apply-job-btn" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold mt-6 flex-shrink-0">درخواست برای این شغل</button>
+      </div>
+    </div>
+
+    <!-- New Investment Page (صفحه جدید سرمایه‌گذاری) -->
+    <div id="investment-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">سرمایه‌گذاری‌ها</h2>
+      <div class="glass-card p-4 flex flex-col space-y-4 flex-shrink-0">
+        <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💰 طلا و سکه</button>
+        <button id="stocks_bourse-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📈 سهام بورس</button>
+        <button id="cryptocurrency-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">₿ ارز دیجیتال</button>
+        <button id="investment_land-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏡 زمین و املاک</button>
+        <button id="raw_materials-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📦 مواد اولیه</button>
+      </div>
+      <div class="glass-card p-4 mt-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
+        <h3 class="text-lg font-semibold mb-2">سرمایه‌گذاری‌های فعلی شما:</h3>
+        <ul id="current-investments-summary" class="mt-4 space-y-2"></ul>
+      </div>
+    </div>
+
+    <!-- New detailed investment pages (صفحات جزئیات سرمایه‌گذاری جدید) -->
+    <div id="gold_coins-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">💰 طلا و سکه</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-gold_coins-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-gold_coins-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <div id="stocks_bourse-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">📈 سهام بورس</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-stocks_bourse-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-stocks_bourse-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <div id="cryptocurrency-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">₿ ارز دیجیتال</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-cryptocurrency-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-cryptocurrency-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <div id="investment_land-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">🏡 زمین و املاک (سرمایه‌گذاری)</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-investment_land-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-investment_land-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <div id="raw_materials-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">📦 مواد اولیه</h2>
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-raw_materials-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-raw_materials-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+
+    <div id="assets-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Assets Page, returns to Dashboard (دکمه بازگشت برای صفحه دارایی‌ها، به داشبورد برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">دارایی‌ها</h2>
+      <!-- Vertical list of asset categories (لیست عمودی دسته‌بندی‌های دارایی) -->
+      <div id="assets-category-list" class="glass-card p-4 flex flex-col space-y-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
+        <button id="properties-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏠 املاک</button>
+        <button id="vehicles-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🚗 خودروها</button>
+        <button id="plane_boat-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">✈️/⛵ هواپیما/قایق</button>
+        <button id="jewelry-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💎 جواهرات</button>
+        <button id="instruments-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🎸 سازها</button>
+        <!-- Removed investments-category-btn from assets, now in activities menu (سرمایه‌گذاری‌ها از دارایی‌ها حذف شد، اکنون در منوی فعالیت‌ها است) -->
+      </div>
+    </div>
+
+    <!-- Asset Category Pages (pages for properties, vehicles, etc.) -->
+    <!-- Property Page -->
+    <div id="properties-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-properties-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-properties-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <!-- Vehicles Page -->
+    <div id="vehicles-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-vehicles-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-vehicles-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <!-- Plane/Boat Page -->
+    <div id="plane_boat-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-plane_boat-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-plane_boat-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <!-- Jewelry Page -->
+    <div id="jewelry-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-jewelry-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-jewelry-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <!-- Instruments Page -->
+    <div id="instruments-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
+      <div class="glass-card p-4 mb-4 flex-shrink-0">
+        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+        <div id="owned-instruments-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+      </div>
+      <div class="glass-card p-4 flex-grow overflow-y-auto">
+        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+        <div id="buy-instruments-list" class="space-y-2 asset-list-container"></div>
+      </div>
+    </div>
+
+    <div id="settings-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+      <div class="back-button-container">
+          <!-- Back button for Settings Page, returns to Dashboard (دکمه بازگشت برای صفحه تنظیمات، به داشبورد برمی‌گردد) -->
+          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
+      </div>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">تنظیمات</h2>
+      <div class="glass-card p-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
+        <div class="mb-4">
+          <label class="block mb-2">تم</label>
+          <select id="theme-select" class="w-full p-2 bg-gray-800 rounded-lg">
+            <option value="dark" selected>تیره</option>
+            <option value="light">روشن</option>
+          </select>
+        </div>
+        <div class="flex space-x-2 flex-wrap gap-2">
+          <button id="save-game" class="btn-primary px-4 py-2 rounded-lg">ذخیره</button>
+          <button id="load-game" class="btn-primary px-4 py-2 rounded-lg">بارگذاری</button>
+          <button id="reset-game" class="btn-secondary px-4 py-2 rounded-lg">ریست</button>
+        </div>
+      </div>
+    </div>
+  </div> <!-- End of game-container -->
 
   <script type="module">
     // Global game state and other variables (وضعیت سراسری بازی و سایر متغیرها)
@@ -1131,6 +1154,10 @@
     async function initGame() {
       console.log('Initializing game...'); // Debugging line
 
+      // Set up global game container scaling (تنظیم مقیاس‌بندی کانتینر اصلی بازی)
+      window.addEventListener('resize', resizeGame);
+      resizeGame(); // Initial call to set correct scale (فراخوانی اولیه برای تنظیم مقیاس صحیح)
+
       // Event Listeners for Start Screen (شنونده‌های رویداد برای صفحه شروع)
       document.getElementById('start-new-life').addEventListener('click', startNewLife);
       document.getElementById('continue-life').addEventListener('click', continueLife);
@@ -1196,6 +1223,22 @@
       updateUI();
       // Ensure only start screen is visible on initial load (اطمینان از نمایش تنها صفحه شروع در بارگذاری اولیه)
       window.showPage('start-screen');
+    }
+
+    // Define base dimensions for the game container (تعریف ابعاد پایه برای کانتینر بازی)
+    const BASE_WIDTH = 375; // Design width (عرض طراحی)
+    const BASE_HEIGHT = 667; // Design height (ارتفاع طراحی)
+
+    // Function to resize and scale the game container (تابع برای تغییر اندازه و مقیاس‌بندی کانتینر بازی)
+    function resizeGame() {
+      const gameContainer = document.getElementById('game-container');
+      if (!gameContainer) return;
+
+      const scaleX = window.innerWidth / BASE_WIDTH;
+      const scaleY = window.innerHeight / BASE_HEIGHT;
+      const scaleFactor = Math.min(scaleX, scaleY);
+
+      gameContainer.style.setProperty('--scale-factor', scaleFactor);
     }
 
     // Start New Life (شروع زندگی جدید)
@@ -1296,11 +1339,8 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) {
         // Determine the correct display type based on the pageId (تعیین نوع نمایش صحیح بر اساس pageId)
-        if (pageId === 'start-screen' || pageId === 'dashboard') { 
-          targetPage.style.display = 'flex'; // These are flex containers (اینها کانتینرهای فلکس هستند)
-        }
-        else {
-          targetPage.style.display = 'block'; // Other pages might be block (سایر صفحات ممکن است بلاک باشند)
+        if (pageId === 'start-screen' || pageId === 'dashboard' || pageId === 'character-page' || pageId === 'log-page' || pageId === 'education-page' || pageId === 'relationships-page' || pageId === 'health-page' || pageId === 'career-categories-page' || pageId === 'job-listing-page' || pageId === 'job-details-page' || pageId === 'investment-page' || pageId === 'gold_coins-page' || pageId === 'stocks_bourse-page' || pageId === 'cryptocurrency-page' || pageId === 'investment_land-page' || pageId === 'raw_materials-page' || pageId === 'assets-page' || pageId === 'properties-page' || pageId === 'vehicles-page' || pageId === 'plane_boat-page' || pageId === 'jewelry-page' || pageId === 'instruments-page' || pageId === 'settings-page') { 
+          targetPage.style.display = 'flex'; // These are all now flex containers (اینها همه اکنون کانتینرهای فلکس هستند)
         }
         console.log(`Page ${pageId} display set to: ${targetPage.style.display}`); // Debugging line (خطایابی)
       } else {
