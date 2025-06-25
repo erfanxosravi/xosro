@@ -140,13 +140,13 @@
     }
     /* Styling for tab bar buttons - Adjusted emoji size and made text bold (استایل‌دهی برای دکمه‌های نوار تب - تنظیم اندازه ایموجی و بولد کردن متن) */
     .tab-bar button span {
-      font-size: 1.8rem; /* Slightly smaller emoji size (اندازه ایموجی کمی کوچکتر) */
+      font-size: 1.5rem; /* Reduced emoji size for tab bar (اندازه ایموجی برای نوار تب کاهش یافت) */
       line-height: 1; /* Adjust line height for better alignment (تنظیم ارتفاع خط برای تراز بهتر) */
       margin-bottom: 0.2rem; /* Small margin between emoji and text (فاصله کم بین ایموجی و متن) */
     }
     .tab-bar button {
       font-weight: 700; /* Bold text (متن بولد) */
-      font-size: 0.75rem; /* Reduced font size for tab bar text (اندازه فونت متن نوار تب کاهش یافت) */
+      font-size: 0.65rem; /* Further reduced font size for tab bar text (اندازه فونت متن نوار تب بیشتر کاهش یافت) */
     }
 
     .modal-overlay {
@@ -319,21 +319,56 @@
     <!-- Status bars (نوارهای وضعیت) -->
     <div id="status-bars-container" class="status-bars-section"> 
       <div class="flex flex-col space-y-2 text-sm">
-        <div class="flex items-center"><span class="ml-2 w-16">😊 شادی</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="happiness-bar" class="status-bar bg-blue-500"></div></div><span id="happiness-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">💪 سلامت</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="health-bar" class="status-bar bg-red-500"></div></div><span id="health-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">🧠 هوش</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="smarts-bar" class="status-bar bg-purple-500"></div></div><span id="smarts-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">😎 ظاهر</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="looks-bar" class="status-bar bg-yellow-500"></div></div><span id="looks-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">🕌 معنویت</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="spirituality-bar" class="status-bar bg-teal-500"></div></div><span id="spirituality-value" class="ml-2 w-10 text-left"></span></div>
+        <!-- Status Bar Item (آیتم نوار وضعیت) -->
+        <div class="flex items-center justify-between">
+          <span class="flex-shrink-0 w-24 text-base">😊 شادی</span>
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- Added h-4 for height, mx-2 for spacing (h-4 برای ارتفاع، mx-2 برای فاصله اضافه شد) -->
+            <div id="happiness-bar" class="status-bar bg-blue-500 w-full"></div>
+          </div>
+          <span id="happiness-value" class="text-right font-medium w-12"></span> <!-- Added font-medium, w-12 for consistent width (font-medium و w-12 برای عرض ثابت اضافه شد) -->
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="flex-shrink-0 w-24 text-base">💪 سلامت</span>
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+            <div id="health-bar" class="status-bar bg-red-500 w-full"></div>
+          </div>
+          <span id="health-value" class="text-right font-medium w-12"></span>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="flex-shrink-0 w-24 text-base">🧠 هوش</span>
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+            <div id="smarts-bar" class="status-bar bg-purple-500 w-full"></div>
+          </div>
+          <span id="smarts-value" class="text-right font-medium w-12"></span>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="flex-shrink-0 w-24 text-base">😎 ظاهر</span>
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+            <div id="looks-bar" class="status-bar bg-yellow-500 w-full"></div>
+          </div>
+          <span id="looks-value" class="text-right font-medium w-12"></span>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="flex-shrink-0 w-24 text-base">🕌 معنویت</span>
+          <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
+            <div id="spirituality-bar" class="status-bar bg-teal-500 w-full"></div>
+          </div>
+          <span id="spirituality-value" class="text-right font-medium w-12"></span>
+        </div>
       </div>
     </div>
 
     <div class="tab-bar flex justify-around"> 
       <!-- New Tab Buttons (دکمه‌های تب جدید) -->
-      <button id="career-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
-      <button id="assets-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
-      <button id="age-up-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
-      <button id="relationships-main-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
-      <button id="activities-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button> <!-- Changed emoji to three dots (تغییر ایموجی به سه نقطه) -->
+      <button id="career-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
+      <button id="assets-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
+      <button id="age-up-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
+      <button id="relationships-main-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
+      <button id="activities-tab" class="flex flex-col items-center p-1 rounded-lg hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button> <!-- Changed emoji to three dots (تغییر ایموجی به سه نقطه) -->
     </div>
 
     <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
@@ -1270,7 +1305,8 @@
       // Status Bars (نوارهای وضعیت)
       const updateStatusBar = (id, value) => {
         document.getElementById(`${id}-value`).textContent = `${value}%`;
-        document.getElementById(`${id}-bar`).style.width = `${value}%`; // This sets the actual fill percentage
+        // The inner status-bar div always has w-full now, its parent controls the overall length
+        document.getElementById(`${id}-bar`).style.width = `${value}%`; 
       };
       updateStatusBar('happiness', gameState.happiness);
       updateStatusBar('health', gameState.health);
@@ -2107,7 +2143,7 @@
       },
       'stocks_bourse': {
         name: 'سهام بورس',
-        emoji: '�',
+        emoji: '📈',
         items: [
           { name: 'سهام شرکت خودرو سازی', basePrice: 5000000, minGrowth: -0.05, maxGrowth: 0.25 },
           { name: 'سهام بانک', basePrice: 2000000, minGrowth: 0.02, maxGrowth: 0.10 },
