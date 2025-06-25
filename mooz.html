@@ -52,10 +52,10 @@
       transform: scale(1.05);
     }
     .status-bar {
-      height: 8px;
-      border-radius: 4px;
+      height: 16px; /* Increased height for "thicker" bars (ارتفاع برای نوارهای "ضخیم‌تر" افزایش یافت) */
+      border-radius: 8px; /* Adjusted border-radius for new height (شعاع مرزی برای ارتفاع جدید تنظیم شد) */
       transition: width 0.3s ease;
-      width: 100%; /* Make status bar fill its container (نوار وضعیت را پر می‌کند) */
+      /* width: 100%; Removed this from here, now it's dynamically set by JS based on value */
     }
     .animate-slide-in {
       animation: slideIn 0.5s ease-out;
@@ -146,6 +146,7 @@
     }
     .tab-bar button {
       font-weight: 700; /* Bold text (متن بولد) */
+      font-size: 0.75rem; /* Reduced font size for tab bar text (اندازه فونت متن نوار تب کاهش یافت) */
     }
 
     .modal-overlay {
@@ -318,21 +319,21 @@
     <!-- Status bars (نوارهای وضعیت) -->
     <div id="status-bars-container" class="status-bars-section"> 
       <div class="flex flex-col space-y-2 text-sm">
-        <div class="flex items-center"><span class="ml-2 w-16">😊 شادی</span><div class="flex-1 bg-gray-700 rounded-full"><div id="happiness-bar" class="status-bar bg-blue-500"></div></div><span id="happiness-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">💪 سلامت</span><div class="flex-1 bg-gray-700 rounded-full"><div id="health-bar" class="status-bar bg-red-500"></div></div><span id="health-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">🧠 هوش</span><div class="flex-1 bg-gray-700 rounded-full"><div id="smarts-bar" class="status-bar bg-purple-500"></div></div><span id="smarts-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">😎 ظاهر</span><div class="flex-1 bg-gray-700 rounded-full"><div id="looks-bar" class="status-bar bg-yellow-500"></div></div><span id="looks-value" class="ml-2 w-10 text-left"></span></div>
-        <div class="flex items-center"><span class="ml-2 w-16">🕌 معنویت</span><div class="flex-1 bg-gray-700 rounded-full"><div id="spirituality-bar" class="status-bar bg-teal-500"></div></div><span id="spirituality-value" class="ml-2 w-10 text-left"></span></div>
+        <div class="flex items-center"><span class="ml-2 w-16">😊 شادی</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="happiness-bar" class="status-bar bg-blue-500"></div></div><span id="happiness-value" class="ml-2 w-10 text-left"></span></div>
+        <div class="flex items-center"><span class="ml-2 w-16">💪 سلامت</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="health-bar" class="status-bar bg-red-500"></div></div><span id="health-value" class="ml-2 w-10 text-left"></span></div>
+        <div class="flex items-center"><span class="ml-2 w-16">🧠 هوش</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="smarts-bar" class="status-bar bg-purple-500"></div></div><span id="smarts-value" class="ml-2 w-10 text-left"></span></div>
+        <div class="flex items-center"><span class="ml-2 w-16">😎 ظاهر</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="looks-bar" class="status-bar bg-yellow-500"></div></div><span id="looks-value" class="ml-2 w-10 text-left"></span></div>
+        <div class="flex items-center"><span class="ml-2 w-16">🕌 معنویت</span><div class="w-2/3 bg-gray-700 rounded-full"><div id="spirituality-bar" class="status-bar bg-teal-500"></div></div><span id="spirituality-value" class="ml-2 w-10 text-left"></span></div>
       </div>
     </div>
 
     <div class="tab-bar flex justify-around"> 
       <!-- New Tab Buttons (دکمه‌های تب جدید) -->
-      <button id="career-tab" class="flex flex-col items-center text-sm p-2 rounded-lg hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
-      <button id="assets-tab" class="flex flex-col items-center text-sm p-2 rounded-lg hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
-      <button id="age-up-tab" class="flex flex-col items-center text-sm p-2 rounded-lg hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
-      <button id="relationships-main-tab" class="flex flex-col items-center text-sm p-2 rounded-lg hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
-      <button id="activities-tab" class="flex flex-col items-center text-sm p-2 rounded-lg hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button> <!-- Changed emoji to three dots (تغییر ایموجی به سه نقطه) -->
+      <button id="career-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>💼</span>حرفه</button>
+      <button id="assets-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>💰</span>دارایی‌ها</button>
+      <button id="age-up-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>⏭️</span>یک سال بگذرون</button>
+      <button id="relationships-main-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>❤️</span>روابط</button>
+      <button id="activities-tab" class="flex flex-col items-center p-2 rounded-lg hover:bg-gray-700 transition"><span>...</span>فعالیت‌ها</button> <!-- Changed emoji to three dots (تغییر ایموجی به سه نقطه) -->
     </div>
 
     <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
@@ -624,6 +625,86 @@
     </div>
   </div>
 
+  <!-- Asset Category Pages (pages for properties, vehicles, etc.) -->
+  <!-- Property Page -->
+  <div id="properties-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
+    <div class="back-button-container">
+        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
+    <div class="glass-card p-4 mb-4">
+      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+      <div id="owned-properties-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+    </div>
+    <div class="glass-card p-4">
+      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+      <div id="buy-properties-list" class="space-y-2 asset-list-container"></div>
+    </div>
+  </div>
+
+  <!-- Vehicles Page -->
+  <div id="vehicles-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
+    <div class="back-button-container">
+        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
+    <div class="glass-card p-4 mb-4">
+      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+      <div id="owned-vehicles-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+    </div>
+    <div class="glass-card p-4">
+      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+      <div id="buy-vehicles-list" class="space-y-2 asset-list-container"></div>
+    </div>
+  </div>
+
+  <!-- Plane/Boat Page -->
+  <div id="plane_boat-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
+    <div class="back-button-container">
+        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
+    <div class="glass-card p-4 mb-4">
+      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+      <div id="owned-plane_boat-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+    </div>
+    <div class="glass-card p-4">
+      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+      <div id="buy-plane_boat-list" class="space-y-2 asset-list-container"></div>
+    </div>
+  </div>
+
+  <!-- Jewelry Page -->
+  <div id="jewelry-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
+    <div class="back-button-container">
+        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
+    <div class="glass-card p-4 mb-4">
+      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+      <div id="owned-jewelry-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+    </div>
+    <div class="glass-card p-4">
+      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+      <div id="buy-jewelry-list" class="space-y-2 asset-list-container"></div>
+    </div>
+  </div>
+
+  <!-- Instruments Page -->
+  <div id="instruments-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
+    <div class="back-button-container">
+        <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
+    </div>
+    <h2 class="text-2xl font-bold mb-4"></h2> <!-- Title will be set by JS -->
+    <div class="glass-card p-4 mb-4">
+      <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
+      <div id="owned-instruments-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
+    </div>
+    <div class="glass-card p-4">
+      <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
+      <div id="buy-instruments-list" class="space-y-2 asset-list-container"></div>
+    </div>
+  </div>
 
   <div id="settings-page" style="display: none;" class="min-h-screen p-4 main-content-padding page-content-scroll">
     <div class="back-button-container">
@@ -746,7 +827,7 @@
       },
       'ARTS_ENTERTAINMENT': {
         name: 'مشاغل هنری و سرگرمی',
-        emoji: '🎭',
+        emoji: '🎭', /* Changed emoji from ? to 🎭 as suggested by problem statement. */
         jobs: {
           'artist': {
             name: 'نقاش',
@@ -821,7 +902,7 @@
       },
       'ANIMAL_RELATED': {
         name: 'مشاغل مربوط به حیوانات',
-        emoji: '?',
+        emoji: '🐶',
         jobs: {
           'vet_assistant': {
             name: 'دستیار دامپزشک',
@@ -881,7 +962,7 @@
       },
       'RARE_SPECIAL': {
         name: 'شغل‌های خاص و کمیاب',
-        emoji: '?',
+        emoji: '🌟', /* Changed emoji from ? to 🌟 for rare/special jobs. */
         jobs: {
           'astronaut': {
             name: 'فضانورد',
@@ -1189,7 +1270,7 @@
       // Status Bars (نوارهای وضعیت)
       const updateStatusBar = (id, value) => {
         document.getElementById(`${id}-value`).textContent = `${value}%`;
-        document.getElementById(`${id}-bar`).style.width = `${value}%`;
+        document.getElementById(`${id}-bar`).style.width = `${value}%`; // This sets the actual fill percentage
       };
       updateStatusBar('happiness', gameState.happiness);
       updateStatusBar('health', gameState.health);
@@ -2017,7 +2098,7 @@
     const investmentCategories = {
       'gold_coins': {
         name: 'طلا و سکه',
-        emoji: '�',
+        emoji: '💰',
         items: [
           { name: 'یک گرم طلای ۱۸ عیار', basePrice: 3500000, minGrowth: 0.05, maxGrowth: 0.15 },
           { name: 'نیم سکه بهار آزادی', basePrice: 20000000, minGrowth: 0.08, maxGrowth: 0.18 },
@@ -2026,7 +2107,7 @@
       },
       'stocks_bourse': {
         name: 'سهام بورس',
-        emoji: '📈',
+        emoji: '�',
         items: [
           { name: 'سهام شرکت خودرو سازی', basePrice: 5000000, minGrowth: -0.05, maxGrowth: 0.25 },
           { name: 'سهام بانک', basePrice: 2000000, minGrowth: 0.02, maxGrowth: 0.10 },
@@ -2079,7 +2160,7 @@
       }
 
       // First, show the page. This ensures the H2 element is potentially ready.
-      window.showPage(`${type}-page`); // This call will internally call updateUI()
+      window.showPage(`${type}-page`); 
 
       // Now update the page title (به‌روزرسانی عنوان صفحه)
       // This line is now called AFTER the page is set to display: block
@@ -2122,7 +2203,6 @@
         `;
       }).join('');
 
-      // window.showPage(`${type}-page`); // This was moved up (این به بالا منتقل شد)
     };
 
     // Buy asset function (تابع خرید دارایی)
@@ -2216,7 +2296,6 @@
         `;
       }).join('');
 
-      // window.showPage(`${type}-page`); // This was moved up (این به بالا منتقل شد)
     };
 
     // Buy investment function (تابع خرید سرمایه‌گذاری)
