@@ -94,16 +94,30 @@
 
     /* Header Section (بخش هدر) */
     .header-section {
-      height: 7.5rem; /* ارتفاع کمی افزایش یافت تا فضای بیشتری ایجاد شود */
+      height: 7rem; /* ارتفاع به ۷rem بازگردانده شد تا فضای کافی تضمین شود */
       flex-shrink: 0; /* جلوگیری از کوچک شدن */
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* افزودن سایه برای جداسازی */
       z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
       display: flex; /* Make it a flex container */
       flex-direction: column; /* Stack children vertically */
-      justify-content: space-evenly; /* Distribute space evenly between items (فضای بین آیتم‌ها را به طور یکنواخت توزیع می‌کند) */
+      justify-content: flex-start; /* محتوا را به بالای کانتینر هل می‌دهد */
       align-items: center;
-      padding-top: 1.5rem; /* افزایش پدینگ بالا برای پایین‌تر آوردن عنوان */
-      padding-bottom: 0.5rem; /* کاهش پدینگ پایین برای نزدیک‌تر نگه داشتن اطلاعات کاراکتر */
+      padding-top: 0; /* پدینگ بالا از خود header-section حذف شد */
+      padding-bottom: 0.5rem; /* پدینگ پایین حفظ شد */
+    }
+
+    .header-section h1 {
+      margin-top: 0.75rem; /* مارجین بالا اضافه شد تا عنوان از بالای صفحه فاصله بگیرد */
+      margin-bottom: 0.2rem; /* مارجین کمی کمتر برای عنوان */
+    }
+
+    /* این بخش flex-grow 1 می‌گیرد تا بقیه فضای عمودی هدر را اشغال کند */
+    /* و margin-top: auto آن را به پایین هدر می‌چسباند */
+    .header-section > .flex.justify-between.w-full.items-center {
+        flex-grow: 1;
+        margin-top: auto; 
+        padding-left: 0.5rem; /* پدینگ داخلی برای محتوا */
+        padding-right: 0.5rem; /* پدینگ داخلی برای محتوا */
     }
 
     /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
@@ -362,7 +376,7 @@
     <div id="dashboard" style="display: none;">
       <!-- Header Section (بخش هدر) -->
       <div class="header-section glass-card p-4">
-        <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1> <!-- Removed mb-2 -->
+        <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1> <!-- Changed styling to accommodate new spacing -->
         <div class="flex justify-between w-full items-center">
           <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
           <div class="text-right flex-1 pr-4">
@@ -372,7 +386,7 @@
 
           <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
           <div class="text-left flex-1 pl-4 flex flex-col items-end">
-            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button>
+            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- Removed mb-1 -->
             <p id="dashboard-char-money" class="text-sm text-emerald-400"></p>
             <p id="dashboard-char-job" class="text-xs text-gray-300"></p>
           </div>
@@ -643,7 +657,7 @@
       <div class="back-button-container">
           <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
       </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">? طلا و سکه</h2>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">💰 طلا و سکه</h2>
       <div class="glass-card p-4 mb-4 flex-shrink-0">
         <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
         <div id="owned-gold_coins-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
