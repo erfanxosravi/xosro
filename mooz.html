@@ -100,24 +100,24 @@
       z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
       display: flex; /* Make it a flex container */
       flex-direction: column; /* Stack children vertically */
-      justify-content: flex-start; /* محتوا را به بالای کانتینر هل می‌دهد */
-      align-items: center;
-      padding-top: 0; /* پدینگ بالا از خود header-section حذف شد */
       padding-bottom: 0.5rem; /* پدینگ پایین حفظ شد */
     }
 
-    .header-section h1 {
-      margin-top: 0.75rem; /* مارجین بالا اضافه شد تا عنوان از بالای صفحه فاصله بگیرد */
-      margin-bottom: 0.2rem; /* مارجین کمی کمتر برای عنوان */
+    .header-top-row { /* New class for the top row of the header */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        padding: 0.75rem 1rem 0.2rem 1rem; /* Adjusted padding (top, right/left, bottom) */
     }
 
-    /* این بخش flex-grow 1 می‌گیرد تا بقیه فضای عمودی هدر را اشغال کند */
-    /* و margin-top: auto آن را به پایین هدر می‌چسباند */
-    .header-section > .flex.justify-between.w-full.items-center {
-        flex-grow: 1;
-        margin-top: auto; 
-        padding-left: 0.5rem; /* پدینگ داخلی برای محتوا */
-        padding-right: 0.5rem; /* پدینگ داخلی برای محتوا */
+    .header-info-row { /* New class for the character info row */
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        padding: 0 1rem; /* Horizontal padding for alignment */
+        flex-grow: 1; /* Allows this row to take remaining vertical space in header */
+        align-items: flex-end; /* Aligns content to the bottom of this row */
     }
 
     /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
@@ -376,17 +376,19 @@
     <div id="dashboard" style="display: none;">
       <!-- Header Section (بخش هدر) -->
       <div class="header-section glass-card p-4">
-        <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1> <!-- Changed styling to accommodate new spacing -->
-        <div class="flex justify-between w-full items-center">
+        <div class="header-top-row">
+          <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1>
+          <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl p-1 rounded-full hover:bg-gray-700">⚙️</button>
+        </div>
+        <div class="header-info-row">
           <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
           <div class="text-right flex-1 pr-4">
             <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
             <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
           </div>
 
-          <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
+          <!-- Right Section: Money & Job (بخش راست: پول و شغل) -->
           <div class="text-left flex-1 pl-4 flex flex-col items-end">
-            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- Removed mb-1 -->
             <p id="dashboard-char-money" class="text-sm text-emerald-400"></p>
             <p id="dashboard-char-job" class="text-xs text-gray-300"></p>
           </div>
