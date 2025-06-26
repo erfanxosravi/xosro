@@ -182,13 +182,13 @@
       width: 100%; /* اطمینان از پر کردن عرض ستون گرید */
     }
     .tab-bar button span:first-child { /* ایموجی دکمه‌ها */
-      font-size: 1.1rem; /* اندازه ایموجی برای نوار تب تنظیم شد */
+      font-size: 1.3rem; /* اندازه ایموجی برای نوار تب افزایش یافت */
       line-height: 1; /* تنظیم ارتفاع خط برای تراز بهتر */
       margin-bottom: 0.1rem; /* فاصله بسیار کم بین ایموجی و متن */
     }
     .tab-bar button span:last-child {
       font-weight: 700; /* متن بولد */
-      font-size: 0.65rem; /* اندازه فونت متن نوار تب کمی کاهش یافت */
+      font-size: 0.75rem; /* اندازه فونت متن نوار تب کمی افزایش یافت */
       white-space: nowrap; /* جلوگیری از شکستن خط متن */
       overflow: hidden; /* پنهان کردن هر متنی که از کادر بیرون می‌زند */
       text-overflow: ellipsis; /* نمایش سه نقطه برای متن‌های بریده شده */
@@ -358,7 +358,7 @@
       <div class="header-section glass-card p-4 flex flex-col justify-center items-center">
         <div class="flex justify-between w-full items-center">
           <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
-          <div class="text-right flex-1 pr-2">
+          <div class="text-right flex-1 pr-4"> <!-- Increased pr-2 to pr-4 -->
             <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
             <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
           </div>
@@ -367,17 +367,17 @@
           <h1 class="text-2xl font-bold text-white flex-none">زندگی ایرانی</h1> 
 
           <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
-          <div class="text-left flex-1 pl-2 flex flex-col items-end">
+          <div class="text-left flex-1 pl-4 flex flex-col items-end"> <!-- Increased pl-2 to pl-4 -->
             <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- New settings icon (آیکون تنظیمات جدید) -->
-            <p id="dashboard-char-money" class="text-lg text-emerald-400"></p>
-            <p id="dashboard-char-job" class="text-sm text-gray-300"></p>
+            <p id="dashboard-char-money" class="text-sm text-emerald-400"></p> <!-- Changed text-lg to text-sm -->
+            <p id="dashboard-char-job" class="text-xs text-gray-300"></p> <!-- Changed text-sm to text-xs -->
           </div>
         </div>
       </div>
 
       <!-- Main Content Area - This will be the scrollable part (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) -->
       <div id="main-dashboard-content"> 
-        <div id="life-log-scroll-container" class="glass-card p-4">
+        <div id="life-log-scroll-container" class="glass-card p-4"> <!-- Removed h-full -->
           <!-- Removed "گزارش زندگی" header as requested (هدر "گزارش زندگی" طبق درخواست حذف شد) -->
           <div id="life-log" class="space-y-4"></div>
         </div>
@@ -868,7 +868,7 @@
     const careerData = {
       'OFFICE_CORPORATE': {
         name: 'مشاغل اداری و شرکتی',
-        emoji: '�',
+        emoji: '🏢',
         jobs: {
           'clerk': {
             name: 'کارمند',
@@ -2194,7 +2194,7 @@
       },
       'jewelry': {
         name: 'جواهرات',
-        emoji: '💎',
+        emoji: '�',
         items: [
           { name: 'حلقه طلا', basePrice: 20000000 },
           { name: 'گردنبند زمرد', basePrice: 80000000 },
