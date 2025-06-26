@@ -94,10 +94,16 @@
 
     /* Header Section (بخش هدر) */
     .header-section {
-      height: 6rem; /* 96px - کاهش ارتفاع هدر برای فضای بیشتر */
+      height: 7.5rem; /* ارتفاع کمی افزایش یافت تا فضای بیشتری ایجاد شود */
       flex-shrink: 0; /* جلوگیری از کوچک شدن */
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* افزودن سایه برای جداسازی */
       z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
+      display: flex; /* Make it a flex container */
+      flex-direction: column; /* Stack children vertically */
+      justify-content: space-evenly; /* Distribute space evenly between items (فضای بین آیتم‌ها را به طور یکنواخت توزیع می‌کند) */
+      align-items: center;
+      padding-top: 1.5rem; /* افزایش پدینگ بالا برای پایین‌تر آوردن عنوان */
+      padding-bottom: 0.5rem; /* کاهش پدینگ پایین برای نزدیک‌تر نگه داشتن اطلاعات کاراکتر */
     }
 
     /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
@@ -355,29 +361,27 @@
 
     <div id="dashboard" style="display: none;">
       <!-- Header Section (بخش هدر) -->
-      <div class="header-section glass-card p-4 flex flex-col justify-center items-center">
+      <div class="header-section glass-card p-4">
+        <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1> <!-- Removed mb-2 -->
         <div class="flex justify-between w-full items-center">
           <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
-          <div class="text-right flex-1 pr-4"> <!-- Increased pr-2 to pr-4 -->
+          <div class="text-right flex-1 pr-4">
             <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
             <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
           </div>
 
-          <!-- Center Section: Game Title (بخش مرکزی: عنوان بازی) -->
-          <h1 class="text-2xl font-bold text-white flex-none">زندگی ایرانی</h1> 
-
           <!-- Right Section: Settings Icon, Money & Job (بخش راست: آیکون تنظیمات، پول و شغل) -->
-          <div class="text-left flex-1 pl-4 flex flex-col items-end"> <!-- Increased pl-2 to pl-4 -->
-            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button> <!-- New settings icon (آیکون تنظیمات جدید) -->
-            <p id="dashboard-char-money" class="text-sm text-emerald-400"></p> <!-- Changed text-lg to text-sm -->
-            <p id="dashboard-char-job" class="text-xs text-gray-300"></p> <!-- Changed text-sm to text-xs -->
+          <div class="text-left flex-1 pl-4 flex flex-col items-end">
+            <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl mb-1 p-1 rounded-full hover:bg-gray-700">⚙️</button>
+            <p id="dashboard-char-money" class="text-sm text-emerald-400"></p>
+            <p id="dashboard-char-job" class="text-xs text-gray-300"></p>
           </div>
         </div>
       </div>
 
       <!-- Main Content Area - This will be the scrollable part (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) -->
       <div id="main-dashboard-content"> 
-        <div id="life-log-scroll-container" class="glass-card p-4"> <!-- Removed h-full -->
+        <div id="life-log-scroll-container" class="glass-card p-4">
           <!-- Removed "گزارش زندگی" header as requested (هدر "گزارش زندگی" طبق درخواست حذف شد) -->
           <div id="life-log" class="space-y-4"></div>
         </div>
@@ -639,7 +643,7 @@
       <div class="back-button-container">
           <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
       </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">💰 طلا و سکه</h2>
+      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">? طلا و سکه</h2>
       <div class="glass-card p-4 mb-4 flex-shrink-0">
         <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
         <div id="owned-gold_coins-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
@@ -2194,7 +2198,7 @@
       },
       'jewelry': {
         name: 'جواهرات',
-        emoji: '�',
+        emoji: '💎',
         items: [
           { name: 'حلقه طلا', basePrice: 20000000 },
           { name: 'گردنبند زمرد', basePrice: 80000000 },
