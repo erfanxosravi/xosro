@@ -17,29 +17,35 @@
       margin: 0;
       padding: 0;
     }
-
     body {
       font-family: 'Vazir', sans-serif;
       background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
-      display: flex; /* برای مرکز کردن game-container */
-      justify-content: center; /* مرکز افقی */
-      align-items: center; /* مرکز عمودی */
+      display: flex;
+      justify-content: center;
+      align-items: center;
       min-height: 100vh;
-      overflow-x: hidden; /* جلوگیری از اسکرول افقی */
-      color: white; /* Default text color (رنگ پیش‌فرض متن) */
-    }
-
+      min-width: 100vw;
+      width: 100vw;
+      height: 100vh;
+      overflow-x: hidden;
+      color: white;
+}
     /* New game container for scaling the entire game (کانتینر جدید بازی برای مقیاس‌بندی کل بازی) */
     #game-container {
-      position: relative; /* برای transform: translate در JS */
-      width: 375px; /* عرض پایه برای ابعاد طراحی موبایل (مثلاً آیفون ۶/۷/۸) */
-      height: 667px; /* ارتفاع پایه برای ابعاد طراحی موبایل (مثلاً آیفون ۶/۷/۸) */
-      overflow: hidden; /* پنهان کردن محتوایی که از ابعاد پایه خارج می‌شود */
-      background: linear-gradient(135deg, #121212 0%, #1a202c 100%); /* پس‌زمینه را به کانتینر اصلی منتقل کنید */
-      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5); /* افزودن سایه برای جلوه بهتر */
-      transform-origin: center center; /* مقیاس‌بندی از مرکز */
-      transform: scale(var(--scale-factor, 1)); /* عامل مقیاس‌بندی توسط JS تنظیم می‌شود */
-      border-radius: 12px; /* گرد کردن گوشه‌ها برای کانتینر اصلی */
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      min-width: 0;
+      min-height: 0;
+      max-width: 100vw;
+      max-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
+      box-shadow: none;
+      border-radius: 0;
+      transform: none;
+      display: flex;
+      flex-direction: column;
     }
 
     .glass-card {
