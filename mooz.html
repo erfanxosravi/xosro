@@ -100,24 +100,40 @@
       z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
       display: flex; /* Make it a flex container */
       flex-direction: column; /* Stack children vertically */
-      padding-bottom: 0.5rem; /* پدینگ پایین حفظ شد */
+      padding: 0.5rem 1rem; /* Added padding to the header section itself (پدینگ به خود هدر اضافه شد) */
     }
 
-    .header-top-row { /* New class for the top row of the header */
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        padding: 0.75rem 1rem 0.2rem 1rem; /* Adjusted padding (top, right/left, bottom) */
+    /* Header Top Row (شامل عنوان و دکمه تنظیمات) */
+    .header-top-row {
+      display: flex;
+      justify-content: center; /* مرکز کردن عنوان */
+      align-items: center;
+      width: 100%;
+      position: relative; /* برای موقعیت‌دهی مطلق دکمه تنظیمات */
+      flex-shrink: 0; /* جلوگیری از کوچک شدن */
     }
 
-    .header-info-row { /* New class for the character info row */
+    .header-top-row h1 {
+      margin: 0; /* حذف مارجین‌های اضافی از عنوان */
+    }
+
+    .header-top-row #header-settings-btn {
+      position: absolute;
+      left: 0; /* قرار دادن دکمه در سمت چپ */
+      top: 50%; /* وسط قرار دادن عمودی */
+      transform: translateY(-50%); /* تنظیم دقیق برای وسط قرار گرفتن عمودی */
+    }
+
+    /* Character Info Row (شامل نام، سن، پول و شغل) */
+    .header-info-row {
         display: flex;
-        justify-content: space-between;
+        justify-content: space-between; /* پخش کردن آیتم‌ها در طول خط */
         width: 100%;
-        padding: 0 1rem; /* Horizontal padding for alignment */
-        flex-grow: 1; /* Allows this row to take remaining vertical space in header */
-        align-items: flex-end; /* Aligns content to the bottom of this row */
+        margin-top: auto; /* برای هل دادن این ردیف به پایین هدر */
+    }
+
+    .header-info-row .flex-1 {
+        padding: 0 0.5rem; /* کاهش پدینگ داخلی برای این دو ستون */
     }
 
     /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
@@ -295,7 +311,31 @@
     #life-log-full::-webkit-scrollbar,
     #life-log-scroll-container::-webkit-scrollbar, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
     #full-log-scroll-area::-webkit-scrollbar,
-    .asset-list-container::-webkit-scrollbar { /* کانتینرهای لیست دارایی را هدف قرار دهید */
+    .asset-list-container::-webkit-scrollbar,
+    #career-category-list::-webkit-scrollbar, /* Added for career categories */
+    #job-list-container::-webkit-scrollbar, /* Added for job listings */
+    #owned-gold_coins-list::-webkit-scrollbar,
+    #buy-gold_coins-list::-webkit-scrollbar,
+    #owned-stocks_bourse-list::-webkit-scrollbar,
+    #buy-stocks_bourse-list::-webkit-scrollbar,
+    #owned-cryptocurrency-list::-webkit-scrollbar,
+    #buy-cryptocurrency-list::-webkit-scrollbar,
+    #owned-investment_land-list::-webkit-scrollbar,
+    #buy-investment_land-list::-webkit-scrollbar,
+    #owned-raw_materials-list::-webkit-scrollbar,
+    #buy-raw_materials-list::-webkit-scrollbar,
+    #owned-properties-list::-webkit-scrollbar,
+    #buy-properties-list::-webkit-scrollbar,
+    #owned-vehicles-list::-webkit-scrollbar,
+    #buy-vehicles-list::-webkit-scrollbar,
+    #owned-plane_boat-list::-webkit-scrollbar,
+    #buy-plane_boat-list::-webkit-scrollbar,
+    #owned-jewelry-list::-webkit-scrollbar,
+    #buy-jewelry-list::-webkit-scrollbar,
+    #owned-instruments-list::-webkit-scrollbar,
+    #buy-instruments-list::-webkit-scrollbar,
+    #education-content-scroll::-webkit-scrollbar /* Added for new education content scroll */
+     {
       display: none;
     }
 
@@ -305,7 +345,31 @@
     #life-log-full,
     #life-log-scroll-container, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
     #full-log-scroll-area,
-    .asset-list-container { /* کانتینرهای لیست دارایی را هدف قرار دهید */
+    .asset-list-container,
+    #career-category-list, /* Added for career categories */
+    #job-list-container, /* Added for job listings */
+    #owned-gold_coins-list,
+    #buy-gold_coins-list,
+    #owned-stocks_bourse-list,
+    #buy-stocks_bourse-list,
+    #owned-cryptocurrency-list,
+    #buy-cryptocurrency-list,
+    #owned-investment_land-list,
+    #buy-investment_land-list,
+    #owned-raw_materials-list,
+    #buy-raw_materials-list,
+    #owned-properties-list,
+    #buy-properties-list,
+    #owned-vehicles-list,
+    #buy-vehicles-list,
+    #owned-plane_boat-list,
+    #buy-plane_boat-list,
+    #owned-jewelry-list,
+    #buy-jewelry-list,
+    #owned-instruments-list,
+    #buy-instruments-list,
+    #education-content-scroll /* Added for new education content scroll */
+    {
       scrollbar-width: none; /* Firefox */
     }
 
@@ -334,6 +398,23 @@
     }
     #log-page .glass-card > .flex.space-x-2.mb-4 { /* Filter buttons container */
         margin-bottom: 0.5rem; /* mb-2 */
+    }
+
+    /* Game Over Modal Styling (استایل مودال پایان بازی) */
+    #game-over-screen {
+        background: linear-gradient(135deg, #2b0b0b 0%, #4a1a1a 100%); /* Darker red gradient for game over */
+        text-align: center;
+        padding: 2rem;
+    }
+    #game-over-screen h2 {
+        font-size: 2.5rem;
+        color: #ff6b6b; /* Bright red for "Game Over" */
+        margin-bottom: 1rem;
+    }
+    #game-over-screen p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        color: #ddd;
     }
   </style>
 </head>
@@ -375,10 +456,10 @@
 
     <div id="dashboard" style="display: none;">
       <!-- Header Section (بخش هدر) -->
-      <div class="header-section glass-card p-4">
+      <div class="header-section glass-card">
         <div class="header-top-row">
-          <h1 class="text-2xl font-bold text-white">زندگی ایرانی</h1>
           <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl p-1 rounded-full hover:bg-gray-700">⚙️</button>
+          <h1 class="text-2xl font-bold text-white flex-grow text-center ml-10">زندگی ایرانی</h1> <!-- Added ml-10 to offset settings button and keep title centered -->
         </div>
         <div class="header-info-row">
           <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
@@ -527,18 +608,20 @@
       </div>
     </div>
 
-    <div id="education-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
+    <div id="education-page" style="display: none;" class="h-full page-content-scroll"> 
       <div class="back-button-container">
-          <!-- Back button for Education Page, returns to Activities Menu (دکمه بازگشت برای صفحه تحصیلات، به منوی فعالیت‌ها برمی‌گردد) -->
+          <!-- Back button for Education Page, returns to Activities Menu -->
           <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
       </div>
       <h2 class="text-2xl font-bold mb-4 flex-shrink-0">تحصیلات</h2>
-      <div class="glass-card p-4 flex-grow"> <!-- Added flex-grow -->
+      <div class="glass-card p-4 flex flex-col flex-grow"> 
         <div class="flex space-x-2 mb-4 flex-shrink-0">
-          <button id="school-tab" class="btn-primary px-4 py-2 rounded-lg">مدرسه</button>
-          <button id="university-tab" class="btn-secondary px-4 py-2 rounded-lg">دانشگاه</button>
+          <button id="school-tab" class="btn-primary px-4 py-2 rounded-lg" onclick="window.showSchool()">مدرسه</button>
+          <button id="university-tab" class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showUniversity()">دانشگاه</button>
         </div>
-        <div id="education-content"></div>
+        <div id="education-content-scroll" class="flex-grow overflow-y-auto"> <!-- Added scrollable container -->
+          <!-- Education content will be dynamically loaded here -->
+        </div>
       </div>
     </div>
 
@@ -642,7 +725,7 @@
       </div>
       <h2 class="text-2xl font-bold mb-4 flex-shrink-0">سرمایه‌گذاری‌ها</h2>
       <div class="glass-card p-4 flex flex-col space-y-4 flex-shrink-0">
-        <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💰 طلا و سکه</button>
+        <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">? طلا و سکه</button>
         <button id="stocks_bourse-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📈 سهام بورس</button>
         <button id="cryptocurrency-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">₿ ارز دیجیتال</button>
         <button id="investment_land-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏡 زمین و املاک</button>
@@ -850,6 +933,17 @@
         </div>
       </div>
     </div>
+
+    <!-- Game Over Screen (صفحه پایان بازی) -->
+    <div id="game-over-screen" style="display: none;" class="flex flex-col items-center justify-center h-full">
+      <h2>پایان بازی!</h2>
+      <p id="game-over-reason" class="text-center"></p>
+      <div class="flex flex-col space-y-4 w-full max-w-xs">
+        <button id="restart-game-btn" class="btn-primary w-full py-3 rounded-full text-lg font-semibold">شروع زندگی جدید</button>
+        <button id="view-log-btn" class="btn-secondary w-full py-3 rounded-full text-md">مشاهده تاریخچه زندگی</button>
+      </div>
+    </div>
+
   </div> <!-- End of game-container -->
 
   <script type="module">
@@ -870,8 +964,8 @@
       education: { level: 'هیچ', major: '', degreeProgress: 0 },
       job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
       relationships: [
-        { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60 },
-        { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65 }
+        { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, // Added age for parents
+        { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 } // Added age for parents
       ],
       romanticRelationships: [],
       children: [],
@@ -981,7 +1075,7 @@
       },
       'FINANCE_BUSINESS': { 
         name: 'مشاغل اقتصادی و مالی',
-        emoji: '💵', /* Changed to a more suitable emoji (تغییر به ایموجی مناسب‌تر) */
+        emoji: '💵' /* Changed to a more suitable emoji (تغییر به ایموجی مناسب‌تر) */,
         jobs: {
           'accountant': {
             name: 'حسابدار',
@@ -1086,7 +1180,7 @@
       },
       'RARE_SPECIAL': {
         name: 'شغل‌های خاص و کمیاب',
-        emoji: '🌟', /* Changed emoji from ? to 🌟 for rare/special jobs. */
+        emoji: '🌟' /* Changed emoji from ? to 🌟 for rare/special jobs. */,
         jobs: {
           'astronaut': {
             name: 'فضانورد',
@@ -1207,7 +1301,7 @@
 
       // Event Listeners for Activities Menu (شنونده‌های رویداد برای منوی فعالیت‌ها)
       // These now hide the modal and then show the page (اینها اکنون مودال را پنهان کرده و سپس صفحه را نمایش می‌دهند)
-      document.getElementById('education-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showPage('education-page'); });
+      document.getElementById('education-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showEducationPage(); }); // Call new education entry point
       document.getElementById('health-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showPage('health-page'); });
       document.getElementById('investments-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showPage('investment-page'); }); // New: Go to investment page
       document.getElementById('close-activities-menu').addEventListener('click', window.hideActivitiesMenu); // Only hides the modal
@@ -1216,6 +1310,14 @@
       document.getElementById('save-game').addEventListener('click', saveGame);
       document.getElementById('load-game').addEventListener('click', loadGame);
       document.getElementById('reset-game').addEventListener('click', resetGame);
+      
+      // Event Listeners for Game Over Screen (شنونده‌های رویداد برای صفحه پایان بازی)
+      document.getElementById('restart-game-btn').addEventListener('click', restartGame);
+      document.getElementById('view-log-btn').addEventListener('click', () => {
+        window.showPage('log-page');
+        document.getElementById('game-over-screen').style.display = 'none'; // Hide game over screen
+      });
+
 
       // Event Listeners for Health Page (شنونده‌های رویداد برای صفحه سلامت)
       document.getElementById('visit-doctor').addEventListener('click', visitDoctor);
@@ -1224,8 +1326,9 @@
       document.getElementById('meditate').addEventListener('click', meditate);
 
       // Event Listeners for Education Page (شنونده‌های رویداد برای صفحه تحصیلات)
-      document.getElementById('school-tab').addEventListener('click', showSchool);
-      document.getElementById('university-tab').addEventListener('click', showUniversity);
+      // These are now handled within showEducationPage to set active tab (اینها اکنون در showEducationPage برای تنظیم تب فعال مدیریت می‌شوند)
+      // document.getElementById('school-tab').addEventListener('click', showSchool); 
+      // document.getElementById('university-tab').addEventListener('click', showUniversity);
 
       // Event Listeners for Assets Page category buttons (شنونده‌های رویداد برای دکمه‌های دسته‌بندی صفحه دارایی‌ها)
       document.getElementById('properties-category-btn').addEventListener('click', () => window.showAssetCategoryPage('properties'));
@@ -1300,8 +1403,8 @@
         education: { level: 'هیچ', major: '', degreeProgress: 0 },
         job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
         relationships: [
-          { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60 },
-          { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65 }
+          { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, 
+          { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 }
         ],
         romanticRelationships: [],
         children: [],
@@ -1360,7 +1463,8 @@
         'health-page', 'assets-page', 'settings-page',
         'job-listing-page', 'job-details-page', // Added career pages (صفحات شغلی اضافه شدند)
         'properties-page', 'vehicles-page', 'plane_boat-page', 'jewelry-page', 'instruments-page',
-        'investment-page', 'gold_coins-page', 'stocks_bourse-page', 'cryptocurrency-page', 'investment_land-page', 'raw_materials-page'
+        'investment-page', 'gold_coins-page', 'stocks_bourse-page', 'cryptocurrency-page', 'investment_land-page', 'raw_materials-page',
+        'game-over-screen' // Add game over screen (صفحه پایان بازی اضافه شد)
       ];
       pages.forEach(page => {
         const element = document.getElementById(page);
@@ -1372,7 +1476,7 @@
       const targetPage = document.getElementById(pageId);
       if (targetPage) {
         // Determine the correct display type based on the pageId (تعیین نوع نمایش صحیح بر اساس pageId)
-        if (pageId === 'start-screen' || pageId === 'dashboard' || pageId === 'character-page' || pageId === 'log-page' || pageId === 'education-page' || pageId === 'relationships-page' || pageId === 'health-page' || pageId === 'career-categories-page' || pageId === 'job-listing-page' || pageId === 'job-details-page' || pageId === 'investment-page' || pageId === 'gold_coins-page' || pageId === 'stocks_bourse-page' || pageId === 'cryptocurrency-page' || pageId === 'investment_land-page' || pageId === 'raw_materials-page' || pageId === 'assets-page' || pageId === 'properties-page' || pageId === 'vehicles-page' || pageId === 'plane_boat-page' || pageId === 'jewelry-page' || pageId === 'instruments-page' || pageId === 'settings-page') { 
+        if (pageId === 'start-screen' || pageId === 'dashboard' || pageId === 'character-page' || pageId === 'log-page' || pageId === 'education-page' || pageId === 'relationships-page' || pageId === 'health-page' || pageId === 'career-categories-page' || pageId === 'job-listing-page' || pageId === 'job-details-page' || pageId === 'investment-page' || pageId === 'gold_coins-page' || pageId === 'stocks_bourse-page' || pageId === 'cryptocurrency-page' || pageId === 'investment_land-page' || pageId === 'raw_materials-page' || pageId === 'assets-page' || pageId === 'properties-page' || pageId === 'vehicles-page' || pageId === 'plane_boat-page' || pageId === 'jewelry-page' || pageId === 'instruments-page' || pageId === 'settings-page' || pageId === 'game-over-screen') { 
           targetPage.style.display = 'flex'; // These are all now flex containers (اینها همه اکنون کانتینرهای فلکس هستند)
         }
         console.log(`Page ${pageId} display set to: ${targetPage.style.display}`); // Debugging line (خطایابی)
@@ -1383,6 +1487,9 @@
       // Specific actions for certain pages
       if (pageId === 'career-categories-page') {
         window.showCareerCategories(); 
+      }
+      if (pageId === 'education-page') {
+          window.showEducationPage(); // Ensure the education page loads correctly (اطمینان از بارگذاری صحیح صفحه تحصیلات)
       }
 
       updateUI();
@@ -1439,13 +1546,13 @@
       // Log Pages (صفحات تاریخچه) - This remains separate for the full log page
       filterLog('all'); // Always show all logs by default on update (همیشه همه گزارش‌ها را به‌طور پیش‌فرض در به‌روزرسانی نمایش دهید)
 
-      // Education Page (صفحه تحصیلات)
-      const currentEducationTab = document.querySelector('#education-page .btn-primary')?.id;
-      if (currentEducationTab === 'university-tab') {
-        showUniversity();
-      } else {
-        showSchool(); // Default to school (پیش‌فرض به مدرسه)
-      }
+      // Education Page (صفحه تحصیلات) - Now handled by showEducationPage
+      // const currentEducationTab = document.querySelector('#education-page .btn-primary')?.id;
+      // if (currentEducationTab === 'university-tab') {
+      //   showUniversity();
+      // } else {
+      //   showSchool(); // Default to school (پیش‌فرض به مدرسه)
+      // }
 
       // Relationships Page (صفحه روابط)
       const relList = document.getElementById('relationships-list');
@@ -1734,6 +1841,11 @@
 
     // Age Up (یک سال بزرگ‌تر شدن)
     async function ageUp() {
+      // Check for character death before aging up (بررسی مرگ کاراکتر قبل از افزایش سن)
+      if (checkDeath()) {
+          return; // If character dies, stop ageUp process (اگر کاراکتر مرد، فرآیند افزایش سن متوقف شود)
+      }
+
       gameState.age++;
       gameState.year++;
 
@@ -1747,6 +1859,8 @@
       // Health decay based on age (کاهش سلامت بر اساس سن)
       if (gameState.age > 40) gameState.health = Math.max(0, gameState.health - 2);
       if (gameState.age > 60) gameState.health = Math.max(0, gameState.health - 5);
+      if (gameState.age > 80) gameState.health = Math.max(0, gameState.health - 10); // More significant decay at old age (کاهش قابل توجه‌تر در سنین بالا)
+
 
       // Job salary (حقوق شغل)
       if (gameState.job.title !== 'بیکار') {
@@ -1795,108 +1909,390 @@
         // Log positive or negative growth (ثبت رشد مثبت یا منفی)
         if (growthAmount >= 0) {
             gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری شما در ${inv.name} به مبلغ ${growthAmount.toLocaleString('fa-IR')} تومان سود کرد. (ارزش فعلی: ${inv.value.toLocaleString('fa-IR')} تومان)`, type: 'finance' });
+            if (growthAmount > 10000000 && Math.random() < 0.3) { // Large investment gain (سود بزرگ سرمایه‌گذاری)
+                gameState.happiness = Math.min(100, gameState.happiness + 5);
+            }
         } else {
             gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری شما در ${inv.name} به مبلغ ${Math.abs(growthAmount).toLocaleString('fa-IR')} تومان ضرر کرد. (ارزش فعلی: ${inv.value.toLocaleString('fa-IR')} تومان)`, type: 'finance' });
+            if (Math.abs(growthAmount) > 5000000 && Math.random() < 0.5) { // Significant investment loss (زیان قابل توجه سرمایه‌گذاری)
+                gameState.happiness = Math.max(0, gameState.happiness - 10);
+                showMessageModal(`وای! سرمایه‌گذاری شما در ${inv.name} دچار افت شدید شد.`);
+            }
         }
       });
 
 
-      // Update children's age (به‌روزرسانی سن فرزندان)
+      // Update children's age and handle family AI (به‌روزرسانی سن فرزندان و مدیریت هوش مصنوعی خانواده)
+      for (let i = 0; i < gameState.relationships.length; i++) {
+          const person = gameState.relationships[i];
+          person.age = (person.age || 0) + 1; // Ensure age exists and increments (اطمینان از وجود و افزایش سن)
+          person.relationship = Math.max(0, person.relationship - 2 + Math.floor(Math.random() * 5)); // Slight decay + random fluctuation (کاهش جزئی + نوسان تصادفی)
+
+          // AI for family members: asking for money (هوش مصنوعی برای اعضای خانواده: درخواست پول)
+          if (person.role === 'فرزند' && person.age > 18 && person.age < 25 && gameState.money > 2000000 && Math.random() < 0.05) {
+              const amount = Math.floor(Math.random() * 5 + 1) * 100000; // 100,000 to 500,000
+              const giveMoney = await window.confirm(`${person.name} از شما ${amount.toLocaleString('fa-IR')} تومان پول خواست. آیا پرداخت می‌کنید؟`);
+              if (giveMoney) {
+                  gameState.money -= amount;
+                  person.relationship = Math.min(100, person.relationship + 15);
+                  gameState.happiness = Math.min(100, gameState.happiness + 5);
+                  gameState.log.push({ year: gameState.year, event: `شما به ${person.name} مبلغ ${amount.toLocaleString('fa-IR')} تومان کمک مالی کردید.`, type: 'finance' });
+              } else {
+                  person.relationship = Math.max(0, person.relationship - 10);
+                  gameState.happiness = Math.max(0, gameState.happiness - 5);
+                  gameState.log.push({ year: gameState.year, event: `شما درخواست کمک مالی ${person.name} را رد کردید.`, type: 'family' });
+              }
+          }
+          
+          // AI for family members: leaving due to bad relationship (هوش مصنوعی برای اعضای خانواده: ترک کردن به دلیل رابطه بد)
+          if (person.relationship < 20 && Math.random() < 0.1) {
+              gameState.log.push({ year: gameState.year, event: `${person.name} به دلیل رابطه بسیار بد با شما، تصمیم به ترک کرد.`, type: 'family' });
+              showMessageModal(`${person.name} شما را ترک کرد!`);
+              gameState.relationships.splice(i, 1);
+              i--; // Adjust index due to removal (تنظیم ایندکس به دلیل حذف)
+              gameState.happiness = Math.max(0, gameState.happiness - 15);
+          }
+      }
+
+      // AI for romantic relationships (هوش مصنوعی برای روابط عاطفی)
+      for (let i = 0; i < gameState.romanticRelationships.length; i++) {
+        const partner = gameState.romanticRelationships[i];
+        partner.age = (partner.age || 0) + 1; // Assume partner also ages (فرض بر این است که شریک هم سنش بالا می‌رود)
+        partner.relationship = Math.max(0, partner.relationship - 3 + Math.floor(Math.random() * 7)); // Slight decay + fluctuation
+
+        // Partner asks for money (شریک درخواست پول می‌کند)
+        if (partner.isMarried && gameState.money > 5000000 && Math.random() < 0.03) {
+            const amount = Math.floor(Math.random() * 10 + 1) * 200000; // 200,000 to 2,000,000
+            const giveMoney = await window.confirm(`${partner.name} از شما ${amount.toLocaleString('fa-IR')} تومان برای یک نیاز مالی خواست. آیا پرداخت می‌کنید؟`);
+            if (giveMoney) {
+                gameState.money -= amount;
+                partner.relationship = Math.min(100, partner.relationship + 10);
+                gameState.happiness = Math.min(100, gameState.happiness + 5);
+                gameState.log.push({ year: gameState.year, event: `شما به ${partner.name} مبلغ ${amount.toLocaleString('fa-IR')} تومان کمک مالی کردید.`, type: 'finance' });
+            } else {
+                partner.relationship = Math.max(0, partner.relationship - 15);
+                gameState.happiness = Math.max(0, gameState.happiness - 8);
+                gameState.log.push({ year: gameState.year, event: `شما درخواست کمک مالی ${partner.name} را رد کردید.`, type: 'family' });
+            }
+        }
+
+        // Partner initiates breakup if relationship is too low (شریک در صورت پایین بودن رابطه، جدایی را آغاز می‌کند)
+        if (!partner.isMarried && partner.relationship < 15 && Math.random() < 0.1) {
+            gameState.log.push({ year: gameState.year, event: `${partner.name} رابطه را با شما به هم زد!`, type: 'family' });
+            showMessageModal(`${partner.name} با شما کات کرد!`);
+            gameState.romanticRelationships.splice(i, 1);
+            i--;
+            gameState.happiness = Math.max(0, gameState.happiness - 20);
+        }
+      }
+
+      // Handle children aging (مدیریت بالا رفتن سن فرزندان)
       gameState.children.forEach(child => {
         child.age++;
         child.relationship = Math.min(100, child.relationship + Math.floor(Math.random() * 5)); // Slight improvement (بهبود جزئی)
       });
 
-      // Random events (رویدادهای تصادفی)
-      const events = [
-        { event: 'شما یک سال بزرگ‌تر شدید!', type: 'general' },
-        { event: 'به یک عروسی دعوت شدید!', type: 'family', effect: () => gameState.happiness = Math.min(100, gameState.happiness + 10) },
-        { event: 'یک بیماری خفیف گرفتید.', type: 'health', effect: () => { gameState.health = Math.max(0, gameState.health - 10); gameState.illnesses.push({ name: 'سرماخوردگی', severity: 'خفیف' }); } },
-        { event: 'یک دوست جدید پیدا کردید!', type: 'family', effect: () => gameState.relationships.push({ id: crypto.randomUUID(), name: 'دوست جدید', role: 'دوست', relationship: 50, respect: 50, happiness: 50 }) },
-        { event: 'یک جایزه کوچک بردید!', type: 'finance', effect: () => gameState.money += 100000 },
-        { event: 'در ترافیک گیر کردید و دیرتان شد.', type: 'general', effect: () => gameState.happiness = Math.max(0, gameState.happiness - 5) },
-        { event: 'یک کتاب جدید خواندید و هوش شما افزایش یافت.', type: 'education', effect: () => gameState.smarts = Math.min(100, gameState.smarts + 3) },
-        { event: 'مدتی را در طبیعت گذراندید و معنویت شما افزایش یافت.', type: 'spirituality', effect: () => gameState.spirituality = Math.min(100, gameState.spirituality + 5) },
-        { event: 'یک وسیله الکترونیکی شما خراب شد و هزینه تعمیر داشتید.', type: 'finance', effect: () => gameState.money = Math.max(0, gameState.money - 50000) },
-        { event: 'در محل کار با همکارانتان به مشکل خوردید.', type: 'career', effect: () => gameState.happiness = Math.max(0, gameState.happiness - 8) },
-        { event: 'یک دوره آموزشی آنلاین گذراندید و مهارت‌هایتان بهبود یافت.', type: 'education', effect: () => gameState.smarts = Math.min(100, gameState.smarts + 7) },
-        { event: 'به یک سفر کوتاه رفتید.', type: 'general', effect: () => gameState.happiness = Math.min(100, gameState.happiness + 15) },
-      ];
-      const randomEvent = events[Math.floor(Math.random() * events.length)];
-      gameState.log.push({ year: gameState.year, event: randomEvent.event, type: randomEvent.type });
-      if (randomEvent.effect) randomEvent.effect();
 
-      // Add current money to finance history (اضافه کردن پول فعلی به تاریخچه مالی)
+      // Smarter Random Events (رویدادهای تصادفی هوشمندانه)
+      const possibleEvents = [
+        { 
+            event: 'شما یک سال بزرگ‌تر شدید!', 
+            type: 'general', 
+            condition: () => true 
+        },
+        { 
+            event: 'به یک عروسی دعوت شدید و اوقات خوشی را گذراندید!', 
+            type: 'family', 
+            condition: () => gameState.happiness < 90 && gameState.age > 18, 
+            effect: () => gameState.happiness = Math.min(100, gameState.happiness + 10) 
+        },
+        { 
+            event: 'یک بیماری خفیف گرفتید.', 
+            type: 'health', 
+            condition: () => gameState.health > 20 && Math.random() < 0.2, // More likely if not already very sick (احتمال بیشتر اگر هنوز خیلی بیمار نباشد)
+            effect: () => { 
+                gameState.health = Math.max(0, gameState.health - 10); 
+                gameState.illnesses.push({ name: 'سرماخوردانی', severity: 'خفیف' }); 
+            } 
+        },
+        { 
+            event: 'یک دوست جدید پیدا کردید!', 
+            type: 'family', 
+            condition: () => gameState.age >= 10 && gameState.relationships.length < 5 && Math.random() < 0.1, 
+            effect: () => gameState.relationships.push({ id: crypto.randomUUID(), name: 'دوست جدید', role: 'دوست', relationship: 50, respect: 50, happiness: 50, age: gameState.age }) 
+        },
+        { 
+            event: 'یک جایزه کوچک در قرعه‌کشی بردید!', 
+            type: 'finance', 
+            condition: () => Math.random() < 0.05, 
+            effect: () => gameState.money += 100000 
+        },
+        { 
+            event: 'در ترافیک سنگین گیر کردید و دیرتان شد.', 
+            type: 'general', 
+            condition: () => Math.random() < 0.1, 
+            effect: () => gameState.happiness = Math.max(0, gameState.happiness - 5) 
+        },
+        { 
+            event: 'یک کتاب جدید خواندید و هوش شما افزایش یافت.', 
+            type: 'education', 
+            condition: () => gameState.smarts < 95 && Math.random() < 0.15, 
+            effect: () => gameState.smarts = Math.min(100, gameState.smarts + 3) 
+        },
+        { 
+            event: 'مدتی را در طبیعت گذراندید و معنویت شما افزایش یافت.', 
+            type: 'spirituality', 
+            condition: () => gameState.spirituality < 95 && Math.random() < 0.1, 
+            effect: () => gameState.spirituality = Math.min(100, gameState.spirituality + 5) 
+        },
+        { 
+            event: 'یک وسیله الکترونیکی شما خراب شد و مجبور به تعمیر شدید.', 
+            type: 'finance', 
+            condition: () => gameState.money > 50000 && Math.random() < 0.1, 
+            effect: () => gameState.money = Math.max(0, gameState.money - 50000) 
+        },
+        { 
+            event: 'در محل کار با همکارانتان به مشکل خوردید.', 
+            type: 'career', 
+            condition: () => gameState.job.title !== 'بیکار' && Math.random() < 0.08, 
+            effect: () => gameState.happiness = Math.max(0, gameState.happiness - 8) 
+        },
+        { 
+            event: 'یک دوره آموزشی آنلاین گذراندید و مهارت‌هایتان بهبود یافت.', 
+            type: 'education', 
+            condition: () => gameState.smarts < 90 && Math.random() < 0.07, 
+            effect: () => gameState.smarts = Math.min(100, gameState.smarts + 7) 
+        },
+        { 
+            event: 'به یک سفر کوتاه رفتید و روحیه گرفتید.', 
+            type: 'general', 
+            condition: () => gameState.money > 2000000 && gameState.happiness < 80 && Math.random() < 0.05, 
+            effect: () => gameState.happiness = Math.min(100, gameState.happiness + 15) 
+        },
+        {
+            event: 'با سرمایه‌گذاری هوشمندانه، سود خوبی کسب کردید!',
+            type: 'finance',
+            condition: () => gameState.investments.length > 0 && Math.random() < 0.05,
+            effect: () => {
+                const investment = gameState.investments[Math.floor(Math.random() * gameState.investments.length)];
+                const bonus = investment.value * 0.1; // 10% bonus
+                gameState.money += bonus;
+                gameState.happiness = Math.min(100, gameState.happiness + 10);
+                gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری در ${investment.name} به شما ${bonus.toLocaleString('fa-IR')} تومان سود مازاد داد!`, type: 'finance' });
+            }
+        },
+        {
+            event: 'یکی از دارایی‌های شما نیاز به تعمیر پیدا کرد و هزینه داشت.',
+            type: 'finance',
+            condition: () => gameState.assets.length > 0 && gameState.money > 100000 && Math.random() < 0.07,
+            effect: () => {
+                const cost = Math.floor(Math.random() * 5 + 1) * 10000; // 10k to 50k
+                gameState.money = Math.max(0, gameState.money - cost);
+                gameState.happiness = Math.max(0, gameState.happiness - 3);
+                gameState.log.push({ year: gameState.year, event: `هزینه تعمیر یکی از دارایی‌ها: ${cost.toLocaleString('fa-IR')} تومان.`, type: 'finance' });
+            }
+        }
+      ];
+
+      // Filter events based on conditions (فیلتر کردن رویدادها بر اساس شرایط)
+      const applicableEvents = possibleEvents.filter(event => event.condition());
+      
+      // Pick one random applicable event (انتخاب یک رویداد تصادفی از میان رویدادهای قابل اجرا)
+      let chosenEvent = { event: 'یک سال از زندگی شما گذشت.', type: 'general' }; // Default event (رویداد پیش‌فرض)
+      if (applicableEvents.length > 0) {
+          chosenEvent = applicableEvents[Math.floor(Math.random() * applicableEvents.length)];
+      }
+
+      gameState.log.push({ year: gameState.year, event: chosenEvent.event, type: chosenEvent.type });
+      if (chosenEvent.effect) chosenEvent.effect();
+
 
       updateUI();
       saveGame();
     }
 
-    // Education (تحصیلات)
-    function showSchool() {
-      const content = document.getElementById('education-content');
-      let schoolOptions = '';
-      if (gameState.age < 6) {
-        schoolOptions = '<p>شما برای شروع تحصیل خیلی کوچک هستید.</p>';
-      } else if (gameState.age < 12) {
-        schoolOptions = `
-          <p>وضعیت تحصیلی: دبستان (${gameState.education.level === 'دبستان' ? 'در حال تحصیل' : 'فارغ‌التحصیل'})</p>
-          <button class="btn-primary px-4 py-2 rounded-lg mt-2" onclick="window.study('primary')">درس بخوانید</button>
-        `;
-      } else if (gameState.age < 15) {
-        schoolOptions = `
-          <p>وضعیت تحصیلی: راهنمایی (${gameState.education.level === 'راهنمایی' ? 'در حال تحصیل' : 'فارغ‌التحصیل'})</p>
-          <button class="btn-primary px-4 py-2 rounded-lg mt-2" onclick="window.study('middle')">درس بخوانید</button>
-        `;
-      } else if (gameState.age < 18) {
-        schoolOptions = `
-          <p>وضعیت تحصیلی: دبیرستان (${gameState.education.level === 'دبیرستان' ? 'در حال تحصیل' : 'فارغ‌التحصیل'})</p>
-          <button class="btn-primary px-4 py-2 rounded-lg mt-2" onclick="window.study('high')">درس بخوانید</button>
-        `;
-      } else {
-        schoolOptions = `
-          <p>شما تحصیلات مدرسه را به پایان رسانده‌اید.</p>
-          <button class="btn-primary px-4 py-2 rounded-lg mt-2" onclick="window.study('general')">مطالعه آزاد</button>
-        `;
-      }
-      content.innerHTML = schoolOptions;
+    // --- Death System Functions (توابع سیستم مرگ) ---
+    function checkDeath() {
+      let deathReason = null;
 
+      // 1. Natural Death (مرگ طبیعی)
+      if (gameState.age >= 60 && Math.random() < (gameState.age - 50) * 0.01) { // Chance increases after 60 (شانس بعد از ۶۰ سالگی افزایش می‌یابد)
+        deathReason = `شما در سن ${gameState.age} سالگی به مرگ طبیعی از دنیا رفتید.`;
+      }
+      // 2. Illness Death (مرگ بر اثر بیماری)
+      if (gameState.health < 10 && gameState.illnesses.length > 0 && Math.random() < 0.3) {
+        deathReason = `شما در اثر عوارض بیماری‌هایتان در سن ${gameState.age} سالگی درگذشتید.`;
+      }
+      // 3. Accident Death (مرگ بر اثر حادثه)
+      if (Math.random() < 0.005) { // 0.5% chance each year (۰.۵٪ شانس در هر سال)
+        deathReason = `متاسفانه در سن ${gameState.age} سالگی دچار یک حادثه ناگوار شدید و فوت کردید.`;
+      }
+      
+      // AI for parents dying (هوش مصنوعی برای فوت والدین)
+      for (let i = 0; i < gameState.relationships.length; i++) {
+          const person = gameState.relationships[i];
+          if ((person.role === 'پدر' || person.role === 'مادر') && person.age > 70 && Math.random() < (person.age - 60) * 0.008) {
+              gameState.log.push({ year: gameState.year, event: `${person.name} شما در سن ${person.age} سالگی به دلیل کهولت سن فوت کرد.`, type: 'family' });
+              showMessageModal(`${person.name} شما درگذشت.`);
+              gameState.relationships.splice(i, 1);
+              i--; // Adjust index due to removal
+              gameState.happiness = Math.max(0, gameState.happiness - 10); // Impact on player's happiness (تاثیر بر شادی بازیکن)
+          }
+      }
+
+      if (deathReason) {
+        handleGameOver(deathReason);
+        return true; // Character died (کاراکتر مرد)
+      }
+      return false; // Character did not die (کاراکتر نمرد)
+    }
+
+    function handleGameOver(reason) {
+      window.showPage('game-over-screen');
+      document.getElementById('game-over-reason').textContent = reason;
+      saveGame(); // Save final state (ذخیره وضعیت نهایی)
+    }
+
+    function restartGame() {
+        resetGame(); // Reset game state (وضعیت بازی را ریست می‌کند)
+        window.showPage('start-screen'); // Show start screen (صفحه شروع را نمایش می‌دهد)
+    }
+
+    // --- Education Revamp Functions (توابع بازسازی تحصیلات) ---
+
+    // Main entry point for education page (نقطه ورود اصلی برای صفحه تحصیلات)
+    window.showEducationPage = function() {
+        window.showPage('education-page');
+        // Determine which tab to show by default (تعیین اینکه کدام تب به‌طور پیش‌فرض نمایش داده شود)
+        if (gameState.age < 18) {
+            window.showSchool();
+        } else {
+            // If already university level or graduated, show university. Otherwise, still school for general study.
+            if (gameState.education.level.includes('دانشگاه') || gameState.education.level.includes('فارغ‌التحصیل')) {
+                window.showUniversity();
+            } else {
+                window.showSchool(); // Even if over 18, still show school for "general study" (حتی اگر بالای ۱۸ سال باشد، همچنان مدرسه را برای "مطالعه عمومی" نشان دهد)
+            }
+        }
+    };
+
+    window.showSchool = function() {
+      const content = document.getElementById('education-content-scroll');
+      let htmlContent = '';
+
+      // Update tab styles (به‌روزرسانی استایل تب‌ها)
       document.getElementById('school-tab').classList.add('btn-primary');
       document.getElementById('school-tab').classList.remove('btn-secondary');
       document.getElementById('university-tab').classList.add('btn-secondary');
       document.getElementById('university-tab').classList.remove('btn-primary');
-    }
 
-    function showUniversity() {
-      const content = document.getElementById('education-content');
-      if (gameState.age < 18 || gameState.education.level.indexOf('دبیرستان') === -1 && gameState.education.level.indexOf('فارغ‌التحصیل') === -1) {
-        content.innerHTML = '<p>برای ورود به دانشگاه باید حداقل ۱۸ سال داشته باشید و دبیرستان را تمام کرده باشید.</p>';
+      if (gameState.age < 6) {
+        htmlContent = `<div class="glass-card p-4 text-center">
+                         <p class="text-lg">شما برای شروع تحصیل خیلی کوچک هستید.</p>
+                       </div>`;
+      } else if (gameState.age < 12) {
+        htmlContent = `
+          <div class="glass-card p-4 mb-4">
+            <h3 class="text-lg font-semibold mb-2">مقطع ابتدایی</h3>
+            <p><strong>وضعیت:</strong> ${gameState.education.level === 'ابتدایی' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
+            <p class="text-sm text-gray-300 mt-2">با درس خواندن هوش خود را افزایش دهید.</p>
+            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('primary')">درس بخوانید (افزایش هوش، +5)</button>
+          </div>
+        `;
+      } else if (gameState.age < 15) {
+        htmlContent = `
+          <div class="glass-card p-4 mb-4">
+            <h3 class="text-lg font-semibold mb-2">مقطع راهنمایی</h3>
+            <p><strong>وضعیت:</strong> ${gameState.education.level === 'راهنمایی' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
+            <p class="text-sm text-gray-300 mt-2">مهارت‌های پایه خود را تقویت کنید.</p>
+            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('middle')">درس بخوانید (افزایش هوش، +5)</button>
+          </div>
+        `;
+      } else if (gameState.age < 18) {
+        htmlContent = `
+          <div class="glass-card p-4 mb-4">
+            <h3 class="text-lg font-semibold mb-2">مقطع دبیرستان</h3>
+            <p><strong>وضعیت:</strong> ${gameState.education.level === 'دبیرستان' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
+            <p class="text-sm text-gray-300 mt-2">برای ورود به دانشگاه آماده شوید.</p>
+            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('high')">درس بخوانید (افزایش هوش، +5)</button>
+          </div>
+        `;
       } else {
-        content.innerHTML = `
-          <p>وضعیت تحصیلی: ${gameState.education.major ? `دانشجو (${gameState.education.major} - ${gameState.education.degreeProgress}% پیشرفت)` : 'آماده برای انتخاب رشته'}</p>
-          <p>انتخاب رشته:</p>
-          <select id="major-select" class="w-full p-2 bg-gray-800 rounded-lg mb-4">
-            <option value="پزشکی">پزشکی (نیاز به هوش بالا)</option>
-            <option value="مهندسی">مهندسی (نیاز به هوش متوسط)</option>
-            <option value="حقوق">حقوق (نیاز به هوش متوسط)</option>
-            <option value="هنر">هنر (نیاز به ظاهر و شادی)</option>
-            <option value="مدیریت">مدیریت</option>
-          </select>
-          <button class="btn-primary px-4 py-2 rounded-lg" onclick="window.applyUniversity()">ثبت‌نام/ادامه تحصیل</button>
-          ${gameState.education.level === 'دانشگاه' ? `<button class="btn-secondary px-4 py-2 rounded-lg mt-2 ml-2" onclick="window.dropOut()">انصراف از تحصیل</button>` : ''}
+        htmlContent = `
+          <div class="glass-card p-4 text-center">
+            <h3 class="text-lg font-semibold mb-2">تحصیلات مدرسه</h3>
+            <p>شما تحصیلات مدرسه را به پایان رسانده‌اید.</p>
+            <p class="text-sm text-gray-300 mt-2">با مطالعه آزاد می‌توانید به دانش خود بیافزایید.</p>
+            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('general')">مطالعه آزاد (افزایش هوش، +3)</button>
+          </div>
         `;
       }
+      content.innerHTML = htmlContent;
+    }
+
+    window.showUniversity = function() {
+      const content = document.getElementById('education-content-scroll');
+      let htmlContent = '';
+
+      // Update tab styles (به‌روزرسانی استایل تب‌ها)
       document.getElementById('university-tab').classList.add('btn-primary');
       document.getElementById('university-tab').classList.remove('btn-secondary');
       document.getElementById('school-tab').classList.add('btn-secondary');
       document.getElementById('school-tab').classList.remove('btn-primary');
+
+      if (gameState.age < 18 || !(gameState.education.level.includes('دبیرستان') || gameState.education.level.includes('فارغ‌التحصیل'))) {
+        htmlContent = `<div class="glass-card p-4 text-center">
+                         <p class="text-lg">برای ورود به دانشگاه باید حداقل ۱۸ سال داشته باشید و دبیرستان را تمام کرده باشید.</p>
+                       </div>`;
+      } else {
+        if (gameState.education.level === 'دانشگاه') {
+          htmlContent = `
+            <div class="glass-card p-4 mb-4">
+              <h3 class="text-lg font-semibold mb-2">دانشگاه</h3>
+              <p><strong>رشته فعلی:</strong> ${gameState.education.major}</p>
+              <p><strong>پیشرفت مدرک:</strong> ${gameState.education.degreeProgress}%</p>
+              <p class="text-sm text-gray-300 mt-2">با ادامه تحصیل در رشته خود، پیشرفت کنید.</p>
+              <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.continueUniversityStudy()">ادامه تحصیل (افزایش پیشرفت، +10-20)</button>
+              <button class="btn-secondary w-full py-2 rounded-lg mt-2" onclick="window.dropOut()">انصراف از تحصیل</button>
+            </div>
+          `;
+        } else if (gameState.education.level.includes('فارغ‌التحصیل')) {
+          htmlContent = `
+            <div class="glass-card p-4 text-center">
+              <h3 class="text-lg font-semibold mb-2">فارغ‌التحصیل</h3>
+              <p>شما از دانشگاه در رشته ${gameState.education.major || 'نامشخص'} فارغ‌التحصیل شده‌اید.</p>
+              <p class="text-sm text-gray-300 mt-2">می‌توانید به دنبال شغل مناسب باشید یا در رشته دیگری ادامه تحصیل دهید.</p>
+              ${gameState.education.major ? `<p><strong>مدرک:</strong> ${gameState.education.major}</p>` : ''}
+            </div>
+          `;
+        } else {
+          // Ready to choose major
+          htmlContent = `
+            <div class="glass-card p-4">
+              <h3 class="text-lg font-semibold mb-2">انتخاب رشته دانشگاه</h3>
+              <p class="text-sm text-gray-300 mb-4">رشته‌ای را انتخاب کنید که به علاقه و توانایی‌های شما نزدیک باشد.</p>
+              <select id="major-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="پزشکی">پزشکی (نیاز به هوش بالا: ۷۰+)</option>
+                <option value="مهندسی">مهندسی (نیاز به هوش متوسط: ۶۰+)</option>
+                <option value="حقوق">حقوق (نیاز به هوش متوسط: ۶۰+)</option>
+                <option value="هنر">هنر (نیاز به ظاهر: ۵۰+، شادی: ۵۰+)</option>
+                <option value="مدیریت">مدیریت</option>
+              </select>
+              <button class="btn-primary w-full py-3 rounded-lg" onclick="window.applyUniversity()">ثبت‌نام در دانشگاه</button>
+            </div>
+          `;
+        }
+      }
+      content.innerHTML = htmlContent;
     }
 
+    // Function for studying in school (تابع برای درس خواندن در مدرسه)
     window.study = function(level) {
+      // Logic for studying remains mostly the same, just update UI based on new structure
       gameState.smarts = Math.min(100, gameState.smarts + 5);
       let logMessage = '';
       if (level === 'primary') {
-        gameState.education.level = 'دبستان';
+        gameState.education.level = 'ابتدایی';
         logMessage = 'شما در دبستان درس خواندید.';
       } else if (level === 'middle') {
         gameState.education.level = 'راهنمایی';
@@ -1906,14 +2302,38 @@
         logMessage = 'شما در دبیرستان درس خواندید.';
       } else if (level === 'general') {
         logMessage = 'شما مطالعه آزاد داشتید و هوش شما افزایش یافت.';
+        gameState.smarts = Math.min(100, gameState.smarts + 3); // Slightly less for general (کمی کمتر برای عمومی)
       }
       gameState.log.push({ year: gameState.year, event: logMessage, type: 'education' });
       updateUI();
+      window.showSchool(); // Re-render school page (بازسازی صفحه مدرسه)
       saveGame();
     }
 
+    // Function for continuing university study (تابع برای ادامه تحصیل در دانشگاه)
+    window.continueUniversityStudy = function() {
+        if (gameState.education.level !== 'دانشگاه') {
+            showMessageModal('شما در حال حاضر دانشجوی دانشگاه نیستید.');
+            return;
+        }
+
+        gameState.education.degreeProgress += 10 + Math.floor(Math.random() * 10); // 10-20% progress (۱۰-۲۰٪ پیشرفت)
+        if (gameState.education.degreeProgress >= 100) {
+            gameState.education.degreeProgress = 100;
+            gameState.education.level = `فارغ‌التحصیل ${gameState.education.major}`;
+            gameState.log.push({ year: gameState.year, event: `شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید!`, type: 'education' });
+            showMessageModal(`تبریک! شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید.`);
+        } else {
+            gameState.log.push({ year: gameState.year, event: `شما در حال تحصیل در رشته ${gameState.education.major} هستید. (${gameState.education.degreeProgress}% پیشرفت)`, type: 'education' });
+        }
+        gameState.smarts = Math.min(100, gameState.smarts + 7); // Boost smarts (افزایش هوش)
+        updateUI();
+        window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
+        saveGame();
+    }
+
     window.applyUniversity = function() {
-      if (gameState.age < 18 || (gameState.education.level.indexOf('دبیرستان') === -1 && gameState.education.level.indexOf('فارغ‌التحصیل') === -1)) {
+      if (gameState.age < 18 || !(gameState.education.level.includes('دبیرستان') || gameState.education.level.includes('فارغ‌التحصیل'))) {
         showMessageModal('برای ورود به دانشگاه باید حداقل ۱۸ سال داشته باشید و دبیرستان را تمام کرده باشید.');
         return;
       }
@@ -1938,6 +2358,7 @@
       gameState.education.degreeProgress = 0; // Reset progress (پیشرفت را بازنشانی می‌کند)
       gameState.log.push({ year: gameState.year, event: `شما در رشته ${selectedMajor} در دانشگاه ثبت‌نام کردید.`, type: 'education' });
       updateUI();
+      window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
       saveGame();
     }
 
@@ -1954,6 +2375,7 @@
                 gameState.log.push({ year: gameState.year, event: 'شما از دانشگاه انصراف دادید.', type: 'education' });
                 showMessageModal('شما از دانشگاه انصراف دادید.');
                 updateUI();
+                window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
                 saveGame();
             }
         });
@@ -1974,8 +2396,8 @@
           showMessageModal(`پول کافی برای خرید هدیه ندارید! (حداقل ${giftCost.toLocaleString('fa-IR')} تومان)`);
           return;
         }
-        person.relationship = Math.min(100, person.relationship + 10);
         gameState.money -= giftCost;
+        person.relationship = Math.min(100, person.relationship + 10);
         gameState.log.push({ year: gameState.year, event: `شما به ${person.name} هدیه دادید.`, type: 'family' });
       } else if (action === 'argue') {
         person.relationship = Math.max(0, person.relationship - 15);
@@ -2005,7 +2427,8 @@
                 name: `${partnerName} جدید`,
                 role: 'شریک عاطفی',
                 relationship: 30 + Math.floor(Math.random() * 20), // Initial relationship (رابطه اولیه)
-                isMarried: false
+                isMarried: false,
+                age: gameState.age + (Math.random() * 5 - 2) // Partner age close to player's (سن شریک نزدیک به بازیکن)
             };
             gameState.romanticRelationships.push(newPartner);
             gameState.log.push({ year: gameState.year, event: `شما با ${newPartner.name} آشنا شدید!`, type: 'family' });
@@ -2050,10 +2473,17 @@
             return;
         }
 
+        const marriageCost = 5000000; // Example marriage cost (هزینه ازدواج)
+        if (gameState.money < marriageCost) {
+            showMessageModal(`پول کافی برای مراسم ازدواج ندارید! (حداقل ${marriageCost.toLocaleString('fa-IR')} تومان)`);
+            return;
+        }
+
         const success = Math.random() < (partner.relationship / 100);
         if (success) {
             partner.role = 'همسر';
             partner.isMarried = true;
+            gameState.money -= marriageCost; // Deduct marriage cost (کسر هزینه ازدواج)
             gameState.happiness = Math.min(100, gameState.happiness + 20);
             gameState.log.push({ year: gameState.year, event: `شما با ${partner.name} ازدواج کردید! تبریک!`, type: 'family' });
             showMessageModal(`تبریک! شما با ${partner.name} ازدواج کردید.`);
@@ -2085,9 +2515,11 @@
           id: crypto.randomUUID(),
           name: `${babyName} شما`,
           age: 0,
-          relationship: 70 + Math.floor(Math.random() * 10) // Initial relationship (رابطه اولیه)
+          relationship: 70 + Math.floor(Math.random() * 10), // Initial relationship (رابطه اولیه)
+          role: 'فرزند' // Add role for children (افزودن نقش برای فرزندان)
         };
         gameState.children.push(newChild);
+        gameState.relationships.push(newChild); // Add children to main relationships array (افزودن فرزندان به آرایه اصلی روابط)
         gameState.happiness = Math.min(100, gameState.happiness + 30);
         gameState.log.push({ year: gameState.year, event: `تبریک! شما صاحب یک ${newChild.name} شد!`, type: 'family' });
         showMessageModal(`تبریک! شما صاحب یک ${newChild.name} شدید!`);
@@ -2526,8 +2958,8 @@
           happiness: 50, health: 80, smarts: 50, looks: 50, spirituality: 50,
           education: { level: 'هیچ', major: '', degreeProgress: 0 }, job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
           relationships: [
-            { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60 },
-            { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65 }
+            { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, 
+            { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 }
           ],
           romanticRelationships: [], children: [], illnesses: [], assets: [], investments: [], log: [],
         };
@@ -2594,7 +3026,7 @@
             <div class="glass-card p-4 mb-4">
               <h4 class="text-lg font-semibold mb-2">سن ${currentAgeAtYearStart}</h4>
               <ul class="list-disc list-inside space-y-1 text-sm">
-                ${logsByYear[year].map(event => `<li>${event}</li>`).join('')}
+                ${logsByYear[year].map(event => `<li>${event}</li>`).join('')}\
               </ul>
             </div>
           `;
