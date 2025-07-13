@@ -1,3053 +1,0 @@
-<!DOCTYPE html>
-<html lang="fa" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>زندگی ایرانی - شبیه‌ساز زندگی</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://v1.fontapi.ir/css/Vazir" rel="stylesheet">\
-  <!-- Chart.js CDN updated to a specific stable version (CDN چارت.جی‌اس به نسخه پایدار و مشخص تغییر یافت) -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
-  <style>
-    /* Ensure html and body take full height and do not scroll (اطمینان از اشغال کامل ارتفاع و عدم اسکرول برای html و body) */
-    html, body {
-      height: 100%;
-      width: 100%;
-      overflow: hidden; /* جلوگیری از اسکرول کلی صفحه */
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: 'Vazir', sans-serif;
-      background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      min-width: 100vw;
-      width: 100vw;
-      height: 100vh;
-      overflow-x: hidden;
-      color: white;
-}
-    /* New game container for scaling the entire game (کانتینر جدید بازی برای مقیاس‌بندی کل بازی) */
-    #game-container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      min-width: 0;
-      min-height: 0;
-      max-width: 100vw;
-      max-height: 100vh;
-      overflow: hidden;
-      background: linear-gradient(135deg, #121212 0%, #1a202c 100%);
-      box-shadow: none;
-      border-radius: 0;
-      transform: none;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .glass-card {
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .btn-primary {
-      background: #10b981;
-      color: white;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-    .btn-primary:hover {
-      background: #059669;
-      transform: scale(1.05);
-    }
-    .btn-secondary {
-      background: #4b5563;
-      color: white;
-      transition: transform 0.2s ease, background 0.2s ease;
-    }
-    .btn-secondary:hover {
-      background: #374151;
-      transform: scale(1.05);
-    }
-    .status-bar {
-      height: 100%; /* ارتفاع نوار رنگی برابر با ارتفاع والدش باشد */
-      border-radius: 8px; /* شعاع مرزی برای نوار رنگی */
-      transition: width 0.3s ease;
-    }
-    .animate-slide-in {
-      animation: slideIn 0.5s ease-out;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-    }
-    .money-display {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    /* Dashboard specific styling (استایل‌های خاص داشبورد) */
-    #dashboard {
-      display: flex;
-      flex-direction: column;
-      height: 100%; /* اکنون ۱۰۰٪ از game-container را اشغال می‌کند */
-      /* overflow: hidden از اینجا حذف شد، game-container آن را مدیریت می‌کند */
-    }
-
-    /* Header Section (بخش هدر) */
-    .header-section {
-      height: 7rem; /* ارتفاع به ۷rem بازگردانده شد تا فضای کافی تضمین شود */
-      flex-shrink: 0; /* جلوگیری از کوچک شدن */
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* افزودن سایه برای جداسازی */
-      z-index: 10; /* اطمینان از قرارگیری هدر بالای محتوای اسکرولی */
-      display: flex; /* Make it a flex container */
-      flex-direction: column; /* Stack children vertically */
-      padding: 0.5rem 1rem; /* Added padding to the header section itself (پدینگ به خود هدر اضافه شد) */
-    }
-
-    /* Header Top Row (شامل عنوان و دکمه تنظیمات) */
-    .header-top-row {
-      display: flex;
-      justify-content: center; /* مرکز کردن عنوان */
-      align-items: center;
-      width: 100%;
-      position: relative; /* برای موقعیت‌دهی مطلق دکمه تنظیمات */
-      flex-shrink: 0; /* جلوگیری از کوچک شدن */
-    }
-
-    .header-top-row h1 {
-      margin: 0; /* حذف مارجین‌های اضافی از عنوان */
-    }
-
-    .header-top-row #header-settings-btn {
-      position: absolute;
-      left: 0; /* قرار دادن دکمه در سمت چپ */
-      top: 50%; /* وسط قرار دادن عمودی */
-      transform: translateY(-50%); /* تنظیم دقیق برای وسط قرار گرفتن عمودی */
-    }
-
-    /* Character Info Row (شامل نام، سن، پول و شغل) */
-    .header-info-row {
-        display: flex;
-        justify-content: space-between; /* پخش کردن آیتم‌ها در طول خط */
-        width: 100%;
-        margin-top: auto; /* برای هل دادن این ردیف به پایین هدر */
-    }
-
-    .header-info-row .flex-1 {
-        padding: 0 0.5rem; /* کاهش پدینگ داخلی برای این دو ستون */
-    }
-
-    /* Main Content Area - This will contain the scrollable life log (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) */
-    #main-dashboard-content {
-      flex-grow: 1; /* فضای عمودی باقی‌مانده را اشغال می‌کند */
-      padding: 0.5rem; /* کاهش پدینگ کلی برای فضای داخلی */
-      display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
-      flex-direction: column; /* فرزندان را به صورت عمودی پشته کنید */
-      justify-content: flex-start; /* محتوا را در بالای این ناحیه همتراز کنید */
-      align-items: center; /* محتوا را به صورت افقی وسط قرار دهید */
-      overflow-y: auto; /* این بخش اصلی اکنون اسکرول خودش را مدیریت خواهد کرد */
-      -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
-    }
-    
-    /* Styles for the glass-card containing life-log (استایل‌ها برای glass-card شامل گزارش زندگی) */
-    #life-log-scroll-container { /* New ID for direct targeting (آی‌دی جدید برای هدف‌گیری مستقیم) */
-      width: 100%; /* اطمینان از پر کردن عرض */
-      max-width: 768px; /* اختیاری: محدود کردن حداکثر عرض برای خوانایی بهتر در صفحات بزرگتر */
-      /* ارتفاع توسط محتوای داخل آن و overflow-y در والد مدیریت می‌شود */
-    }
-
-    /* Styles for the actual life-log content area (استایل‌ها برای ناحیه محتوای گزارش زندگی واقعی) */
-    #life-log {
-      space-y: 4; /* فاصله را حفظ کنید */
-    }
-
-    /* Bottom Sections - Now part of flex flow (بخش‌های پایین - اکنون بخشی از جریان فلکس) */
-    .status-bars-section {
-      height: 180px; /* ارتفاع صریح تنظیم شده است */
-      flex-shrink: 0; /* جلوگیری از کوچک شدن */
-      padding: 0.5rem 1rem; /* کاهش پدینگ عمودی برای فضای بیشتر */
-      background: rgba(255, 255, 255, 0.08); /* پس‌زمینه glass-card */
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1); /* حاشیه بالا برای جداسازی */
-      border-radius: 12px 12px 0 0; /* گوشه‌های بالایی گرد */
-      z-index: 10; /* اطمینان از قرارگیری نوارهای وضعیت بالای محتوای اسکرولی */
-    }
-    .status-bars-section .flex-col {
-        space-y: 1; /* کاهش فاصله بین آیتم‌های نوار وضعیت */
-    }
-    .status-bars-section .flex-shrink-0.w-24 { /* Adjust width for labels */
-        width: 5rem; /* w-20 = 80px */
-    }
-    .status-bars-section .font-bold.text-sm.w-12 { /* Adjust width for values */
-        width: 2.5rem; /* w-10 = 40px */
-    }
-
-    /* Header specific text overflow handling (مدیریت سرریز متن خاص هدر) */
-    #dashboard-char-name,
-    #dashboard-char-age,
-    #dashboard-char-money,
-    #dashboard-char-job {
-      white-space: nowrap; /* جلوگیری از شکستن خط متن */
-      overflow: hidden;     /* پنهان کردن محتوای اضافی */
-      text-overflow: ellipsis; /* نمایش سه نقطه (...) برای متن‌های بریده شده */
-    }
-
-
-    .tab-bar {
-      height: 60px; /* ارتفاع صریح تنظیم شده است */
-      flex-shrink: 0; /* جلوگیری از کوچک شدن */
-      padding: 0.5rem; /* py-2 */
-      background: rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px 12px 0 0; /* گوشه‌های بالایی گرد */
-      z-index: 10; /* اطمینان از قرارگیری نوار تب بالای محتوای اسکرولی */
-      display: grid; /* استفاده از گرید برای کنترل دقیق‌تر جای‌گیری دکمه‌ها */
-      grid-template-columns: repeat(5, 1fr); /* تقسیم به 5 ستون مساوی */
-      gap: 0.2rem; /* فاصله کم بین دکمه‌ها */
-      justify-items: center; /* وسط قرار دادن آیتم‌ها در ستون‌های گرید */
-      align-items: center; /* وسط قرار دادن آیتم‌ها به صورت عمودی */
-    }
-    /* Styling for tab bar buttons (استایل‌دهی برای دکمه‌های نوار تب) */
-    .tab-bar button {
-      display: flex; /* دکمه‌ها به صورت فلکس نمایش داده شوند */
-      flex-direction: column; /* محتویات دکمه (ایموجی و متن) به صورت عمودی چیده شوند */
-      align-items: center; /* محتویات دکمه در مرکز قرار گیرند */
-      padding: 0.3rem; /* پدینگ دکمه‌ها کاهش یافت */
-      border-radius: 0.5rem;
-      transition: background 0.2s ease;
-      width: 100%; /* اطمینان از پر کردن عرض ستون گرید */
-    }
-    .tab-bar button span:first-child { /* ایموجی دکمه‌ها */
-      font-size: 1.3rem; /* اندازه ایموجی برای نوار تب افزایش یافت */
-      line-height: 1; /* تنظیم ارتفاع خط برای تراز بهتر */
-      margin-bottom: 0.1rem; /* فاصله بسیار کم بین ایموجی و متن */
-    }
-    .tab-bar button span:last-child {
-      font-weight: 700; /* متن بولد */
-      font-size: 0.75rem; /* اندازه فونت متن نوار تب کمی افزایش یافت */
-      white-space: nowrap; /* جلوگیری از شکستن خط متن */
-      overflow: hidden; /* پنهان کردن هر متنی که از کادر بیرون می‌زند */
-      text-overflow: ellipsis; /* نمایش سه نقطه برای متن‌های بریده شده */
-    }
-
-    .modal-overlay {
-      position: fixed; /* باید نسبت به viewport ثابت بماند */
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.75);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 50;
-    }
-    .modal-content {
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(15px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 15px;
-      padding: 1.5rem;
-      width: 90%;
-      max-width: 400px;
-      text-align: center;
-      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    }
-    .modal-button-container {
-      display: flex;
-      justify-content: space-around;
-      margin-top: 1rem;
-    }
-    .modal-button {
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .modal-button.primary {
-      background-color: #10b981;
-      color: white;
-    }
-    .modal-button.primary:hover {
-      background: #059669;
-      transform: translateY(-2px);
-    }
-    .modal-button.secondary {
-      background-color: #4b5563;
-      color: white;
-    }
-    .modal-button.secondary:hover {
-      background-color: #374151;
-      transform: translateY(-2px);
-    }
-    /* Ensure scrollability for content within pages (اطمینان از قابلیت اسکرول برای محتوای درون صفحات) */
-    .page-content-scroll {
-      display: flex; /* اکنون اینها نیز فلکس کانتینر هستند */
-      flex-direction: column;
-      height: 100%; /* ۱۰۰٪ ارتفاع کانتینر والد خود (game-container) را اشغال می‌کنند */
-      overflow-y: auto; /* اسکرول داخلی برای محتوا */
-      -webkit-overflow-scrolling: touch; /* اسکرول روان در iOS */
-      padding: 0.5rem; /* کاهش پدینگ برای فضای بیشتر محتوا */
-      padding-bottom: 1rem; /* برای جلوگیری از بریده شدن محتوا در پایین */
-    }
-    .back-button-container {
-        display: flex;
-        justify-content: flex-start; /* همتراز کردن به چپ */
-        margin-bottom: 0.5rem; /* فضای زیر دکمه کاهش یافت */
-        flex-shrink: 0; /* از کوچک شدن دکمه بازگشت جلوگیری می‌کند */
-    }
-    /* Styling for activity menu buttons - Adjusted emoji size and made text bold (استایل‌دهی برای دکمه‌های منوی فعالیت - تنظیم اندازه ایموجی و بولد کردن متن) */
-    #activities-menu .glass-card span:first-child {
-      font-size: 2.2rem; /* اندازه ایموجی کمی کوچتر برای منوی فعالیت‌ها */
-      line-height: 1;
-      margin-bottom: 0.5rem; /* افزودن مقداری فاصله زیر ایموجی */
-    }
-    #activities-menu .glass-card span:last-child {
-      font-weight: 700; /* متن بولد */
-    }
-
-
-    /* Hide scrollbar for WebKit browsers (Chrome, Safari) - پنهان کردن اسکرول‌بار برای مرورگرهای WebKit */
-    #main-dashboard-content::-webkit-scrollbar, 
-    .page-content-scroll::-webkit-scrollbar,
-    #life-log-full::-webkit-scrollbar,
-    #life-log-scroll-container::-webkit-scrollbar, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
-    #full-log-scroll-area::-webkit-scrollbar,
-    .asset-list-container::-webkit-scrollbar,
-    #career-category-list::-webkit-scrollbar, /* Added for career categories */
-    #job-list-container::-webkit-scrollbar, /* Added for job listings */
-    #owned-gold_coins-list::-webkit-scrollbar,
-    #buy-gold_coins-list::-webkit-scrollbar,
-    #owned-stocks_bourse-list::-webkit-scrollbar,
-    #buy-stocks_bourse-list::-webkit-scrollbar,
-    #owned-cryptocurrency-list::-webkit-scrollbar,
-    #buy-cryptocurrency-list::-webkit-scrollbar,
-    #owned-investment_land-list::-webkit-scrollbar,
-    #buy-investment_land-list::-webkit-scrollbar,
-    #owned-raw_materials-list::-webkit-scrollbar,
-    #buy-raw_materials-list::-webkit-scrollbar,
-    #owned-properties-list::-webkit-scrollbar,
-    #buy-properties-list::-webkit-scrollbar,
-    #owned-vehicles-list::-webkit-scrollbar,
-    #buy-vehicles-list::-webkit-scrollbar,
-    #owned-plane_boat-list::-webkit-scrollbar,
-    #buy-plane_boat-list::-webkit-scrollbar,
-    #owned-jewelry-list::-webkit-scrollbar,
-    #buy-jewelry-list::-webkit-scrollbar,
-    #owned-instruments-list::-webkit-scrollbar,
-    #buy-instruments-list::-webkit-scrollbar,
-    #education-content-scroll::-webkit-scrollbar /* Added for new education content scroll */
-     {
-      display: none;
-    }
-
-    /* Hide scrollbar for Firefox - پنهان کردن اسکرول‌بار برای فایرفاکس */
-    #main-dashboard-content, 
-    .page-content-scroll,
-    #life-log-full,
-    #life-log-scroll-container, /* کانتینر اسکرول جدید داشبورد را هدف قرار دهید */
-    #full-log-scroll-area,
-    .asset-list-container,
-    #career-category-list, /* Added for career categories */
-    #job-list-container, /* Added for job listings */
-    #owned-gold_coins-list,
-    #buy-gold_coins-list,
-    #owned-stocks_bourse-list,
-    #buy-stocks_bourse-list,
-    #owned-cryptocurrency-list,
-    #buy-cryptocurrency-list,
-    #owned-investment_land-list,
-    #buy-investment_land-list,
-    #owned-raw_materials-list,
-    #buy-raw_materials-list,
-    #owned-properties-list,
-    #buy-properties-list,
-    #owned-vehicles-list,
-    #buy-vehicles-list,
-    #owned-plane_boat-list,
-    #buy-plane_boat-list,
-    #owned-jewelry-list,
-    #buy-jewelry-list,
-    #owned-instruments-list,
-    #buy-instruments-list,
-    #education-content-scroll /* Added for new education content scroll */
-    {
-      scrollbar-width: none; /* Firefox */
-    }
-
-    /* Styling for the new full log page scroll area (استایل‌دهی برای ناحیه اسکرول جدید صفحه گزارش کامل) */
-    #log-page .glass-card { /* والد #full-log-scroll-area */
-        flex-grow: 1; /* این گلس-کارد فضای باقی‌مانده را اشغال می‌کند */
-        display: flex; /* آن را به کانتینر فلکس تبدیل کنید */
-        flex-direction: column; /* محتویات داخلی را به صورت عمودی پشته کنید */
-        min-height: 0; /* برای آیتم‌های فلکس با overflow ضروری است */
-    }
-    #log-page .glass-card > .flex.space-x-2.mb-2 { /* کانتینر دکمه‌های فیلتر */
-        flex-shrink: 0; /* از کوچک شدن دکمه‌ها جلوگیری می‌کند */
-    }
-    #full-log-scroll-area { 
-        overflow-y: auto;
-        flex-grow: 1; /* فضای باقی‌مانده را در والد فلکس خود اشغال می‌کند */
-        min-height: 0; /* مهم برای آیتم‌های فلکس با قابلیت overflow */
-    }
-    /* Further reductions for log-page elements */
-    #log-page {
-        padding: 0.5rem; /* p-2 */
-    }
-    #log-page h2 {
-        margin-bottom: 0.5rem; /* mb-2 */
-        flex-shrink: 0; /* جلوگیری از کوچک شدن عنوان */
-    }
-    #log-page .glass-card > .flex.space-x-2.mb-4 { /* Filter buttons container */
-        margin-bottom: 0.5rem; /* mb-2 */
-    }
-
-    /* Game Over Modal Styling (استایل مودال پایان بازی) */
-    #game-over-screen {
-        background: linear-gradient(135deg, #2b0b0b 0%, #4a1a1a 100%); /* Darker red gradient for game over */
-        text-align: center;
-        padding: 2rem;
-    }
-    #game-over-screen h2 {
-        font-size: 2.5rem;
-        color: #ff6b6b; /* Bright red for "Game Over" */
-        margin-bottom: 1rem;
-    }
-    #game-over-screen p {
-        font-size: 1.2rem;
-        margin-bottom: 1.5rem;
-        color: #ddd;
-    }
-  </style>
-</head>
-<body>
-  <!-- New: Main game container for scaling -->
-  <div id="game-container">
-    <div id="start-screen" class="flex flex-col items-center justify-center h-full p-4"> <!-- Changed min-h-screen to h-full -->
-      <img src="https://placehold.co/150x120/10b981/ffffff?text=لوگو" alt="لوگو بازی" class="h-32 mb-5 animate-slide-in rounded-lg">
-      <div class="glass-card p-6 w-11/12 max-w-md text-center">
-        <h1 class="text-3xl font-bold mb-4">زندگی ایرانی</h1>
-        <input id="name-input" type="text" placeholder="نام خود را وارد کنید" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500" value="عرفان خسروی">
-        <select id="gender-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="male" selected>مرد 👨</option>
-          <option value="female">زن 👩</option>
-        </select>
-        <select id="province-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="tehran" selected>تهران - پایتخت، امکانات زیاد</option>
-          <option value="isfahan">اصفهان - تاریخی، فرهنگی</option>
-          <option value="shiraz">شیراز - ادبی، خوش آب‌وهوا</option>
-          <option value="mashhad">مشهد - مذهبی، زیارتی</option>
-          <option value="tabriz">تبریز - صنعتی، تاریخی</option>
-        </select>
-        <select id="family-status" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-          <option value="normal" selected>خانواده معمولی</option>
-          <option value="wealthy">خانواده ثروتمند</option>
-          <option value="rural">خانواده روستایی</option>
-          <option value="poor">خانواده با مشکلات مالی</option>
-        </select>
-        <button id="start-new-life" class="btn-primary w-4/5 py-3 rounded-full text-lg font-semibold mb-3 shadow-lg">شروع زندگی جدید</button>
-        <button id="continue-life" class="btn-secondary w-4/5 py-3 rounded-full text-md shadow-lg">ادامه زندگی قبلی</button>
-      </div>
-      <!-- Removed settings button from start screen (دکمه تنظیمات از صفحه شروع حذف شد) -->
-      <div class="absolute bottom-5 right-5">
-        <select id="language-select" class="bg-gray-800 p-2 rounded-lg text-sm">
-          <option value="fa" selected>فارسی</option>
-        </select>
-      </div>
-    </div>
-
-    <div id="dashboard" style="display: none;">
-      <!-- Header Section (بخش هدر) -->
-      <div class="header-section glass-card">
-        <div class="header-top-row">
-          <button id="header-settings-btn" class="text-gray-400 hover:text-white transition text-2xl p-1 rounded-full hover:bg-gray-700">⚙️</button>
-          <h1 class="text-2xl font-bold text-white flex-grow text-center ml-10">زندگی ایرانی</h1> <!-- Added ml-10 to offset settings button and keep title centered -->
-        </div>
-        <div class="header-info-row">
-          <!-- Left Section: Name & Age (بخش چپ: نام و سن) -->
-          <div class="text-right flex-1 pr-4">
-            <h2 id="dashboard-char-name" class="text-xl font-bold"></h2>
-            <p id="dashboard-char-age" class="text-sm text-gray-300"></p>
-          </div>
-
-          <!-- Right Section: Money & Job (بخش راست: پول و شغل) -->
-          <div class="text-left flex-1 pl-4 flex flex-col items-end">
-            <p id="dashboard-char-money" class="text-sm text-emerald-400"></p>
-            <p id="dashboard-char-job" class="text-xs text-gray-300"></p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Main Content Area - This will be the scrollable part (این بخش اصلی محتوا است که شامل گزارش زندگی قابل اسکرول خواهد بود) -->
-      <div id="main-dashboard-content"> 
-        <div id="life-log-scroll-container" class="glass-card p-4">
-          <!-- Removed "گزارش زندگی" header as requested (هدر "گزارش زندگی" طبق درخواست حذف شد) -->
-          <div id="life-log" class="space-y-4"></div>
-        </div>
-      </div>
-
-      <!-- Bottom Status Bars & Tab Bar (نوارهای وضعیت و نوار تب پایین) -->
-      <!-- Status bars (نوارهای وضعیت) -->
-      <div id="status-bars-container" class="status-bars-section"> 
-        <div class="flex flex-col space-y-1 text-sm"> <!-- space-y-1 برای کاهش فاصله عمودی -->
-          <!-- Status Bar Item (آیتم نوار وضعیت) - هر آیتم نوار وضعیت اکنون از یک flex container برای توزیع فضا استفاده می‌کند -->
-          <div class="flex items-center justify-between h-8"> <!-- افزایش ارتفاع برای جا دادن متن و نوار در یک خط -->
-            <span class="flex-shrink-0 w-20 text-base">😊 شادی</span> <!-- عرض ثابت برای اموجی و متن -->
-            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2"> <!-- flex-grow برای اشغال فضای باقی‌مانده توسط نوار اصلی -->
-              <div id="happiness-bar" class="status-bar bg-blue-500"></div>
-            </div>
-            <span id="happiness-value" class="text-right font-bold text-sm w-10"></span> <!-- عرض ثابت برای درصد و بولد کردن -->
-          </div>
-
-          <div class="flex items-center justify-between h-8">
-            <span class="flex-shrink-0 w-20 text-base">💪 سلامت</span>
-            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-              <div id="health-bar" class="status-bar bg-red-500"></div>
-            </div>
-            <span id="health-value" class="text-right font-bold text-sm w-10"></span>
-          </div>
-
-          <div class="flex items-center justify-between h-8">
-            <span class="flex-shrink-0 w-20 text-base">🧠 هوش</span>
-            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-              <div id="smarts-bar" class="status-bar bg-purple-500"></div>
-            </div>
-            <span id="smarts-value" class="text-right font-bold text-sm w-10"></span>
-          </div>
-
-          <div class="flex items-center justify-between h-8">
-            <span class="flex-shrink-0 w-20 text-base">😎 ظاهر</span>
-            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-              <div id="looks-bar" class="status-bar bg-yellow-500"></div>
-            </div>
-            <span id="looks-value" class="text-right font-bold text-sm w-10"></span>
-          </div>
-
-          <div class="flex items-center justify-between h-8">
-            <span class="flex-shrink-0 w-20 text-base">🕌 معنویت</span>
-            <div class="flex-grow bg-gray-700 rounded-full h-4 mx-2">
-              <div id="spirituality-bar" class="status-bar bg-teal-500"></div>
-            </div>
-            <span id="spirituality-value" class="text-right font-bold text-sm w-10"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab-bar"> <!-- استفاده از گرید برای تنظیم بهتر دکمه‌های منو در موبایل -->
-        <!-- New Tab Buttons (دکمه‌های تب جدید) -->
-        <button id="career-tab" class="hover:bg-gray-700 transition"><span>💼</span><span>حرفه</span></button>
-        <button id="assets-tab" class="hover:bg-gray-700 transition"><span>💰</span><span>دارایی‌ها</span></button>
-        <button id="age-up-tab" class="hover:bg-gray-700 transition"><span>⏭️</span><span>یک سال بگذرون</span></button>
-        <button id="relationships-main-tab" class="hover:bg-gray-700 transition"><span>❤️</span><span>روابط</span></button>
-        <button id="activities-tab" class="hover:bg-gray-700 transition"><span>...</span><span>فعالیت‌ها</span></button>
-      </div>
-
-      <div id="activities-menu" style="display: none;" class="modal-overlay"> <!-- Renamed from more-menu -->
-        <div class="modal-content text-white">
-          <h2 class="text-xl font-bold mb-4">گزینه‌های بیشتر</h2>
-          <div class="grid grid-cols-2 gap-4">
-            <button id="education-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-              <span class="text-2xl">🎓</span>
-              <span>تحصیلات</span>
-            </button>
-            <button id="health-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-              <span class="text-2xl">🏥</span>
-              <span>سلامت</span>
-            </button>
-            <button id="investments-btn" class="glass-card p-4 flex flex-col items-center justify-center hover:bg-gray-700 transition">
-              <span class="text-2xl">📈</span>
-              <span>سرمایه‌گذاری</span>
-            </button>
-            <!-- Removed settings button from activities menu (دکمه تنظیمات از منوی فعالیت‌ها حذف شد) -->
-          </div>
-          <button id="close-activities-menu" class="btn-secondary w-full py-2 mt-4 rounded-lg">بستن</button> <!-- Renamed ID -->
-        </div>
-      </div>
-    </div>
-
-    <div id="character-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Character Page, returns to Dashboard (دکمه بازگشت برای صفحه شخصیت، به داشبورد برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">اطلاعات شخصیت</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <p><strong>نام:</strong> <span id="char-name"></span></p>
-        <p><strong>جنسیت:</strong> <span id="char-gender"></span></p>
-        <p><strong>محل تولد:</strong> <span id="char-province"></span></p>
-        <p><strong>وضعیت خانوادگی:</strong> <span id="char-family"></span></p>
-        <p><strong>سن:</strong> <span id="char-age"></span></p>
-      </div>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">خانواده</h3>
-        <ul id="family-list" class="space-y-2"></ul>
-      </div>
-      <div class="glass-card p-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">ویژگی‌ها</h3>
-        <p>هوش: <span id="char-smarts"></span></p>
-        <p>ظاهر: <span id="char-looks"></span></p>
-        <p>معنویت: <span id="char-spirituality"></span></p>
-      </div>
-    </div>
-
-    <div id="log-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Log Page, returns to Activities Menu (دکمه بازگشت برای صفحه تاریخچه، به منوی فعالیت‌ها برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-2 flex-shrink-0">تاریخچه زندگی</h2> <!-- Margin bottom reduced here -->
-      <div class="glass-card p-4 flex flex-col flex-grow"> <!-- Added flex flex-col and flex-grow to parent glass-card -->
-        <div class="flex space-x-2 mb-2 overflow-x-auto pb-2 flex-shrink-0"> <!-- Margin bottom reduced here -->
-          <button id="log-filter-all" class="btn-primary px-4 py-2 rounded-lg flex-shrink-0">همه</button>
-          <button id="log-filter-career" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">شغل</button>
-          <button id="log-filter-family" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">خانواده</button>
-          <button id="log-filter-health" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">سلامت</button>
-          <button id="log-filter-education" class="btn-secondary px-4 py-2 rounded-lg flex-shrink-0">تحصیلات</button>
-        </div>
-        <div id="full-log-scroll-area"> <!-- New scrollable container for the full log (کانتینر قابل اسکرول جدید برای گزارش کامل) -->
-          <ul id="life-log-full" class="space-y-4"></ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="education-page" style="display: none;" class="h-full page-content-scroll"> 
-      <div class="back-button-container">
-          <!-- Back button for Education Page, returns to Activities Menu -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">تحصیلات</h2>
-      <div class="glass-card p-4 flex flex-col flex-grow"> 
-        <div class="flex space-x-2 mb-4 flex-shrink-0">
-          <button id="school-tab" class="btn-primary px-4 py-2 rounded-lg" onclick="window.showSchool()">مدرسه</button>
-          <button id="university-tab" class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showUniversity()">دانشگاه</button>
-        </div>
-        <div id="education-content-scroll" class="flex-grow overflow-y-auto"> <!-- Added scrollable container -->
-          <!-- Education content will be dynamically loaded here -->
-        </div>
-      </div>
-    </div>
-
-    <div id="relationships-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Relationships Page, returns to Dashboard (دکمه بازگشت برای صفحه روابط، به داشبورد برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">روابط</h2>
-      <div id="relationships-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-shrink-0"></div>
-      <div class="glass-card p-4 mt-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">روابط عاطفی</h3>
-        <div id="romantic-relationships" class="space-y-2"></div>
-        <button id="find-partner-btn" class="btn-primary px-4 py-2 rounded-lg mt-4">پیدا کردن شریک عاطفی</button>
-      </div>
-    </div>
-
-    <div id="health-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Health Page, returns to Activities Menu (دکمه بازگشت برای صفحه سلامت، به منوی فعالیت‌ها برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">سلامت</h2>
-      <div class="glass-card p-4 flex-shrink-0">
-        <p><strong>وضعیت سلامت:</strong> <span id="health-status"></span></p>
-        <p><strong>بیماری‌ها:</strong> <span id="illnesses"></span></p>
-        <div class="flex space-x-2 mt-4 flex-wrap gap-2">
-          <button id="visit-doctor" class="btn-primary px-4 py-2 rounded-lg">مراجعه به پزشک عمومی</button>
-          <button id="visit-specialist" class="btn-primary px-4 py-2 rounded-lg">مراجعه به متخصص</button>
-          <button id="go-gym" class="btn-primary px-4 py-2 rounded-lg">ورزش</button>
-          <button id="meditate" class="btn-primary px-4 py-2 rounded-lg">مراقبه</button>
-        </div>
-      </div>
-      <div class="glass-card p-4 mt-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">بیماری‌ها و درمان‌ها</h3>
-        <ul id="illness-list" class="space-y-2"></ul>
-      </div>
-    </div>
-
-    <div id="career-categories-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت به داشبورد</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-6 text-center flex-shrink-0">انتخاب مسیر شغلی</h2>
-      <div id="career-category-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 flex-grow overflow-y-auto">
-        <!-- Job categories will be populated here by JavaScript -->
-      </div>
-    </div>
-
-    <div id="job-listing-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button id="back-to-career-categories-btn" class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('career-categories-page')">بازگشت به دسته‌بندی مشاغل</button>
-      </div>
-      <h2 id="job-listing-title" class="text-2xl font-bold mb-6 text-center flex-shrink-0">لیست مشاغل</h2>
-      <div id="job-list-container" class="space-y-4 flex-grow overflow-y-auto">
-        <!-- Jobs for the selected category will be populated here by JavaScript -->
-      </div>
-    </div>
-
-    <div id="job-details-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button id="back-to-job-listing-btn" class="btn-secondary px-4 py-2 rounded-lg">بازگشت به لیست مشاغل</button> 
-          <!-- The onclick for this button will be set dynamically by JavaScript to include current category -->
-      </div>
-      <div class="glass-card p-6 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
-        <h2 id="job-detail-title" class="text-3xl font-bold mb-4 text-center">نام شغل</h2>
-        <p id="job-detail-description" class="text-gray-300 mb-4">توضیحات شغل در اینجا قرار می‌گیرد.</p>
-        
-        <div class="mb-4">
-          <h3 class="text-xl font-semibold mb-2">اطلاعات پایه:</h3>
-          <p><strong>حقوق ماهیانه:</strong> <span id="job-detail-salary"></span> تومان</p>
-          <p><strong>حداقل سن:</strong> <span id="job-detail-minAge"></span> سال</p>
-        </div>
-
-        <div class="mb-4">
-          <h3 class="text-xl font-semibold mb-2">تحصیلات مورد نیاز:</h3>
-          <p id="job-detail-educationReq"></p>
-        </div>
-
-        <div class="mb-4">
-          <h3 class="text-xl font-semibold mb-2">مهارت‌های مورد نیاز:</h3>
-          <ul id="job-detail-skillRequirements" class="list-disc list-inside text-gray-300">
-            <!-- Skill requirements will be populated here -->
-          </ul>
-        </div>
-        
-        <div id="job-detail-promotion-info" class="mb-4" style="display: none;"> <!-- Hidden by default -->
-          <h3 class="text-xl font-semibold mb-2">مسیر ارتقا:</h3>
-          <p><strong>شغل بعدی:</strong> <span id="job-detail-promotionTo"></span></p>
-          <p><strong>تجربه لازم برای ارتقا:</strong> <span id="job-detail-experienceForPromotion"></span> سال</p>
-        </div>
-
-        <button id="apply-job-btn" class="btn-primary w-full py-3 rounded-lg text-lg font-semibold mt-6 flex-shrink-0">درخواست برای این شغل</button>
-      </div>
-    </div>
-
-    <!-- New Investment Page (صفحه جدید سرمایه‌گذاری) -->
-    <div id="investment-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard'); window.showActivitiesMenu();">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">سرمایه‌گذاری‌ها</h2>
-      <div class="glass-card p-4 flex flex-col space-y-4 flex-shrink-0">
-        <button id="gold_coins-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">? طلا و سکه</button>
-        <button id="stocks_bourse-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📈 سهام بورس</button>
-        <button id="cryptocurrency-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">₿ ارز دیجیتال</button>
-        <button id="investment_land-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏡 زمین و املاک</button>
-        <button id="raw_materials-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">📦 مواد اولیه</button>
-      </div>
-      <div class="glass-card p-4 mt-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
-        <h3 class="text-lg font-semibold mb-2">سرمایه‌گذاری‌های فعلی شما:</h3>
-        <ul id="current-investments-summary" class="mt-4 space-y-2"></ul>
-      </div>
-    </div>
-
-    <!-- New detailed investment pages (صفحات جزئیات سرمایه‌گذاری جدید) -->
-    <div id="gold_coins-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">💰 طلا و سکه</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-gold_coins-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-gold_coins-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <div id="stocks_bourse-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">📈 سهام بورس</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-stocks_bourse-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-stocks_bourse-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <div id="cryptocurrency-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">₿ ارز دیجیتال</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-cryptocurrency-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-cryptocurrency-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <div id="investment_land-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">🏡 زمین و املاک (سرمایه‌گذاری)</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-investment_land-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-investment_land-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <div id="raw_materials-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('investment-page')">بازگشت به سرمایه‌گذاری‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">📦 مواد اولیه</h2>
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-raw_materials-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-raw_materials-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-
-    <div id="assets-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Assets Page, returns to Dashboard (دکمه بازگشت برای صفحه دارایی‌ها، به داشبورد برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">دارایی‌ها</h2>
-      <!-- Vertical list of asset categories (لیست عمودی دسته‌بندی‌های دارایی) -->
-      <div id="assets-category-list" class="glass-card p-4 flex flex-col space-y-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
-        <button id="properties-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🏠 املاک</button>
-        <button id="vehicles-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🚗 خودروها</button>
-        <button id="plane_boat-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">✈️/⛵ هواپیما/قایق</button>
-        <button id="jewelry-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">💎 جواهرات</button>
-        <button id="instruments-category-btn" class="btn-secondary w-full py-3 rounded-lg flex-shrink-0">🎸 سازها</button>
-        <!-- Removed investments-category-btn from assets, now in activities menu (سرمایه‌گذاری‌ها از دارایی‌ها حذف شد، اکنون در منوی فعالیت‌ها است) -->
-      </div>
-    </div>
-
-    <!-- Asset Category Pages (pages for properties, vehicles, etc.) -->
-    <!-- Property Page -->
-    <div id="properties-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-properties-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-properties-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <!-- Vehicles Page -->
-    <div id="vehicles-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-vehicles-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-vehicles-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <!-- Plane/Boat Page -->
-    <div id="plane_boat-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-plane_boat-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-plane_boat-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <!-- Jewelry Page -->
-    <div id="jewelry-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-jewelry-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-jewelry-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <!-- Instruments Page -->
-    <div id="instruments-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('assets-page')">بازگشت به دارایی‌ها</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0"></h2> <!-- Title will be set by JS -->
-      <div class="glass-card p-4 mb-4 flex-shrink-0">
-        <h3 class="text-lg font-semibold mb-2">دارایی‌های فعلی شما:</h3>
-        <div id="owned-instruments-list" class="space-y-2 asset-list-container max-h-40 overflow-y-auto"></div>
-      </div>
-      <div class="glass-card p-4 flex-grow overflow-y-auto">
-        <h3 class="text-lg font-semibold mb-2">برای خرید:</h3>
-        <div id="buy-instruments-list" class="space-y-2 asset-list-container"></div>
-      </div>
-    </div>
-
-    <div id="settings-page" style="display: none;" class="h-full page-content-scroll"> <!-- Changed min-h-screen to h-full -->
-      <div class="back-button-container">
-          <!-- Back button for Settings Page, returns to Dashboard (دکمه بازگشت برای صفحه تنظیمات، به داشبورد برمی‌گردد) -->
-          <button class="btn-secondary px-4 py-2 rounded-lg" onclick="window.showPage('dashboard')">بازگشت</button>
-      </div>
-      <h2 class="text-2xl font-bold mb-4 flex-shrink-0">تنظیمات</h2>
-      <div class="glass-card p-4 flex-grow overflow-y-auto"> <!-- Added flex-grow and overflow-y-auto -->
-        <div class="mb-4">
-          <label class="block mb-2">تم</label>
-          <select id="theme-select" class="w-full p-2 bg-gray-800 rounded-lg">
-            <option value="dark" selected>تیره</option>
-            <option value="light">روشن</option>
-          </select>
-        </div>
-        <div class="flex space-x-2 flex-wrap gap-2">
-          <button id="save-game" class="btn-primary px-4 py-2 rounded-lg">ذخیره</button>
-          <button id="load-game" class="btn-primary px-4 py-2 rounded-lg">بارگذاری</button>
-          <button id="reset-game" class="btn-secondary px-4 py-2 rounded-lg">ریست</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Game Over Screen (صفحه پایان بازی) -->
-    <div id="game-over-screen" style="display: none;" class="flex flex-col items-center justify-center h-full">
-      <h2>پایان بازی!</h2>
-      <p id="game-over-reason" class="text-center"></p>
-      <div class="flex flex-col space-y-4 w-full max-w-xs">
-        <button id="restart-game-btn" class="btn-primary w-full py-3 rounded-full text-lg font-semibold">شروع زندگی جدید</button>
-        <button id="view-log-btn" class="btn-secondary w-full py-3 rounded-full text-md">مشاهده تاریخچه زندگی</button>
-      </div>
-    </div>
-
-  </div> <!-- End of game-container -->
-
-  <script type="module">
-    // Global game state and other variables (وضعیت سراسری بازی و سایر متغیرها)
-    let gameState = {
-      name: '',
-      gender: '',
-      province: '',
-      familyStatus: '',
-      age: 0,
-      year: 2025,
-      money: 0,
-      happiness: 50,
-      health: 80,
-      smarts: 50,
-      looks: 50,
-      spirituality: 50,
-      education: { level: 'هیچ', major: '', degreeProgress: 0 },
-      job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
-      relationships: [
-        { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, // Added age for parents
-        { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 } // Added age for parents
-      ],
-      romanticRelationships: [],
-      children: [],
-      illnesses: [],
-      assets: [], // For properties, vehicles, jewelry, instruments
-      loans: [],
-      investments: [], // For gold, stocks, crypto, investment_land, raw_materials
-      log: []
-    };
-
-    // Global variable to keep track of the last visited career category (متغیر سراسری برای پیگیری آخرین دسته‌بندی شغلی بازدید شده)
-    window.currentCareerCategory = null;
-
-    const careerData = {
-      'OFFICE_CORPORATE': {
-        name: 'مشاغل اداری و شرکتی',
-        emoji: '🏢',
-        jobs: {
-          'clerk': {
-            name: 'کارمند',
-            description: 'انجام وظایف اداری و دفتری.',
-            salary: 5000000,
-            minAge: 18,
-            educationReq: 'دیپلم',
-            skillRequirements: ['هوش: 40', 'شادی: 30'],
-            promotion: { to: 'مدیر اداری', experience: 5 }
-          },
-          'admin_manager': {
-            name: 'مدیر اداری',
-            description: 'نظارت بر عملیات اداری و کارکنان.',
-            salary: 10000000,
-            minAge: 25,
-            educationReq: 'لیسانس مدیریت',
-            skillRequirements: ['هوش: 60', 'روابط: 50'],
-            promotion: { to: 'مدیر عامل', experience: 10 }
-          }
-        }
-      },
-      'SCIENCE_MEDICINE_TECHNICAL': { 
-        name: 'مشاغل علمی، پزشکی و فنی',
-        emoji: '🧪',
-        jobs: {
-          'doctor': {
-            name: 'پزشک عمومی',
-            description: 'تشخیص و درمان بیماری‌های عمومی.',
-            salary: 20000000,
-            minAge: 26,
-            educationReq: 'دکترای پزشکی',
-            skillRequirements: ['هوش: 80', 'سلامت: 70'],
-            promotion: { to: 'متخصص جراحی', experience: 7 }
-          },
-          'engineer': {
-            name: 'مهندس نرم‌افزار',
-            description: 'طراحی و توسعه نرم‌افزار.',
-            salary: 15000000,
-            minAge: 22,
-            educationReq: 'لیسانس مهندسی کامپیوتر',
-            skillRequirements: ['هوش: 75', 'smarts: 70'],
-            promotion: { to: 'معمار نرم‌افزار', experience: 8 }
-          }
-        }
-      },
-      'LAW_GOVERNMENT': {
-        name: 'مشاغل حقوقی', 
-        emoji: '⚖️',
-        jobs: {
-          'lawyer': {
-            name: 'وکیل',
-            description: 'ارائه مشاوره حقوقی و نمایندگی در دادگاه.',
-            salary: 18000000,
-            minAge: 25,
-            educationReq: 'لیسانس حقوق',
-            skillRequirements: ['هوش: 70', 'روابط: 60'],
-            promotion: { to: 'قاضی', experience: 12 }
-          }
-        }
-      },
-      'ARTS_ENTERTAINMENT': {
-        name: 'مشاغل هنری و سرگرمی',
-        emoji: '🎭', /* Changed emoji from ? to 🎭 as suggested by problem statement. */
-        jobs: {
-          'artist': {
-            name: 'نقاش',
-            description: 'خلق آثار هنری با استفاده از رنگ و بوم.',
-            salary: 7000000,
-            minAge: 18,
-            educationReq: 'دیپلم هنر',
-            skillRequirements: ['خلاقیت: 60', 'ظاهر: 50'], // Assuming 'خلاقیت' as a skill for now
-            promotion: null // No direct promotion
-          }
-        }
-      },
-      'EDUCATION_TRAINING': { 
-        name: 'مشاغل آموزشی', 
-        emoji: '📚',
-        jobs: {
-          'teacher': {
-            name: 'معلم',
-            description: 'تدریس به دانش‌آموزان در مدارس.',
-            salary: 8000000,
-            minAge: 22,
-            educationReq: 'لیسانس آموزش',
-            skillRequirements: ['هوش: 60', 'شادی: 50'],
-            promotion: { to: 'مدیر مدرسه', experience: 10 }
-          }
-        }
-      },
-      'FINANCE_BUSINESS': { 
-        name: 'مشاغل اقتصادی و مالی',
-        emoji: '💵' /* Changed to a more suitable emoji (تغییر به ایموجی مناسب‌تر) */,
-        jobs: {
-          'accountant': {
-            name: 'حسابدار',
-            description: 'مدیریت سوابق مالی و تهیه گزارشات.',
-            salary: 9000000,
-            minAge: 20,
-            educationReq: 'لیسانس حسابداری',
-            skillRequirements: ['هوش: 55', 'smarts: 60'],
-            promotion: { to: 'مدیر مالی', experience: 7 }
-          }
-        }
-      },
-      'TRANSPORT_TRAVEL': {
-        name: 'مشاغل سفر و حمل‌ونقل',
-        emoji: '✈️',
-        jobs: {
-          'driver': {
-            name: 'راننده تاکسی',
-            description: 'حمل و نقل مسافر در شهر.',
-            salary: 4000000,
-            minAge: 20,
-            educationReq: 'دیپلم',
-            skillRequirements: ['سلامت: 60'],
-            promotion: null 
-          }
-        }
-      },
-      'SKILLED_TRADES': {
-        name: 'مشاغل دستی و فنی',
-        emoji: '🧰',
-        jobs: {
-          'electrician': {
-            name: 'برقکار',
-            description: 'نصب و تعمیر سیستم‌های برقی.',
-            salary: 7000000,
-            minAge: 18,
-            educationReq: 'فنی حرفه‌ای',
-            skillRequirements: ['هوش: 50', 'دقت: 70'], // Assuming 'دقت' as a skill
-            promotion: null
-          }
-        }
-      },
-      'ANIMAL_RELATED': {
-        name: 'مشاغل مربوط به حیوانات',
-        emoji: '🐶',
-        jobs: {
-          'vet_assistant': {
-            name: 'دستیار دامپزشک',
-            description: 'کمک به دامپزشک در مراقبت از حیوانات.',
-            salary: 5500000,
-            minAge: 18,
-            educationReq: 'دیپلم',
-            skillRequirements: ['همدلی: 60', 'سلامت: 50'], // Assuming 'همدلی' as a skill
-            promotion: null
-          }
-        }
-      },
-      'HEALTHCARE_SUPPORT': { 
-        name: 'مشاغل بهداشتی', 
-        emoji: '🏥',
-        jobs: {
-          'nurse': {
-            name: 'پرستار',
-            description: 'مراقبت از بیماران و کمک به پزشکان.',
-            salary: 12000000,
-            minAge: 22,
-            educationReq: 'لیسانس پرستاری',
-            skillRequirements: ['همدلی: 70', 'سلامت: 65'],
-            promotion: { to: 'سرپرستار', experience: 8 }
-          }
-        }
-      },
-      'SERVICE_FOOD': {
-        name: 'مشاغل خدماتی و غذایی',
-        emoji: '👨‍🍳',
-        jobs: {
-          'chef': {
-            name: 'آشپز',
-            description: 'تهیه و طبخ انواع غذاها.',
-            salary: 6000000,
-            minAge: 18,
-            educationReq: 'دیپلم آشپزی',
-            skillRequirements: ['خلاقیت: 50', 'دقت: 60'],
-            promotion: { to: 'سرآشپز', experience: 7 }
-          }
-        }
-      },
-      'PROFESSIONAL_SPORTS': {
-        name: 'ورزشکاران و ورزش حرفه‌ای',
-        emoji: '🏟️',
-        jobs: {
-          'footballer': {
-            name: 'بازیکن فوتبال',
-            description: 'بازی حرفه‌ای فوتبال در تیم‌ها.',
-            salary: 30000000,
-            minAge: 18,
-            educationReq: 'بدون نیاز رسمی',
-            skillRequirements: ['سلامت: 90', 'looks: 70'],
-            promotion: null
-          }
-        }
-      },
-      'RARE_SPECIAL': {
-        name: 'شغل‌های خاص و کمیاب',
-        emoji: '🌟' /* Changed emoji from ? to 🌟 for rare/special jobs. */,
-        jobs: {
-          'astronaut': {
-            name: 'فضانورد',
-            description: 'سفر و تحقیق در فضا.',
-            salary: 50000000,
-            minAge: 30,
-            educationReq: 'دکترا در علوم فضایی/مهندسی',
-            skillRequirements: ['هوش: 95', 'سلامت: 90'],
-            promotion: null
-          }
-        }
-      },
-      'SPECIAL_DLC': { 
-        name: 'شغل‌های مخصوص',
-        emoji: '🎮',
-        jobs: {
-          'game_developer': {
-            name: 'توسعه‌دهنده بازی',
-            description: 'طراحی و کدنویسی بازی‌های ویدیویی.',
-            salary: 12000000,
-            minAge: 20,
-            educationReq: 'لیسانس علوم کامپیوتر',
-            skillRequirements: ['هوش: 70', 'خلاقیت: 70'],
-            promotion: null
-          }
-        }
-      }
-    };
-
-
-    // Custom Message Modal (مودال پیام سفارشی)
-    function showMessageModal(message) {
-      const modalOverlay = document.createElement('div');
-      modalOverlay.className = 'modal-overlay';
-      
-      const modalContent = document.createElement('div');
-      modalContent.className = 'modal-content';
-      
-      const messageText = document.createElement('p');
-      messageText.className = 'text-lg mb-4';
-      messageText.textContent = message;
-      
-      const closeButton = document.createElement('button');
-      closeButton.className = 'modal-button primary';
-      closeButton.textContent = 'باشه';
-      closeButton.onclick = () => {
-        document.body.removeChild(modalOverlay);
-      };
-
-      modalContent.appendChild(messageText);
-      modalContent.appendChild(closeButton);
-      modalOverlay.appendChild(modalContent);
-      document.body.appendChild(modalOverlay);
-    }
-
-    // Override default confirm for custom modal (جایگزینی confirm پیش‌فرض با مودال سفارشی)
-    window.confirm = function(message) {
-      return new Promise((resolve) => {
-        const modalOverlay = document.createElement('div');
-        modalOverlay.className = 'modal-overlay';
-        
-        const modalContent = document.createElement('div');
-        modalContent.className = 'modal-content';
-        
-        const messageText = document.createElement('p');
-        messageText.className = 'text-lg mb-4';
-        messageText.textContent = message;
-        
-        const buttonContainer = document.createElement('div');
-        buttonContainer.className = 'modal-button-container';
-
-        const confirmButton = document.createElement('button');
-        confirmButton.className = 'modal-button primary';
-        confirmButton.textContent = 'بله';
-        confirmButton.onclick = () => {
-          document.body.removeChild(modalOverlay);
-          resolve(true);
-        };
-
-        const cancelButton = document.createElement('button');
-        cancelButton.className = 'modal-button secondary';
-        cancelButton.textContent = 'خیر';
-        cancelButton.onclick = () => {
-          document.body.removeChild(modalOverlay);
-          resolve(false);
-        };
-
-        buttonContainer.appendChild(confirmButton);
-        buttonContainer.appendChild(cancelButton);
-        modalContent.appendChild(messageText);
-        modalContent.appendChild(buttonContainer);
-        modalOverlay.appendChild(modalContent);
-        document.body.appendChild(modalOverlay);
-      });
-    };
-
-    // Initialize Game (مقداردهی اولیه بازی)
-    async function initGame() {
-      console.log('Initializing game...'); // Debugging line
-
-      // Set up global game container scaling (تنظیم مقیاس‌بندی کانتینر اصلی بازی)
-      window.addEventListener('resize', resizeGame);
-      resizeGame(); // Initial call to set correct scale (فراخوانی اولیه برای تنظیم مقیاس صحیح)
-
-      // Event Listeners for Start Screen (شنونده‌های رویداد برای صفحه شروع)
-      document.getElementById('start-new-life').addEventListener('click', startNewLife);
-      document.getElementById('continue-life').addEventListener('click', continueLife);
-
-      // Event Listeners for Bottom Tab Bar (شنونده‌های رویداد برای نوار تب پایین)
-      document.getElementById('career-tab').addEventListener('click', () => window.showPage('career-categories-page'));
-      document.getElementById('assets-tab').addEventListener('click', () => window.showPage('assets-page')); 
-      document.getElementById('age-up-tab').addEventListener('click', ageUp);
-      document.getElementById('relationships-main-tab').addEventListener('click', () => window.showPage('relationships-page'));
-      document.getElementById('activities-tab').addEventListener('click', window.showActivitiesMenu); // Calls modal function directly
-
-      // Event Listener for the new header settings button (شنونده رویداد برای دکمه تنظیمات جدید در هدر)
-      document.getElementById('header-settings-btn').addEventListener('click', () => window.showPage('settings-page'));
-
-      // Event Listeners for Activities Menu (شنونده‌های رویداد برای منوی فعالیت‌ها)
-      // These now hide the modal and then show the page (اینها اکنون مودال را پنهان کرده و سپس صفحه را نمایش می‌دهند)
-      document.getElementById('education-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showEducationPage(); }); // Call new education entry point
-      document.getElementById('health-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showPage('health-page'); });
-      document.getElementById('investments-btn').addEventListener('click', () => { window.hideActivitiesMenu(); window.showPage('investment-page'); }); // New: Go to investment page
-      document.getElementById('close-activities-menu').addEventListener('click', window.hideActivitiesMenu); // Only hides the modal
-
-      // Event Listeners for Settings Page (شنونده‌های رویداد برای صفحه تنظیمات)
-      document.getElementById('save-game').addEventListener('click', saveGame);
-      document.getElementById('load-game').addEventListener('click', loadGame);
-      document.getElementById('reset-game').addEventListener('click', resetGame);
-      
-      // Event Listeners for Game Over Screen (شنونده‌های رویداد برای صفحه پایان بازی)
-      document.getElementById('restart-game-btn').addEventListener('click', restartGame);
-      document.getElementById('view-log-btn').addEventListener('click', () => {
-        window.showPage('log-page');
-        document.getElementById('game-over-screen').style.display = 'none'; // Hide game over screen
-      });
-
-
-      // Event Listeners for Health Page (شنونده‌های رویداد برای صفحه سلامت)
-      document.getElementById('visit-doctor').addEventListener('click', visitDoctor);
-      document.getElementById('visit-specialist').addEventListener('click', visitSpecialist);
-      document.getElementById('go-gym').addEventListener('click', goGym);
-      document.getElementById('meditate').addEventListener('click', meditate);
-
-      // Event Listeners for Education Page (شنونده‌های رویداد برای صفحه تحصیلات)
-      // These are now handled within showEducationPage to set active tab (اینها اکنون در showEducationPage برای تنظیم تب فعال مدیریت می‌شوند)
-      // document.getElementById('school-tab').addEventListener('click', showSchool); 
-      // document.getElementById('university-tab').addEventListener('click', showUniversity);
-
-      // Event Listeners for Assets Page category buttons (شنونده‌های رویداد برای دکمه‌های دسته‌بندی صفحه دارایی‌ها)
-      document.getElementById('properties-category-btn').addEventListener('click', () => window.showAssetCategoryPage('properties'));
-      document.getElementById('vehicles-category-btn').addEventListener('click', () => window.showAssetCategoryPage('vehicles'));
-      document.getElementById('plane_boat-category-btn').addEventListener('click', () => window.showAssetCategoryPage('plane_boat'));
-      document.getElementById('jewelry-category-btn').addEventListener('click', () => window.showAssetCategoryPage('jewelry'));
-      document.getElementById('instruments-category-btn').addEventListener('click', () => window.showAssetCategoryPage('instruments'));
-      
-      // Event Listeners for NEW Investment Page category buttons (شنونده‌های رویداد برای دکمه‌های دسته‌بندی صفحه سرمایه‌گذاری جدید)
-      document.getElementById('gold_coins-category-btn').addEventListener('click', () => window.showInvestmentCategoryPage('gold_coins'));
-      document.getElementById('stocks_bourse-category-btn').addEventListener('click', () => window.showInvestmentCategoryPage('stocks_bourse'));
-      document.getElementById('cryptocurrency-category-btn').addEventListener('click', () => window.showInvestmentCategoryPage('cryptocurrency'));
-      document.getElementById('investment_land-category-btn').addEventListener('click', () => window.showInvestmentCategoryPage('investment_land'));
-      document.getElementById('raw_materials-category-btn').addEventListener('click', () => window.showInvestmentCategoryPage('raw_materials'));
-
-      // Event Listeners for Log Filters (شنونده‌های رویداد برای فیلترهای تاریخچه)
-      document.getElementById('log-filter-all').addEventListener('click', () => filterLog('all'));
-      document.getElementById('log-filter-career').addEventListener('click', () => filterLog('career'));
-      document.getElementById('log-filter-family').addEventListener('click', () => filterLog('family'));
-      document.getElementById('log-filter-health').addEventListener('click', () => filterLog('health'));
-      document.getElementById('log-filter-education').addEventListener('click', () => filterLog('education'));
-      
-      // Event Listener for static "Find Partner" button (شنونده رویداد برای دکمه ثابت "پیدا کردن شریک عاطفی")
-      document.getElementById('find-partner-btn').addEventListener('click', window.findPartner);
-
-
-      // Initial UI update (به‌روزرسانی اولیه رابط کاربری)
-      updateUI();
-      // Ensure only start screen is visible on initial load (اطمینان از نمایش تنها صفحه شروع در بارگذاری اولیه)
-      window.showPage('start-screen');
-    }
-
-    // Define base dimensions for the game container (تعریف ابعاد پایه برای کانتینر بازی)
-    const BASE_WIDTH = 375; // Design width (عرض طراحی)
-    const BASE_HEIGHT = 667; // Design height (ارتفاع طراحی)
-
-    // Function to resize and scale the game container (تابع برای تغییر اندازه و مقیاس‌بندی کانتینر بازی)
-    function resizeGame() {
-      const gameContainer = document.getElementById('game-container');
-      if (!gameContainer) return;
-
-      const scaleX = window.innerWidth / BASE_WIDTH;
-      const scaleY = window.innerHeight / BASE_HEIGHT;
-      const scaleFactor = Math.min(scaleX, scaleY);
-
-      gameContainer.style.setProperty('--scale-factor', scaleFactor);
-    }
-
-    // Start New Life (شروع زندگی جدید)
-    function startNewLife() {
-      const nameInput = document.getElementById('name-input');
-      const name = nameInput.value.trim();
-      if (!name || name.length < 2) {
-        showMessageModal('لطفاً نام معتبر (حداقل ۲ حرف) خود را وارد کنید.');
-        nameInput.focus();
-        return;
-      }
-      
-      gameState = {
-        name: name,
-        gender: document.getElementById('gender-select').value,
-        province: document.getElementById('province-select').value,
-        familyStatus: document.getElementById('family-status').value,
-        age: 0,
-        year: 2025,
-        money: 0,
-        happiness: 50,
-        health: 80,
-        smarts: 50,
-        looks: 50,
-        spirituality: 50,
-        education: { level: 'هیچ', major: '', degreeProgress: 0 },
-        job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
-        relationships: [
-          { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, 
-          { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 }
-        ],
-        romanticRelationships: [],
-        children: [],
-        illnesses: [],
-        assets: [],
-        investments: [],
-        log: []
-      };
-
-      // Initial money based on family status (پول اولیه بر اساس وضعیت خانوادگی)
-      switch (gameState.familyStatus) {
-        case 'wealthy': gameState.money = 10000000; break;
-        case 'poor': gameState.money = 100000; break;
-        case 'rural': gameState.money = 200000; break;
-        default: gameState.money = 500000; break;
-      }
-
-      gameState.log.push({ year: gameState.year, event: `شما در ${document.querySelector(`#province-select option[value="${gameState.province}"]`).textContent} متولد شدید!`, type: 'family' });
-      
-      updateUI();
-      window.showPage('dashboard');
-      saveGame();
-    }
-
-    // Continue Life (ادامه زندگی)
-    function continueLife() {
-      try {
-        const savedGameState = localStorage.getItem('iranianLifeSimState');
-        if (savedGameState) {
-          gameState = JSON.parse(savedGameState);
-          // Ensure financeHistory is an array and has at least one entry (اطمینان از اینکه financeHistory یک آرایه است و حداقل یک ورودی دارد)
-          if (!gameState.financeHistory || gameState.financeHistory.length === 0) {
-              gameState.financeHistory = [{ year: gameState.year, money: gameState.money }];
-          }
-          updateUI();
-          window.showPage('dashboard');
-          showMessageModal('بازی بارگذاری شد!');
-        } else {
-          showMessageModal('هیچ زندگی ذخیره‌شده‌ای وجود ندارد!');
-        }
-      } catch (e) {
-        console.error('Error loading game:', e);
-        showMessageModal('خطا در بارگذاری بازی! فایل ذخیره شده ممکن است خراب باشد.');
-      }
-    }
-
-    // Show Page (نمایش صفحه)
-    window.showPage = function(pageId) {
-      console.log(`Attempting to show page: ${pageId}`); // Debugging line (خطایابی)
-      if (document.activeElement && typeof document.activeElement.blur === 'function') {
-        document.activeElement.blur();
-      }
-      const pages = [
-        'start-screen', 'dashboard', 'character-page', 'log-page', 
-        'education-page', 'career-categories-page', 'relationships-page', 
-        'health-page', 'assets-page', 'settings-page',
-        'job-listing-page', 'job-details-page', // Added career pages (صفحات شغلی اضافه شدند)
-        'properties-page', 'vehicles-page', 'plane_boat-page', 'jewelry-page', 'instruments-page',
-        'investment-page', 'gold_coins-page', 'stocks_bourse-page', 'cryptocurrency-page', 'investment_land-page', 'raw_materials-page',
-        'game-over-screen' // Add game over screen (صفحه پایان بازی اضافه شد)
-      ];
-      pages.forEach(page => {
-        const element = document.getElementById(page);
-        if (element) {
-          element.style.display = 'none'; // Hide all pages explicitly (پنهان کردن همه صفحات به صورت صریح)
-        }
-      });
-
-      const targetPage = document.getElementById(pageId);
-      if (targetPage) {
-        // Determine the correct display type based on the pageId (تعیین نوع نمایش صحیح بر اساس pageId)
-        if (pageId === 'start-screen' || pageId === 'dashboard' || pageId === 'character-page' || pageId === 'log-page' || pageId === 'education-page' || pageId === 'relationships-page' || pageId === 'health-page' || pageId === 'career-categories-page' || pageId === 'job-listing-page' || pageId === 'job-details-page' || pageId === 'investment-page' || pageId === 'gold_coins-page' || pageId === 'stocks_bourse-page' || pageId === 'cryptocurrency-page' || pageId === 'investment_land-page' || pageId === 'raw_materials-page' || pageId === 'assets-page' || pageId === 'properties-page' || pageId === 'vehicles-page' || pageId === 'plane_boat-page' || pageId === 'jewelry-page' || pageId === 'instruments-page' || pageId === 'settings-page' || pageId === 'game-over-screen') { 
-          targetPage.style.display = 'flex'; // These are all now flex containers (اینها همه اکنون کانتینرهای فلکس هستند)
-        }
-        console.log(`Page ${pageId} display set to: ${targetPage.style.display}`); // Debugging line (خطایابی)
-      } else {
-        console.error(`Error: Page with ID "${pageId}" not found.`); // Debugging line (خطایابی)
-      }
-
-      // Specific actions for certain pages
-      if (pageId === 'career-categories-page') {
-        window.showCareerCategories(); 
-      }
-      if (pageId === 'education-page') {
-          window.showEducationPage(); // Ensure the education page loads correctly (اطمینان از بارگذاری صحیح صفحه تحصیلات)
-      }
-
-      updateUI();
-    }
-
-    // Show Activities Menu (نمایش منوی فعالیت‌ها) - Managed as a separate modal (به عنوان یک مودال جداگانه مدیریت می‌شود)
-    window.showActivitiesMenu = function() {
-      document.getElementById('activities-menu').style.display = 'flex'; // Ensure it shows as flex (اطمینان از نمایش به صورت فلکس)
-    }
-
-    // Hide Activities Menu (پنهان کردن منوی فعالیت‌ها) - Managed as a separate modal (به عنوان یک مودال جداگانه مدیریت می‌شود)
-    window.hideActivitiesMenu = function() {
-      document.getElementById('activities-menu').style.display = 'none'; // Ensure it hides (اطمینان از پنهان شدن)
-    }
-
-    // Update UI (به‌روزرسانی رابط کاربری)
-    function updateUI() {
-      console.log('Updating UI...'); // Debugging line (خطایابی)
-      // Update Combined Header (به‌روزرسانی هدر یکپارچه)
-      document.getElementById('dashboard-char-name').textContent = gameState.name;
-      // Only display age (فقط سن را نمایش دهید)
-      document.getElementById('dashboard-char-age').textContent = `سن: ${gameState.age} ساله`; 
-      document.getElementById('dashboard-char-money').textContent = `پول: ${gameState.money.toLocaleString('fa-IR')} تومان`;
-      document.getElementById('dashboard-char-job').textContent = `شغل: ${gameState.job.title === 'بیکار' && gameState.age < 18 ? 'محصل' : gameState.job.title}`;
-      
-      // Status Bars (نوارهای وضعیت)
-      const updateStatusBar = (id, value) => {
-        document.getElementById(`${id}-value`).textContent = `${value}%`;
-        // عرض نوار رنگی اکنون توسط مقدار value تنظیم می‌شود و به انتهای سمت راست می‌چسبد
-        document.getElementById(`${id}-bar`).style.width = `${value}%`; 
-      };
-      updateStatusBar('happiness', gameState.happiness);
-      updateStatusBar('health', gameState.health);
-      updateStatusBar('smarts', gameState.smarts);
-      updateStatusBar('looks', gameState.looks);
-      updateStatusBar('spirituality', gameState.spirituality);
-
-      // Character Page (صفحه شخصیت)
-      document.getElementById('char-name').textContent = gameState.name;
-      document.getElementById('char-gender').textContent = gameState.gender === 'male' ? 'مرد' : 'زن';
-      document.getElementById('char-province').textContent = document.querySelector(`#province-select option[value="${gameState.province}"]`)?.textContent || 'نامشخص';
-      document.getElementById('char-family').textContent = document.querySelector(`#family-status option[value="${gameState.familyStatus}"]`)?.textContent || 'نامشخص';
-      document.getElementById('char-age').textContent = gameState.age;
-      document.getElementById('char-smarts').textContent = gameState.smarts;
-      document.getElementById('char-looks').textContent = gameState.looks;
-      document.getElementById('char-spirituality').textContent = gameState.spirituality;
-      
-      const familyList = document.getElementById('family-list');
-      familyList.innerHTML = gameState.relationships.map(r => `<li>${r.name} (${r.role}) - رابطه: ${r.relationship}%</li>`).join('');
-
-      // Update Dashboard Life Log (به‌روزرسانی گزارش زندگی داشبورد)
-      updateLifeLogOnDashboard();
-
-      // Log Pages (صفحات تاریخچه) - This remains separate for the full log page
-      filterLog('all'); // Always show all logs by default on update (همیشه همه گزارش‌ها را به‌طور پیش‌فرض در به‌روزرسانی نمایش دهید)
-
-      // Education Page (صفحه تحصیلات) - Now handled by showEducationPage
-      // const currentEducationTab = document.querySelector('#education-page .btn-primary')?.id;
-      // if (currentEducationTab === 'university-tab') {
-      //   showUniversity();
-      // } else {
-      //   showSchool(); // Default to school (پیش‌فرض به مدرسه)
-      // }
-
-      // Relationships Page (صفحه روابط)
-      const relList = document.getElementById('relationships-list');
-      relList.innerHTML = gameState.relationships.map(r => `
-        <div class="glass-card p-4">
-          <p><strong>${r.name}</strong> (${r.role})</p>
-          <p>رابطه: ${r.relationship}%</p>
-          <div class="flex space-x-2 mt-2 flex-wrap gap-2">
-            <button class="btn-primary px-2 py-1 rounded-lg" onclick="window.interact('${r.id}', 'talk')">صحبت</button>
-            <button class="btn-primary px-2 py-1 rounded-lg" onclick="window.interact('${r.id}', 'gift')">هدیه</button>
-            <button class="btn-secondary px-2 py-1 rounded-lg" onclick="window.interact('${r.id}', 'argue')">دعوا</button>
-          </div>
-        </div>
-      `).join('');
-
-      const romanticRelList = document.getElementById('romantic-relationships');
-      romanticRelList.innerHTML = gameState.romanticRelationships.map(r => `
-        <div class="glass-card p-4">
-          <p><strong>${r.name}</strong> (${r.role})</p>
-          <p>رابطه: ${r.relationship}%</p>
-          ${r.isMarried ? `<p class="text-emerald-400">💍 متاهل</p>` : ''}
-          <div class="flex space-x-2 mt-2 flex-wrap gap-2">
-            <button class="btn-primary px-2 py-1 rounded-lg" onclick="window.interactRomantic('${r.id}', 'talk')">صحبت</button>
-            <button class="btn-primary px-2 py-1 rounded-lg" onclick="window.interactRomantic('${r.id}', 'date')">قرار</button>
-            ${!r.isMarried ? `<button class="btn-primary px-2 py-1 rounded-lg" onclick="window.proposeMarriage('${r.id}')">پیشنهاد ازدواج</button>` : ''}
-            ${r.isMarried ? `<button class="btn-primary px-2 py-1 rounded-lg" onclick="window.tryForBaby('${r.id}')">بچه‌دار شدن</button>` : ''}
-            <button class="btn-secondary px-2 py-1 rounded-lg" onclick="window.breakup('${r.id}')">کات کردن</button>
-          </div>
-        </div>
-      `).join('') || '<p>هنوز هیچ شریک عاطفی ندارید.</p>';
-
-      const childrenList = document.getElementById('children-list');
-      if (childrenList) { // Check if element exists (بررسی وجود عنصر)
-        childrenList.innerHTML = gameState.children.map(child => `
-          <div class="glass-card p-4">
-            <p><strong>${child.name}</strong> (سن: ${child.age})</p>
-            <p>رابطه: ${child.relationship}%</p>
-          </div>
-        `).join('') || '<p>هنوز فرزندی ندارید.</p>';
-      }
-
-
-      // Health Page (صفحه سلامت)
-      document.getElementById('health-status').textContent = gameState.health + '%';
-      const illnessList = document.getElementById('illness-list');
-      illnessList.innerHTML = gameState.illnesses.length ? 
-        gameState.illnesses.map(ill => `<li>${ill.name} (شدت: ${ill.severity})</li>`).join('') : 
-        '<li>سالم هستید.</li>';
-      document.getElementById('illnesses').textContent = gameState.illnesses.length ? gameState.illnesses.map(ill => ill.name).join(', ') : 'سالم';
-
-
-      // Finance Page (صفحه مالی)
-      // updateFinanceChart() is now called only when finance page is shown
-    
-      // Investment Page Summary (خلاصه صفحه سرمایه‌گذاری)
-      const currentInvestmentsSummary = document.getElementById('current-investments-summary');
-      if (currentInvestmentsSummary) { // Check if element exists (بررسی وجود عنصر)
-        currentInvestmentsSummary.innerHTML = gameState.investments.map(inv => `
-          <li>${inv.emoji} ${inv.name} - ${inv.value.toLocaleString('fa-IR')} تومان (بازده: ${(inv.growth * 100).toFixed(1)}%)</li>
-        `).join('') || '<p class="text-gray-400">هنوز هیچ سرمایه‌گذاری ندارید.</p>';
-      }
-    }
-
-    window.showCareerCategories = function() {
-      const listContainer = document.getElementById('career-category-list');
-      if (!listContainer) {
-        // If this happens, the HTML for career-categories-page is missing or malformed.
-        console.error('CRITICAL: Career category list container (career-category-list) not found!');
-        return;
-      }
-      listContainer.innerHTML = ''; // Clear previous categories
-
-      // Directly use careerData, assuming it's defined in the same module scope.
-      if (typeof careerData === 'undefined' || careerData === null || Object.keys(careerData).length === 0) {
-        console.error('CRITICAL: careerData is undefined, null, or empty. Cannot populate categories.');
-        listContainer.innerHTML = '<p class="text-gray-400 text-center col-span-full">داده‌های دسته‌بندی شغلی یافت نشد یا خالی است.</p>';
-        return;
-      }
-
-      let categoriesFound = false;
-      for (const categoryKey in careerData) {
-        if (careerData.hasOwnProperty(categoryKey)) {
-          categoriesFound = true;
-          const category = careerData[categoryKey];
-          if (typeof category !== 'object' || category === null || !category.name || !category.emoji) {
-            console.error('Skipping malformed category:', categoryKey, category);
-            continue; // Skip this category if it's not structured as expected
-          }
-
-          const button = document.createElement('button');
-          button.className = 'glass-card p-4 flex flex-col items-center justify-center text-center hover:bg-gray-700/70 transition duration-150 ease-in-out';
-          button.innerHTML = `
-            <span class="text-4xl mb-2">${category.emoji}</span>
-            <span class="font-semibold">${category.name}</span>
-          `;
-          // Ensure window.showJobListingPage is correctly defined and accessible
-          if (typeof window.showJobListingPage === 'function') {
-            button.onclick = () => window.showJobListingPage(categoryKey);
-          } else {
-            console.error('CRITICAL: window.showJobListingPage is not defined. Cannot set onclick for category buttons.');
-          }
-          listContainer.appendChild(button);
-        }
-      }
-
-      if (!categoriesFound) {
-        console.error('No categories found in careerData after iterating.');
-        listContainer.innerHTML = '<p class="text-gray-400 text-center col-span-full">هیچ دسته‌بندی برای نمایش وجود ندارد.</p>';
-      }
-    }
-
-    window.showJobListingPage = function(categoryKey) {
-      console.log(`Showing job listing for category: ${categoryKey}`); // Debugging line (خطایابی)
-      window.currentCareerCategory = categoryKey; // Store the current category (دسته‌بندی فعلی را ذخیره کنید)
-      const category = careerData[categoryKey];
-      if (!category) {
-        console.error('Invalid career category key:', categoryKey);
-        showMessageModal('دسته شغلی نامعتبر است.');
-        return;
-      }
-
-      const pageTitleElement = document.getElementById('job-listing-title');
-      const listContainer = document.getElementById('job-list-container');
-
-      if (!pageTitleElement || !listContainer) {
-        console.error('Job listing page elements not found!');
-        return;
-      }
-
-      pageTitleElement.innerHTML = `${category.emoji || ''} ${category.name}`;
-      listContainer.innerHTML = ''; // Clear previous job listings
-
-      const jobs = category.jobs;
-      if (!jobs || Object.keys(jobs).length === 0) {
-        listContainer.innerHTML = '<p class="text-gray-400 text-center">در حال حاضر شغلی در این دسته موجود نیست.</p>';
-        window.showPage('job-listing-page');
-        return;
-      }
-
-      for (const jobKey in jobs) {
-        if (jobs.hasOwnProperty(jobKey)) {
-          const job = jobs[jobKey];
-          const jobCard = document.createElement('div');
-          jobCard.className = 'glass-card p-4 flex flex-col sm:flex-row justify-between items-center';
-          
-          jobCard.innerHTML = `
-            <div class="flex-grow">
-              <h3 class="text-lg font-semibold text-emerald-400">${job.name}</h3>
-              <p class="text-sm text-gray-300">حقوق: ${job.salary.toLocaleString('fa-IR')} تومان</p>
-              <p class="text-xs text-gray-400 mt-1">${job.description.substring(0, 100)}${job.description.length > 100 ? '...' : ''}</p>
-            </div>
-            <button class="btn-primary px-4 py-2 rounded-lg mt-3 sm:mt-0 sm:ml-4 flex-shrink-0" onclick="window.showJobDetailsPage('${categoryKey}', '${jobKey}')">مشاهده جزئیات</button>
-          `;
-          listContainer.appendChild(jobCard);
-        }
-      }
-      window.showPage('job-listing-page');
-    }
-
-    window.showJobDetailsPage = function(categoryKey, jobKey) {
-      console.log(`Showing job details for: ${jobKey} in category: ${categoryKey}`); // Debugging line (خطایابی)
-      const category = careerData[categoryKey];
-      const job = category ? category.jobs[jobKey] : null;
-
-      if (!job) {
-        console.error('Invalid job or category key:', categoryKey, jobKey);
-        showMessageModal('شغل مورد نظر یافت نشد.');
-        return;
-      }
-
-      // Populate job details (پر کردن جزئیات شغل)
-      document.getElementById('job-detail-title').textContent = job.name;
-      document.getElementById('job-detail-description').textContent = job.description;
-      document.getElementById('job-detail-salary').textContent = job.salary.toLocaleString('fa-IR');
-      document.getElementById('job-detail-minAge').textContent = job.minAge;
-      document.getElementById('job-detail-educationReq').textContent = job.educationReq;
-
-      const skillRequirementsList = document.getElementById('job-detail-skillRequirements');
-      skillRequirementsList.innerHTML = job.skillRequirements.map(skill => `<li>${skill}</li>`).join('');
-
-      const promotionInfo = document.getElementById('job-detail-promotion-info');
-      if (job.promotion) {
-        document.getElementById('job-detail-promotionTo').textContent = job.promotion.to;
-        document.getElementById('job-detail-experienceForPromotion').textContent = job.promotion.experience;
-        promotionInfo.style.display = 'block';
-      } else {
-        promotionInfo.style.display = 'none';
-      }
-
-      // Set the back button's onclick dynamically (تنظیم پویا onclick دکمه بازگشت)
-      const backButton = document.getElementById('back-to-job-listing-btn');
-      if (backButton) {
-        backButton.onclick = () => window.showJobListingPage(categoryKey);
-      } else {
-        console.error('Back to job listing button not found!');
-      }
-
-      // Set apply job button's onclick (تنظیم onclick دکمه درخواست شغل)
-      const applyJobButton = document.getElementById('apply-job-btn');
-      if (applyJobButton) {
-        applyJobButton.onclick = () => window.applyJob(categoryKey, jobKey);
-      } else {
-        console.error('Apply job button not found!');
-      }
-
-      window.showPage('job-details-page');
-    }
-
-    window.applyJob = function(categoryKey, jobKey) {
-      console.log(`Applying for job: ${jobKey} in category: ${categoryKey}`); // Debugging line (خطایابی)
-      const category = careerData[categoryKey];
-      const job = category ? category.jobs[jobKey] : null;
-
-      if (!job) {
-        showMessageModal('شغل مورد نظر یافت نشد.');
-        return;
-      }
-
-      // Check requirements (بررسی الزامات)
-      if (gameState.age < job.minAge) {
-        showMessageModal(`برای این شغل باید حداقل ${job.minAge} سال سن داشته باشید.`);
-        return;
-      }
-
-      // Simplified education check (بررسی تحصیلات ساده شده)
-      if (job.educationReq !== 'بدون نیاز رسمی' && job.educationReq !== 'فنی حرفه‌ای') {
-        const requiredLevel = job.educationReq.includes('لیسانس') ? 'دانشگاه' : 'دبیرستان';
-        if (gameState.education.level.indexOf(requiredLevel) === -1 && !gameState.education.level.includes('فارغ‌التحصیل')) {
-          showMessageModal(`برای این شغل به مدرک ${job.educationReq} نیاز دارید.`);
-          return;
-        }
-      }
-
-      // Skill check (بررسی مهارت‌ها)
-      let skillsMet = true;
-      job.skillRequirements.forEach(req => {
-        const [skillNameRaw, requiredValueRaw] = req.split(': ');
-        const skillName = skillNameRaw.trim();
-        const requiredValue = parseInt(requiredValueRaw);
-
-        let currentSkillValue;
-        switch (skillName) {
-          case 'هوش': currentSkillValue = gameState.smarts; break;
-          case 'شادی': currentSkillValue = gameState.happiness; break;
-          case 'سلامت': currentSkillValue = gameState.health; break;
-          case 'ظاهر': currentSkillValue = gameState.looks; break;
-          case 'معنویت': currentSkillValue = gameState.spirituality; break;
-          case 'روابط': // Assuming this refers to overall relationship status average (فرض بر میانگین وضعیت کلی روابط)
-            currentSkillValue = gameState.relationships.reduce((acc, rel) => acc + rel.relationship, 0) / gameState.relationships.length;
-            break;
-          case 'خلاقیت': // Placeholder for creativity (جایگزین برای خلاقیت)
-          case 'دقت': // Placeholder for precision (جایگزین برای دقت)
-          case 'همدلی': // Placeholder for empathy (جایگزین برای همدلی)
-            currentSkillValue = 50; // Default or random value for now (مقدار پیش‌فرض یا تصادفی برای فعلاً)
-            break;
-          case 'smarts': currentSkillValue = gameState.smarts; break; // Added for consistency with previous code
-          default: currentSkillValue = 0;
-        }
-
-        if (currentSkillValue < requiredValue) {
-          skillsMet = false;
-          showMessageModal(`مهارت ${skillName} شما کافی نیست. (نیاز به ${skillName} ${requiredValue}+ دارید)`);
-        }
-      });
-
-      if (!skillsMet) {
-        return; // Exit if skills are not met (در صورت عدم تطابق مهارت‌ها خارج می‌شود)
-      }
-
-      // If all checks pass, apply for the job (در صورت تایید همه موارد، برای شغل درخواست دهید)
-      gameState.job = {
-        title: job.name,
-        salary: job.salary,
-        level: 1, // Starting at level 1 (شروع در سطح 1)
-        experience: 0,
-        category: categoryKey, // Store category for potential promotions (ذخیره دسته‌بندی برای ارتقاء احتمالی)
-        key: jobKey // Store job key for specific job data (ذخیره کلید شغل برای داده‌های شغل خاص)
-      };
-      gameState.log.push({ year: gameState.year, event: `شما به عنوان ${job.name} شروع به کار کردید.`, type: 'career' });
-      showMessageModal(`تبریک! شما به عنوان ${job.name} استخدام شدید.`);
-      updateUI();
-      saveGame();
-      window.showPage('dashboard'); // Return to dashboard after applying (بازگشت به داشبورد پس از درخواست)
-    };
-
-
-    // Age Up (یک سال بزرگ‌تر شدن)
-    async function ageUp() {
-      // Check for character death before aging up (بررسی مرگ کاراکتر قبل از افزایش سن)
-      if (checkDeath()) {
-          return; // If character dies, stop ageUp process (اگر کاراکتر مرد، فرآیند افزایش سن متوقف شود)
-      }
-
-      gameState.age++;
-      gameState.year++;
-
-      // Base stat changes (تغییرات پایه آمار)
-      gameState.happiness = Math.max(0, Math.min(100, gameState.happiness - 5 + Math.floor(Math.random() * 10)));
-      gameState.health = Math.max(0, Math.min(100, gameState.health - 3 + Math.floor(Math.random() * 6)));
-      gameState.smarts = Math.min(100, gameState.smarts + (gameState.education.level !== 'هیچ' ? 2 : 0));
-      gameState.looks = Math.max(0, Math.min(100, gameState.looks - 2 + Math.floor(Math.random() * 4)));
-      gameState.spirituality = Math.min(100, gameState.spirituality + Math.floor(Math.random() * 5));
-      
-      // Health decay based on age (کاهش سلامت بر اساس سن)
-      if (gameState.age > 40) gameState.health = Math.max(0, gameState.health - 2);
-      if (gameState.age > 60) gameState.health = Math.max(0, gameState.health - 5);
-      if (gameState.age > 80) gameState.health = Math.max(0, gameState.health - 10); // More significant decay at old age (کاهش قابل توجه‌تر در سنین بالا)
-
-
-      // Job salary (حقوق شغل)
-      if (gameState.job.title !== 'بیکار') {
-        gameState.money += gameState.job.salary;
-        gameState.job.experience += 1; // Gain experience (تجربه کسب می‌کند)
-        gameState.log.push({ year: gameState.year, event: `حقوق ماهانه خود را از شغل ${gameState.job.title} دریافت کردید. (${gameState.job.salary.toLocaleString('fa-IR')} تومان)`, type: 'finance' });
-        
-        // Check for promotion (بررسی ارتقاء)
-        const currentJobData = careerData[gameState.job.category]?.jobs[gameState.job.key];
-        if (currentJobData && currentJobData.promotion && gameState.job.experience >= currentJobData.promotion.experience) {
-          const nextJobKey = Object.keys(careerData[gameState.job.category].jobs).find(key => careerData[gameState.job.category].jobs[key].name === currentJobData.promotion.to);
-          if (nextJobKey) {
-            const nextJobData = careerData[gameState.job.category].jobs[nextJobKey];
-            gameState.job.title = nextJobData.name;
-            gameState.job.salary = nextJobData.salary;
-            gameState.job.level++;
-            gameState.job.experience = 0; // Reset experience for new level (تجربه برای سطح جدید بازنشانی می‌شود)
-            gameState.job.key = nextJobKey; // Update job key (به‌روزرسانی کلید شغل)
-            gameState.log.push({ year: gameState.year, event: `تبریک! شما به ${nextJobData.name} ارتقا یافتید!`, type: 'career' });
-            showMessageModal(`تبریک! شما به ${nextJobData.name} ارتقا یافتید!`);
-          }
-        }
-      }
-
-      // Education progress (پیشرفت تحصیلی)
-      if (gameState.education.level === 'دانشگاه') {
-          gameState.education.degreeProgress += 10 + Math.floor(Math.random() * 10); // 10-20% progress per year (۱۰-۲۰٪ پیشرفت در سال)
-          if (gameState.education.degreeProgress >= 100) {
-              gameState.education.degreeProgress = 100;
-              gameState.education.level = `فارغ‌التحصیل ${gameState.education.major}`;
-              gameState.log.push({ year: gameState.year, event: `شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید!`, type: 'education' });
-              showMessageModal(`تبریک! شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید.`);
-          } else {
-              gameState.log.push({ year: gameState.year, event: `شما در حال تحصیل در رشته ${gameState.education.major} هستید. (${gameState.education.degreeProgress}% پیشرفت)`, type: 'education' });
-          }
-      }
-
-      // Investment growth (رشد سرمایه‌گذاری)
-      gameState.investments.forEach(inv => {
-        // Apply volatility to growth rate (اعمال نوسانات بر نرخ رشد)
-        const volatilityFactor = (Math.random() * 2 - 1) * 0.1; // -0.1 to +0.1
-        const actualGrowthRate = inv.growth + volatilityFactor;
-        const growthAmount = inv.value * actualGrowthRate;
-        inv.value = Math.max(0, inv.value + growthAmount); // Value cannot go below zero (ارزش نمی‌تواند کمتر از صفر شود)
-        
-        // Log positive or negative growth (ثبت رشد مثبت یا منفی)
-        if (growthAmount >= 0) {
-            gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری شما در ${inv.name} به مبلغ ${growthAmount.toLocaleString('fa-IR')} تومان سود کرد. (ارزش فعلی: ${inv.value.toLocaleString('fa-IR')} تومان)`, type: 'finance' });
-            if (growthAmount > 10000000 && Math.random() < 0.3) { // Large investment gain (سود بزرگ سرمایه‌گذاری)
-                gameState.happiness = Math.min(100, gameState.happiness + 5);
-            }
-        } else {
-            gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری شما در ${inv.name} به مبلغ ${Math.abs(growthAmount).toLocaleString('fa-IR')} تومان ضرر کرد. (ارزش فعلی: ${inv.value.toLocaleString('fa-IR')} تومان)`, type: 'finance' });
-            if (Math.abs(growthAmount) > 5000000 && Math.random() < 0.5) { // Significant investment loss (زیان قابل توجه سرمایه‌گذاری)
-                gameState.happiness = Math.max(0, gameState.happiness - 10);
-                showMessageModal(`وای! سرمایه‌گذاری شما در ${inv.name} دچار افت شدید شد.`);
-            }
-        }
-      });
-
-
-      // Update children's age and handle family AI (به‌روزرسانی سن فرزندان و مدیریت هوش مصنوعی خانواده)
-      for (let i = 0; i < gameState.relationships.length; i++) {
-          const person = gameState.relationships[i];
-          person.age = (person.age || 0) + 1; // Ensure age exists and increments (اطمینان از وجود و افزایش سن)
-          person.relationship = Math.max(0, person.relationship - 2 + Math.floor(Math.random() * 5)); // Slight decay + random fluctuation (کاهش جزئی + نوسان تصادفی)
-
-          // AI for family members: asking for money (هوش مصنوعی برای اعضای خانواده: درخواست پول)
-          if (person.role === 'فرزند' && person.age > 18 && person.age < 25 && gameState.money > 2000000 && Math.random() < 0.05) {
-              const amount = Math.floor(Math.random() * 5 + 1) * 100000; // 100,000 to 500,000
-              const giveMoney = await window.confirm(`${person.name} از شما ${amount.toLocaleString('fa-IR')} تومان پول خواست. آیا پرداخت می‌کنید؟`);
-              if (giveMoney) {
-                  gameState.money -= amount;
-                  person.relationship = Math.min(100, person.relationship + 15);
-                  gameState.happiness = Math.min(100, gameState.happiness + 5);
-                  gameState.log.push({ year: gameState.year, event: `شما به ${person.name} مبلغ ${amount.toLocaleString('fa-IR')} تومان کمک مالی کردید.`, type: 'finance' });
-              } else {
-                  person.relationship = Math.max(0, person.relationship - 10);
-                  gameState.happiness = Math.max(0, gameState.happiness - 5);
-                  gameState.log.push({ year: gameState.year, event: `شما درخواست کمک مالی ${person.name} را رد کردید.`, type: 'family' });
-              }
-          }
-          
-          // AI for family members: leaving due to bad relationship (هوش مصنوعی برای اعضای خانواده: ترک کردن به دلیل رابطه بد)
-          if (person.relationship < 20 && Math.random() < 0.1) {
-              gameState.log.push({ year: gameState.year, event: `${person.name} به دلیل رابطه بسیار بد با شما، تصمیم به ترک کرد.`, type: 'family' });
-              showMessageModal(`${person.name} شما را ترک کرد!`);
-              gameState.relationships.splice(i, 1);
-              i--; // Adjust index due to removal (تنظیم ایندکس به دلیل حذف)
-              gameState.happiness = Math.max(0, gameState.happiness - 15);
-          }
-      }
-
-      // AI for romantic relationships (هوش مصنوعی برای روابط عاطفی)
-      for (let i = 0; i < gameState.romanticRelationships.length; i++) {
-        const partner = gameState.romanticRelationships[i];
-        partner.age = (partner.age || 0) + 1; // Assume partner also ages (فرض بر این است که شریک هم سنش بالا می‌رود)
-        partner.relationship = Math.max(0, partner.relationship - 3 + Math.floor(Math.random() * 7)); // Slight decay + fluctuation
-
-        // Partner asks for money (شریک درخواست پول می‌کند)
-        if (partner.isMarried && gameState.money > 5000000 && Math.random() < 0.03) {
-            const amount = Math.floor(Math.random() * 10 + 1) * 200000; // 200,000 to 2,000,000
-            const giveMoney = await window.confirm(`${partner.name} از شما ${amount.toLocaleString('fa-IR')} تومان برای یک نیاز مالی خواست. آیا پرداخت می‌کنید؟`);
-            if (giveMoney) {
-                gameState.money -= amount;
-                partner.relationship = Math.min(100, partner.relationship + 10);
-                gameState.happiness = Math.min(100, gameState.happiness + 5);
-                gameState.log.push({ year: gameState.year, event: `شما به ${partner.name} مبلغ ${amount.toLocaleString('fa-IR')} تومان کمک مالی کردید.`, type: 'finance' });
-            } else {
-                partner.relationship = Math.max(0, partner.relationship - 15);
-                gameState.happiness = Math.max(0, gameState.happiness - 8);
-                gameState.log.push({ year: gameState.year, event: `شما درخواست کمک مالی ${partner.name} را رد کردید.`, type: 'family' });
-            }
-        }
-
-        // Partner initiates breakup if relationship is too low (شریک در صورت پایین بودن رابطه، جدایی را آغاز می‌کند)
-        if (!partner.isMarried && partner.relationship < 15 && Math.random() < 0.1) {
-            gameState.log.push({ year: gameState.year, event: `${partner.name} رابطه را با شما به هم زد!`, type: 'family' });
-            showMessageModal(`${partner.name} با شما کات کرد!`);
-            gameState.romanticRelationships.splice(i, 1);
-            i--;
-            gameState.happiness = Math.max(0, gameState.happiness - 20);
-        }
-      }
-
-      // Handle children aging (مدیریت بالا رفتن سن فرزندان)
-      gameState.children.forEach(child => {
-        child.age++;
-        child.relationship = Math.min(100, child.relationship + Math.floor(Math.random() * 5)); // Slight improvement (بهبود جزئی)
-      });
-
-
-      // Smarter Random Events (رویدادهای تصادفی هوشمندانه)
-      const possibleEvents = [
-        { 
-            event: 'شما یک سال بزرگ‌تر شدید!', 
-            type: 'general', 
-            condition: () => true 
-        },
-        { 
-            event: 'به یک عروسی دعوت شدید و اوقات خوشی را گذراندید!', 
-            type: 'family', 
-            condition: () => gameState.happiness < 90 && gameState.age > 18, 
-            effect: () => gameState.happiness = Math.min(100, gameState.happiness + 10) 
-        },
-        { 
-            event: 'یک بیماری خفیف گرفتید.', 
-            type: 'health', 
-            condition: () => gameState.health > 20 && Math.random() < 0.2, // More likely if not already very sick (احتمال بیشتر اگر هنوز خیلی بیمار نباشد)
-            effect: () => { 
-                gameState.health = Math.max(0, gameState.health - 10); 
-                gameState.illnesses.push({ name: 'سرماخوردانی', severity: 'خفیف' }); 
-            } 
-        },
-        { 
-            event: 'یک دوست جدید پیدا کردید!', 
-            type: 'family', 
-            condition: () => gameState.age >= 10 && gameState.relationships.length < 5 && Math.random() < 0.1, 
-            effect: () => gameState.relationships.push({ id: crypto.randomUUID(), name: 'دوست جدید', role: 'دوست', relationship: 50, respect: 50, happiness: 50, age: gameState.age }) 
-        },
-        { 
-            event: 'یک جایزه کوچک در قرعه‌کشی بردید!', 
-            type: 'finance', 
-            condition: () => Math.random() < 0.05, 
-            effect: () => gameState.money += 100000 
-        },
-        { 
-            event: 'در ترافیک سنگین گیر کردید و دیرتان شد.', 
-            type: 'general', 
-            condition: () => Math.random() < 0.1, 
-            effect: () => gameState.happiness = Math.max(0, gameState.happiness - 5) 
-        },
-        { 
-            event: 'یک کتاب جدید خواندید و هوش شما افزایش یافت.', 
-            type: 'education', 
-            condition: () => gameState.smarts < 95 && Math.random() < 0.15, 
-            effect: () => gameState.smarts = Math.min(100, gameState.smarts + 3) 
-        },
-        { 
-            event: 'مدتی را در طبیعت گذراندید و معنویت شما افزایش یافت.', 
-            type: 'spirituality', 
-            condition: () => gameState.spirituality < 95 && Math.random() < 0.1, 
-            effect: () => gameState.spirituality = Math.min(100, gameState.spirituality + 5) 
-        },
-        { 
-            event: 'یک وسیله الکترونیکی شما خراب شد و مجبور به تعمیر شدید.', 
-            type: 'finance', 
-            condition: () => gameState.money > 50000 && Math.random() < 0.1, 
-            effect: () => gameState.money = Math.max(0, gameState.money - 50000) 
-        },
-        { 
-            event: 'در محل کار با همکارانتان به مشکل خوردید.', 
-            type: 'career', 
-            condition: () => gameState.job.title !== 'بیکار' && Math.random() < 0.08, 
-            effect: () => gameState.happiness = Math.max(0, gameState.happiness - 8) 
-        },
-        { 
-            event: 'یک دوره آموزشی آنلاین گذراندید و مهارت‌هایتان بهبود یافت.', 
-            type: 'education', 
-            condition: () => gameState.smarts < 90 && Math.random() < 0.07, 
-            effect: () => gameState.smarts = Math.min(100, gameState.smarts + 7) 
-        },
-        { 
-            event: 'به یک سفر کوتاه رفتید و روحیه گرفتید.', 
-            type: 'general', 
-            condition: () => gameState.money > 2000000 && gameState.happiness < 80 && Math.random() < 0.05, 
-            effect: () => gameState.happiness = Math.min(100, gameState.happiness + 15) 
-        },
-        {
-            event: 'با سرمایه‌گذاری هوشمندانه، سود خوبی کسب کردید!',
-            type: 'finance',
-            condition: () => gameState.investments.length > 0 && Math.random() < 0.05,
-            effect: () => {
-                const investment = gameState.investments[Math.floor(Math.random() * gameState.investments.length)];
-                const bonus = investment.value * 0.1; // 10% bonus
-                gameState.money += bonus;
-                gameState.happiness = Math.min(100, gameState.happiness + 10);
-                gameState.log.push({ year: gameState.year, event: `سرمایه‌گذاری در ${investment.name} به شما ${bonus.toLocaleString('fa-IR')} تومان سود مازاد داد!`, type: 'finance' });
-            }
-        },
-        {
-            event: 'یکی از دارایی‌های شما نیاز به تعمیر پیدا کرد و هزینه داشت.',
-            type: 'finance',
-            condition: () => gameState.assets.length > 0 && gameState.money > 100000 && Math.random() < 0.07,
-            effect: () => {
-                const cost = Math.floor(Math.random() * 5 + 1) * 10000; // 10k to 50k
-                gameState.money = Math.max(0, gameState.money - cost);
-                gameState.happiness = Math.max(0, gameState.happiness - 3);
-                gameState.log.push({ year: gameState.year, event: `هزینه تعمیر یکی از دارایی‌ها: ${cost.toLocaleString('fa-IR')} تومان.`, type: 'finance' });
-            }
-        }
-      ];
-
-      // Filter events based on conditions (فیلتر کردن رویدادها بر اساس شرایط)
-      const applicableEvents = possibleEvents.filter(event => event.condition());
-      
-      // Pick one random applicable event (انتخاب یک رویداد تصادفی از میان رویدادهای قابل اجرا)
-      let chosenEvent = { event: 'یک سال از زندگی شما گذشت.', type: 'general' }; // Default event (رویداد پیش‌فرض)
-      if (applicableEvents.length > 0) {
-          chosenEvent = applicableEvents[Math.floor(Math.random() * applicableEvents.length)];
-      }
-
-      gameState.log.push({ year: gameState.year, event: chosenEvent.event, type: chosenEvent.type });
-      if (chosenEvent.effect) chosenEvent.effect();
-
-
-      updateUI();
-      saveGame();
-    }
-
-    // --- Death System Functions (توابع سیستم مرگ) ---
-    function checkDeath() {
-      let deathReason = null;
-
-      // 1. Natural Death (مرگ طبیعی)
-      if (gameState.age >= 60 && Math.random() < (gameState.age - 50) * 0.01) { // Chance increases after 60 (شانس بعد از ۶۰ سالگی افزایش می‌یابد)
-        deathReason = `شما در سن ${gameState.age} سالگی به مرگ طبیعی از دنیا رفتید.`;
-      }
-      // 2. Illness Death (مرگ بر اثر بیماری)
-      if (gameState.health < 10 && gameState.illnesses.length > 0 && Math.random() < 0.3) {
-        deathReason = `شما در اثر عوارض بیماری‌هایتان در سن ${gameState.age} سالگی درگذشتید.`;
-      }
-      // 3. Accident Death (مرگ بر اثر حادثه)
-      if (Math.random() < 0.005) { // 0.5% chance each year (۰.۵٪ شانس در هر سال)
-        deathReason = `متاسفانه در سن ${gameState.age} سالگی دچار یک حادثه ناگوار شدید و فوت کردید.`;
-      }
-      
-      // AI for parents dying (هوش مصنوعی برای فوت والدین)
-      for (let i = 0; i < gameState.relationships.length; i++) {
-          const person = gameState.relationships[i];
-          if ((person.role === 'پدر' || person.role === 'مادر') && person.age > 70 && Math.random() < (person.age - 60) * 0.008) {
-              gameState.log.push({ year: gameState.year, event: `${person.name} شما در سن ${person.age} سالگی به دلیل کهولت سن فوت کرد.`, type: 'family' });
-              showMessageModal(`${person.name} شما درگذشت.`);
-              gameState.relationships.splice(i, 1);
-              i--; // Adjust index due to removal
-              gameState.happiness = Math.max(0, gameState.happiness - 10); // Impact on player's happiness (تاثیر بر شادی بازیکن)
-          }
-      }
-
-      if (deathReason) {
-        handleGameOver(deathReason);
-        return true; // Character died (کاراکتر مرد)
-      }
-      return false; // Character did not die (کاراکتر نمرد)
-    }
-
-    function handleGameOver(reason) {
-      window.showPage('game-over-screen');
-      document.getElementById('game-over-reason').textContent = reason;
-      saveGame(); // Save final state (ذخیره وضعیت نهایی)
-    }
-
-    function restartGame() {
-        resetGame(); // Reset game state (وضعیت بازی را ریست می‌کند)
-        window.showPage('start-screen'); // Show start screen (صفحه شروع را نمایش می‌دهد)
-    }
-
-    // --- Education Revamp Functions (توابع بازسازی تحصیلات) ---
-
-    // Main entry point for education page (نقطه ورود اصلی برای صفحه تحصیلات)
-    window.showEducationPage = function() {
-        window.showPage('education-page');
-        // Determine which tab to show by default (تعیین اینکه کدام تب به‌طور پیش‌فرض نمایش داده شود)
-        if (gameState.age < 18) {
-            window.showSchool();
-        } else {
-            // If already university level or graduated, show university. Otherwise, still school for general study.
-            if (gameState.education.level.includes('دانشگاه') || gameState.education.level.includes('فارغ‌التحصیل')) {
-                window.showUniversity();
-            } else {
-                window.showSchool(); // Even if over 18, still show school for "general study" (حتی اگر بالای ۱۸ سال باشد، همچنان مدرسه را برای "مطالعه عمومی" نشان دهد)
-            }
-        }
-    };
-
-    window.showSchool = function() {
-      const content = document.getElementById('education-content-scroll');
-      let htmlContent = '';
-
-      // Update tab styles (به‌روزرسانی استایل تب‌ها)
-      document.getElementById('school-tab').classList.add('btn-primary');
-      document.getElementById('school-tab').classList.remove('btn-secondary');
-      document.getElementById('university-tab').classList.add('btn-secondary');
-      document.getElementById('university-tab').classList.remove('btn-primary');
-
-      if (gameState.age < 6) {
-        htmlContent = `<div class="glass-card p-4 text-center">
-                         <p class="text-lg">شما برای شروع تحصیل خیلی کوچک هستید.</p>
-                       </div>`;
-      } else if (gameState.age < 12) {
-        htmlContent = `
-          <div class="glass-card p-4 mb-4">
-            <h3 class="text-lg font-semibold mb-2">مقطع ابتدایی</h3>
-            <p><strong>وضعیت:</strong> ${gameState.education.level === 'ابتدایی' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
-            <p class="text-sm text-gray-300 mt-2">با درس خواندن هوش خود را افزایش دهید.</p>
-            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('primary')">درس بخوانید (افزایش هوش، +5)</button>
-          </div>
-        `;
-      } else if (gameState.age < 15) {
-        htmlContent = `
-          <div class="glass-card p-4 mb-4">
-            <h3 class="text-lg font-semibold mb-2">مقطع راهنمایی</h3>
-            <p><strong>وضعیت:</strong> ${gameState.education.level === 'راهنمایی' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
-            <p class="text-sm text-gray-300 mt-2">مهارت‌های پایه خود را تقویت کنید.</p>
-            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('middle')">درس بخوانید (افزایش هوش، +5)</button>
-          </div>
-        `;
-      } else if (gameState.age < 18) {
-        htmlContent = `
-          <div class="glass-card p-4 mb-4">
-            <h3 class="text-lg font-semibold mb-2">مقطع دبیرستان</h3>
-            <p><strong>وضعیت:</strong> ${gameState.education.level === 'دبیرستان' ? 'در حال تحصیل' : 'فارغ‌التحصیل'}</p>
-            <p class="text-sm text-gray-300 mt-2">برای ورود به دانشگاه آماده شوید.</p>
-            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('high')">درس بخوانید (افزایش هوش، +5)</button>
-          </div>
-        `;
-      } else {
-        htmlContent = `
-          <div class="glass-card p-4 text-center">
-            <h3 class="text-lg font-semibold mb-2">تحصیلات مدرسه</h3>
-            <p>شما تحصیلات مدرسه را به پایان رسانده‌اید.</p>
-            <p class="text-sm text-gray-300 mt-2">با مطالعه آزاد می‌توانید به دانش خود بیافزایید.</p>
-            <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.study('general')">مطالعه آزاد (افزایش هوش، +3)</button>
-          </div>
-        `;
-      }
-      content.innerHTML = htmlContent;
-    }
-
-    window.showUniversity = function() {
-      const content = document.getElementById('education-content-scroll');
-      let htmlContent = '';
-
-      // Update tab styles (به‌روزرسانی استایل تب‌ها)
-      document.getElementById('university-tab').classList.add('btn-primary');
-      document.getElementById('university-tab').classList.remove('btn-secondary');
-      document.getElementById('school-tab').classList.add('btn-secondary');
-      document.getElementById('school-tab').classList.remove('btn-primary');
-
-      if (gameState.age < 18 || !(gameState.education.level.includes('دبیرستان') || gameState.education.level.includes('فارغ‌التحصیل'))) {
-        htmlContent = `<div class="glass-card p-4 text-center">
-                         <p class="text-lg">برای ورود به دانشگاه باید حداقل ۱۸ سال داشته باشید و دبیرستان را تمام کرده باشید.</p>
-                       </div>`;
-      } else {
-        if (gameState.education.level === 'دانشگاه') {
-          htmlContent = `
-            <div class="glass-card p-4 mb-4">
-              <h3 class="text-lg font-semibold mb-2">دانشگاه</h3>
-              <p><strong>رشته فعلی:</strong> ${gameState.education.major}</p>
-              <p><strong>پیشرفت مدرک:</strong> ${gameState.education.degreeProgress}%</p>
-              <p class="text-sm text-gray-300 mt-2">با ادامه تحصیل در رشته خود، پیشرفت کنید.</p>
-              <button class="btn-primary w-full py-2 rounded-lg mt-4" onclick="window.continueUniversityStudy()">ادامه تحصیل (افزایش پیشرفت، +10-20)</button>
-              <button class="btn-secondary w-full py-2 rounded-lg mt-2" onclick="window.dropOut()">انصراف از تحصیل</button>
-            </div>
-          `;
-        } else if (gameState.education.level.includes('فارغ‌التحصیل')) {
-          htmlContent = `
-            <div class="glass-card p-4 text-center">
-              <h3 class="text-lg font-semibold mb-2">فارغ‌التحصیل</h3>
-              <p>شما از دانشگاه در رشته ${gameState.education.major || 'نامشخص'} فارغ‌التحصیل شده‌اید.</p>
-              <p class="text-sm text-gray-300 mt-2">می‌توانید به دنبال شغل مناسب باشید یا در رشته دیگری ادامه تحصیل دهید.</p>
-              ${gameState.education.major ? `<p><strong>مدرک:</strong> ${gameState.education.major}</p>` : ''}
-            </div>
-          `;
-        } else {
-          // Ready to choose major
-          htmlContent = `
-            <div class="glass-card p-4">
-              <h3 class="text-lg font-semibold mb-2">انتخاب رشته دانشگاه</h3>
-              <p class="text-sm text-gray-300 mb-4">رشته‌ای را انتخاب کنید که به علاقه و توانایی‌های شما نزدیک باشد.</p>
-              <select id="major-select" class="w-full p-3 mb-4 text-right bg-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                <option value="پزشکی">پزشکی (نیاز به هوش بالا: ۷۰+)</option>
-                <option value="مهندسی">مهندسی (نیاز به هوش متوسط: ۶۰+)</option>
-                <option value="حقوق">حقوق (نیاز به هوش متوسط: ۶۰+)</option>
-                <option value="هنر">هنر (نیاز به ظاهر: ۵۰+، شادی: ۵۰+)</option>
-                <option value="مدیریت">مدیریت</option>
-              </select>
-              <button class="btn-primary w-full py-3 rounded-lg" onclick="window.applyUniversity()">ثبت‌نام در دانشگاه</button>
-            </div>
-          `;
-        }
-      }
-      content.innerHTML = htmlContent;
-    }
-
-    // Function for studying in school (تابع برای درس خواندن در مدرسه)
-    window.study = function(level) {
-      // Logic for studying remains mostly the same, just update UI based on new structure
-      gameState.smarts = Math.min(100, gameState.smarts + 5);
-      let logMessage = '';
-      if (level === 'primary') {
-        gameState.education.level = 'ابتدایی';
-        logMessage = 'شما در دبستان درس خواندید.';
-      } else if (level === 'middle') {
-        gameState.education.level = 'راهنمایی';
-        logMessage = 'شما در راهنمایی درس خواندید.';
-      } else if (level === 'high') {
-        gameState.education.level = 'دبیرستان';
-        logMessage = 'شما در دبیرستان درس خواندید.';
-      } else if (level === 'general') {
-        logMessage = 'شما مطالعه آزاد داشتید و هوش شما افزایش یافت.';
-        gameState.smarts = Math.min(100, gameState.smarts + 3); // Slightly less for general (کمی کمتر برای عمومی)
-      }
-      gameState.log.push({ year: gameState.year, event: logMessage, type: 'education' });
-      updateUI();
-      window.showSchool(); // Re-render school page (بازسازی صفحه مدرسه)
-      saveGame();
-    }
-
-    // Function for continuing university study (تابع برای ادامه تحصیل در دانشگاه)
-    window.continueUniversityStudy = function() {
-        if (gameState.education.level !== 'دانشگاه') {
-            showMessageModal('شما در حال حاضر دانشجوی دانشگاه نیستید.');
-            return;
-        }
-
-        gameState.education.degreeProgress += 10 + Math.floor(Math.random() * 10); // 10-20% progress (۱۰-۲۰٪ پیشرفت)
-        if (gameState.education.degreeProgress >= 100) {
-            gameState.education.degreeProgress = 100;
-            gameState.education.level = `فارغ‌التحصیل ${gameState.education.major}`;
-            gameState.log.push({ year: gameState.year, event: `شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید!`, type: 'education' });
-            showMessageModal(`تبریک! شما از دانشگاه در رشته ${gameState.education.major} فارغ‌التحصیل شدید.`);
-        } else {
-            gameState.log.push({ year: gameState.year, event: `شما در حال تحصیل در رشته ${gameState.education.major} هستید. (${gameState.education.degreeProgress}% پیشرفت)`, type: 'education' });
-        }
-        gameState.smarts = Math.min(100, gameState.smarts + 7); // Boost smarts (افزایش هوش)
-        updateUI();
-        window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
-        saveGame();
-    }
-
-    window.applyUniversity = function() {
-      if (gameState.age < 18 || !(gameState.education.level.includes('دبیرستان') || gameState.education.level.includes('فارغ‌التحصیل'))) {
-        showMessageModal('برای ورود به دانشگاه باید حداقل ۱۸ سال داشته باشید و دبیرستان را تمام کرده باشید.');
-        return;
-      }
-      const selectedMajor = document.getElementById('major-select').value;
-      
-      // Check requirements for majors (بررسی الزامات برای رشته‌ها)
-      if (selectedMajor === 'پزشکی' && gameState.smarts < 70) {
-        showMessageModal('هوش شما برای رشته پزشکی کافی نیست. (نیاز به هوش ۷۰)');
-        return;
-      }
-      if ((selectedMajor === 'مهندسی' || selectedMajor === 'حقوق') && gameState.smarts < 60) {
-        showMessageModal('هوش شما برای این رشته کافی نیست. (نیاز به هوش ۶۰)');
-        return;
-      }
-      if (selectedMajor === 'هنر' && (gameState.looks < 50 || gameState.happiness < 50)) {
-        showMessageModal('برای رشته هنر نیاز به ظاهر و شادی بیشتری دارید. (نیاز به ظاهر ۵۰ و شادی ۵۰)');
-        return;
-      }
-
-      gameState.education.level = 'دانشگاه';
-      gameState.education.major = selectedMajor;
-      gameState.education.degreeProgress = 0; // Reset progress (پیشرفت را بازنشانی می‌کند)
-      gameState.log.push({ year: gameState.year, event: `شما در رشته ${selectedMajor} در دانشگاه ثبت‌نام کردید.`, type: 'education' });
-      updateUI();
-      window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
-      saveGame();
-    }
-
-    window.dropOut = function() {
-        if (gameState.education.level !== 'دانشگاه') {
-            showMessageModal('شما در حال حاضر دانشجوی دانشگاه نیستید.');
-            return;
-        }
-        window.confirm('آیا مطمئن هستید که می‌خواهید از دانشگاه انصراف دهید؟ این کار ممکن است بر آینده شغلی شما تأثیر بگذارد.').then(confirmed => {
-            if (confirmed) {
-                gameState.education.level = 'فارغ‌التحصیل دبیرستان'; // Changed to this to reflect reality (به این تغییر یافت تا واقعیت را منعاکس کند)
-                gameState.education.major = '';
-                gameState.education.degreeProgress = 0;
-                gameState.log.push({ year: gameState.year, event: 'شما از دانشگاه انصراف دادید.', type: 'education' });
-                showMessageModal('شما از دانشگاه انصراف دادید.');
-                updateUI();
-                window.showUniversity(); // Re-render university page (بازسازی صفحه دانشگاه)
-                saveGame();
-            }
-        });
-    }
-
-    // Relationships (روابط)
-    window.interact = function(personId, action) {
-      const person = gameState.relationships.find(r => r.id === personId);
-      if (!person) return;
-
-      if (action === 'talk') {
-        person.relationship = Math.min(100, person.relationship + 5);
-        gameState.happiness = Math.min(100, gameState.happiness + 3);
-        gameState.log.push({ year: gameState.year, event: `شما با ${person.name} صحبت کردید.`, type: 'family' });
-      } else if (action === 'gift') {
-        const giftCost = 100000;
-        if (gameState.money < giftCost) {
-          showMessageModal(`پول کافی برای خرید هدیه ندارید! (حداقل ${giftCost.toLocaleString('fa-IR')} تومان)`);
-          return;
-        }
-        gameState.money -= giftCost;
-        person.relationship = Math.min(100, person.relationship + 10);
-        gameState.log.push({ year: gameState.year, event: `شما به ${person.name} هدیه دادید.`, type: 'family' });
-      } else if (action === 'argue') {
-        person.relationship = Math.max(0, person.relationship - 15);
-        gameState.happiness = Math.max(0, gameState.happiness - 5);
-        gameState.log.push({ year: gameState.year, event: `شما با ${person.name} دعوا کردید.`, type: 'family' });
-      }
-      updateUI();
-      saveGame();
-    }
-
-    // Romantic Relationships (روابط عاطفی)
-    window.findPartner = function() {
-        if (gameState.age < 18) {
-            showMessageModal('شما برای پیدا کردن شریک عاطفی خیلی کوچک هستید.');
-            return;
-        }
-        if (gameState.romanticRelationships.length > 0 && gameState.romanticRelationships[0].isMarried) {
-            showMessageModal('شما در حال حاضر متاهل هستید و نمی‌توانید شریک عاطفی جدیدی پیدا کنید.');
-            return;
-        }
-        
-        const chance = (gameState.looks + gameState.happiness) / 200; // Chance based on looks and happiness (شانس بر اساس ظاهر و شادی)
-        if (Math.random() < chance) {
-            const partnerName = gameState.gender === 'male' ? 'خانم' : 'آقا'; // Simple naming (نامگذاری ساده)
-            const newPartner = {
-                id: crypto.randomUUID(),
-                name: `${partnerName} جدید`,
-                role: 'شریک عاطفی',
-                relationship: 30 + Math.floor(Math.random() * 20), // Initial relationship (رابطه اولیه)
-                isMarried: false,
-                age: gameState.age + (Math.random() * 5 - 2) // Partner age close to player's (سن شریک نزدیک به بازیکن)
-            };
-            gameState.romanticRelationships.push(newPartner);
-            gameState.log.push({ year: gameState.year, event: `شما با ${newPartner.name} آشنا شدید!`, type: 'family' });
-            showMessageModal(`تبریک! شما با ${newPartner.name} آشنا شدید.`);
-        } else {
-            gameState.log.push({ year: gameState.year, event: 'تلاش برای پیدا کردن شریک عاطفی ناموفق بود.', type: 'family' });
-            showMessageModal('متاسفانه در این سال شریک عاطفی پیدا نکردید.');
-        }
-        updateUI();
-        saveGame();
-    }
-
-    window.interactRomantic = function(personId, action) {
-        const partner = gameState.romanticRelationships.find(r => r.id === personId);
-        if (!partner) return;
-
-        if (action === 'talk') {
-            partner.relationship = Math.min(100, partner.relationship + 7);
-            gameState.happiness = Math.min(100, gameState.happiness + 5);
-            gameState.log.push({ year: gameState.year, event: `شما با ${partner.name} صحبت عمیقی داشتید.`, type: 'family' });
-        } else if (action === 'date') {
-            const dateCost = 500000;
-            if (gameState.money < dateCost) {
-                showMessageModal(`پول کافی برای قرار ملاقات ندارید! (حداقل ${dateCost.toLocaleString('fa-IR')} تومان)`);
-                return;
-            }
-            gameState.money -= dateCost;
-            partner.relationship = Math.min(100, partner.relationship + 15);
-            gameState.happiness = Math.min(100, gameState.happiness + 10);
-            gameState.log.push({ year: gameState.year, event: `شما با ${partner.name} به قرار ملاقات رفتید.`, type: 'family' });
-        }
-        updateUI();
-        saveGame();
-    }
-
-    window.proposeMarriage = function(personId) {
-        const partner = gameState.romanticRelationships.find(r => r.id === personId);
-        if (!partner || partner.isMarried) return;
-
-        if (partner.relationship < 80) {
-            showMessageModal('رابطه شما با این شخص به اندازه کافی قوی نیست که ازدواج کنید. (نیاز به رابطه ۸۰٪+)');
-            return;
-        }
-
-        const marriageCost = 5000000; // Example marriage cost (هزینه ازدواج)
-        if (gameState.money < marriageCost) {
-            showMessageModal(`پول کافی برای مراسم ازدواج ندارید! (حداقل ${marriageCost.toLocaleString('fa-IR')} تومان)`);
-            return;
-        }
-
-        const success = Math.random() < (partner.relationship / 100);
-        if (success) {
-            partner.role = 'همسر';
-            partner.isMarried = true;
-            gameState.money -= marriageCost; // Deduct marriage cost (کسر هزینه ازدواج)
-            gameState.happiness = Math.min(100, gameState.happiness + 20);
-            gameState.log.push({ year: gameState.year, event: `شما با ${partner.name} ازدواج کردید! تبریک!`, type: 'family' });
-            showMessageModal(`تبریک! شما با ${partner.name} ازدواج کردید.`);
-        } else {
-            partner.relationship = Math.max(0, partner.relationship - 20); // Relationship hit (ضربه به رابطه)
-            gameState.happiness = Math.max(0, gameState.happiness - 10); // Happiness hit (ضربه به شادی)
-            gameState.log.push({ year: gameState.year, event: `پیشنهاد ازدواج شما به ${partner.name} رد شد.`, type: 'family' });
-            showMessageModal(`متاسفانه ${partner.name} پیشنهاد ازدواج شما را رد کرد.`);
-        }
-        updateUI();
-        saveGame();
-    }
-
-    window.tryForBaby = function(personId) {
-      const partner = gameState.romanticRelationships.find(r => r.id === personId);
-      if (!partner || !partner.isMarried) {
-        showMessageModal('شما باید متاهل باشید تا بچه‌دار شوید.');
-        return;
-      }
-      if (gameState.age < 20 || gameState.age > 45) { // Realistic age range (محدوده سنی واقع‌بینانه)
-        showMessageModal('شما در محدوده سنی مناسب برای بچه‌دار شدن نیستید. (۲۰ تا ۴۵ سالگی)');
-        return;
-      }
-      
-      const successChance = (gameState.health / 100) * (partner.relationship / 100); // Health and relationship affect chance (سلامت و رابطه بر شانس تأثیر می‌گذارد)
-      if (Math.random() < successChance) {
-        const babyName = gameState.gender === 'male' ? 'دختر' : 'پسر'; // Simple naming (نامگذاری ساده)
-        const newChild = {
-          id: crypto.randomUUID(),
-          name: `${babyName} شما`,
-          age: 0,
-          relationship: 70 + Math.floor(Math.random() * 10), // Initial relationship (رابطه اولیه)
-          role: 'فرزند' // Add role for children (افزودن نقش برای فرزندان)
-        };
-        gameState.children.push(newChild);
-        gameState.relationships.push(newChild); // Add children to main relationships array (افزودن فرزندان به آرایه اصلی روابط)
-        gameState.happiness = Math.min(100, gameState.happiness + 30);
-        gameState.log.push({ year: gameState.year, event: `تبریک! شما صاحب یک ${newChild.name} شد!`, type: 'family' });
-        showMessageModal(`تبریک! شما صاحب یک ${newChild.name} شدید!`);
-      } else {
-        gameState.log.push({ year: gameState.year, event: 'تلاش برای بچه‌دار شدن موفقیت آمیز نبود.', type: 'family' });
-        showMessageModal('تلاش برای بچه‌دار شدن موفقیت‌آمیز نبود. دوباره امتحان کنید.');
-      }
-      updateUI();
-      saveGame();
-    }
-
-    window.breakup = function(personId) {
-        window.confirm('آیا مطمئن هستید که می‌خواهید این رابطه را تمام کنید؟').then(confirmed => {
-            if (confirmed) {
-                gameState.romanticRelationships = gameState.romanticRelationships.filter(r => r.id !== personId);
-                gameState.happiness = Math.max(0, gameState.happiness - 25);
-                gameState.log.push({ year: gameState.year, event: 'شما یک رابطه عاطفی را به پایان رساندید.', type: 'family' });
-                showMessageModal('رابطه شما به پایان رسید.');
-                updateUI();
-                saveGame();
-            }
-        });
-    }
-
-
-    // Health (سلامت)
-    const illnessesData = {
-        'سرماخوردگی': { severity: 'خفیف', impact: 10, cost: 50000, specialist: false },
-        'آنفولانزا': { severity: 'متوسط', impact: 20, cost: 150000, specialist: false },
-        'آپاندیسیت': { severity: 'جدی', impact: 40, cost: 1000000, specialist: true },
-        'افسردگی': { severity: 'مزمن', impact: 15, cost: 200000, specialist: true }
-    };
-
-    function visitDoctor() {
-      const cost = 50000;
-      if (gameState.money < cost) {
-        showMessageModal(`پول کافی برای مراجعه به پزشک ندارید! (هزینه: ${cost.toLocaleString('fa-IR')} تومان)`);
-        return;
-      }
-      gameState.money -= cost;
-      gameState.health = Math.min(100, gameState.health + 20);
-      gameState.illnesses = gameState.illnesses.filter(ill => illnessesData[ill.name]?.specialist === false); // Only minor illnesses cured (فقط بیماری‌های جزئی درمان می‌شوند)
-      gameState.log.push({ year: gameState.year, event: 'شما به پزشک عمومی مراجعه کردید و حالتان بهتر شد.', type: 'health' });
-      updateUI();
-      saveGame();
-    }
-
-    function visitSpecialist() {
-        const cost = 500000;
-        if (gameState.money < cost) {
-            showMessageModal(`پول کافی برای مراجعه به متخصص ندارید! (هزینه: ${cost.toLocaleString('fa-IR')} تومان)`);
-            return;
-        }
-        if (gameState.illnesses.length === 0) {
-            showMessageModal('شما هیچ بیماری خاصی ندارید که نیاز به متخصص داشته باشد.');
-            return;
-        }
-
-        gameState.money -= cost;
-        gameState.health = Math.min(100, gameState.health + 40);
-        gameState.illnesses = []; // Clear all illnesses (تمام بیماری‌ها را پاک می‌کند)
-        gameState.log.push({ year: gameState.year, event: 'شما به متخصص مراجعه کردید و بهبود کامل یافتید.', type: 'health' });
-        showMessageModal('بیماری‌های شما توسط متخصص درمان شد.');
-        updateUI();
-        saveGame();
-    }
-
-    function goGym() {
-      const cost = 20000;
-      if (gameState.money < cost) {
-        showMessageModal(`پول کافی برای رفتن به باشگاه ندارید! (هزینه: ${cost.toLocaleString('fa-IR')} تومان)`);
-        return;
-      }
-      gameState.money -= cost;
-      gameState.health = Math.min(100, gameState.health + 10);
-      gameState.looks = Math.min(100, gameState.looks + 5);
-      gameState.log.push({ year: gameState.year, event: 'شما ورزش کردید و سالم‌تر شدید.', type: 'health' });
-      updateUI();
-      saveGame();
-    }
-
-    function meditate() {
-      gameState.spirituality = Math.min(100, gameState.spirituality + 10);
-      gameState.happiness = Math.min(100, gameState.happiness + 5);
-      gameState.log.push({ year: gameState.year, event: 'شما مراقبه کردید و آرامش بیشتری یافتید.', type: 'spirituality' });
-      updateUI();
-      saveGame();
-    }
-
-    // Asset Categories Data (داده‌های دسته‌بندی دارایی‌ها)
-    const assetCategories = {
-      'properties': {
-        name: 'املاک',
-        emoji: '🏠',
-        items: [
-          { name: 'خانه‌ی ویلایی', basePrice: 250000000 },
-          { name: 'آپارتمان شهری', basePrice: 150000000 },
-          { name: 'مزرعه', basePrice: 400000000 },
-          { name: 'ویلا در شمال', basePrice: 700000000 },
-          { name: 'جزیره خصوصی', basePrice: 5000000000 }
-        ]
-      },
-      'vehicles': {
-        name: 'خودروها',
-        emoji: '🚗',
-        items: [
-          { name: 'پراید', basePrice: 80000000 },
-          { name: 'پژو ۲۰۶', basePrice: 450000000 },
-          { name: 'بی‌ام‌و X6', basePrice: 3000000000 },
-          { name: 'لامبورگینی اونتادور', basePrice: 15000000000 },
-          { name: 'وانت نیسان', basePrice: 120000000 }
-        ]
-      },
-      'plane_boat': {
-        name: 'هواپیما/قایق',
-        emoji: '✈️/⛵',
-        items: [
-          { name: 'قایق موتوری', basePrice: 600000000 },
-          { name: 'کشتی تفریحی', basePrice: 8000000000 },
-          { name: 'هواپیمای شخصی', basePrice: 25000000000 },
-          { name: 'گلایدر', basePrice: 1000000000 },
-          { name: 'قایق بادی', basePrice: 5000000 }
-        ]
-      },
-      'jewelry': {
-        name: 'جواهرات',
-        emoji: '💎',
-        items: [
-          { name: 'حلقه طلا', basePrice: 20000000 },
-          { name: 'گردنبند زمرد', basePrice: 80000000 },
-          { name: 'ساعت رولکس', basePrice: 150000000 },
-          { name: 'دستبند طلا', basePrice: 30000000 },
-          { name: 'گوشواره الماس', basePrice: 300000000 }
-        ]
-      },
-      'instruments': {
-        name: 'سازها',
-        emoji: '🎸',
-        items: [
-          { name: 'گیتار کلاسیک', basePrice: 10000000 },
-          { name: 'پیانو دیجیتال', basePrice: 80000000 },
-          { name: 'ویولن', basePrice: 40000000 },
-          { name: 'دف ایرانی', basePrice: 5000000 },
-          { name: 'سنتور', basePrice: 30000000 }
-        ]
-      },
-    };
-
-    // New Investment Categories Data (داده‌های دسته‌بندی سرمایه‌گذاری جدید)
-    const investmentCategories = {
-      'gold_coins': {
-        name: 'طلا و سکه',
-        emoji: '💰',
-        items: [
-          { name: 'یک گرم طلای ۱۸ عیار', basePrice: 3500000, minGrowth: 0.05, maxGrowth: 0.15 },
-          { name: 'نیم سکه بهار آزادی', basePrice: 20000000, minGrowth: 0.08, maxGrowth: 0.18 },
-          { name: 'تمام سکه بهار آزادی', basePrice: 40000000, minGrowth: 0.10, maxGrowth: 0.20 }
-        ]
-      },
-      'stocks_bourse': {
-        name: 'سهام بورس',
-        emoji: '📈',
-        items: [
-          { name: 'سهام شرکت خودرو سازی', basePrice: 5000000, minGrowth: -0.05, maxGrowth: 0.25 },
-          { name: 'سهام بانک', basePrice: 2000000, minGrowth: 0.02, maxGrowth: 0.10 },
-          { name: 'صندوق سرمایه‌گذاری (ETF)', basePrice: 1000000, minGrowth: 0.07, maxGrowth: 0.17 }
-        ]
-      },
-      'cryptocurrency': {
-        name: 'ارز دیجیتال',
-        emoji: '₿',
-        items: [
-          { name: 'بیت‌کوین (0.001 BTC)', basePrice: 50000000, minGrowth: -0.20, maxGrowth: 0.50 },
-          { name: 'اتریوم (0.01 ETH)', basePrice: 20000000, minGrowth: -0.15, maxGrowth: 0.40 },
-          { name: 'تتر (100 USDT)', basePrice: 6000000, minGrowth: 0.001, maxGrowth: 0.005 } // Stablecoin, very low growth
-        ]
-      },
-      'investment_land': {
-        name: 'زمین و املاک (سرمایه‌گذاری)',
-        emoji: '🏡',
-        items: [
-          { name: 'قطعه زمین کوچک شهری', basePrice: 500000000, minGrowth: 0.10, maxGrowth: 0.20 },
-          { name: 'زمین کشاورزی', basePrice: 1000000000, minGrowth: 0.07, maxGrowth: 0.15 },
-          { name: 'ملک تجاری کوچک', basePrice: 2000000000, minGrowth: 0.12, maxGrowth: 0.25 }
-        ]
-      },
-      'raw_materials': {
-        name: 'مواد اولیه',
-        emoji: '📦',
-        items: [
-          { name: '۱۰۰ کیلوگرم گندم', basePrice: 500000, minGrowth: -0.08, maxGrowth: 0.10 },
-          { name: '۱ تن سیمان', basePrice: 1500000, minGrowth: 0.01, maxGrowth: 0.08 },
-          { name: '۱۰۰ لیتر نفت خام', basePrice: 3000000, minGrowth: -0.10, maxGrowth: 0.15 }
-        ]
-      }
-    };
-
-
-    // Helper function to calculate fluctuating market price (تابع کمکی برای محاسبه قیمت نوسانی بازار)
-    function calculateMarketPrice(basePrice) {
-        const fluctuation = (Math.random() * 0.2) - 0.1; // -10% to +10% (۱۰٪- تا ۱۰٪+)
-        return Math.floor(basePrice * (1 + fluctuation));
-    }
-
-    // Function to show a specific asset category page (تابع برای نمایش صفحه مخصوص دسته‌بندی دارایی)
-    window.showAssetCategoryPage = function(type) {
-      const category = assetCategories[type];
-      if (!category) {
-        console.error('Invalid asset category type:', type);
-        showMessageModal('خطا: دسته دارایی نامعتبر است.');
-        return;
-      }
-
-      // First, show the page. This ensures the H2 element is potentially ready.
-      window.showPage(`${type}-page`); 
-
-      // Now update the page title (به‌روزرسانی عنوان صفحه)
-      // This line is now called AFTER the page is set to display: block
-      const pageH2 = document.querySelector(`#${type}-page h2`);
-      if (pageH2) { // Add a null check for robustness
-        pageH2.textContent = `${category.emoji} ${category.name}`;
-      } else {
-        console.error(`Could not find h2 for page: ${type}-page`);
-      }
-
-      // Populate owned items (پر کردن آیتم‌های موجود)
-      const ownedListId = `owned-${type}-list`;
-      const ownedListElement = document.getElementById(ownedListId);
-      const ownedAssets = gameState.assets.filter(a => a.type === type);
-      ownedListElement.innerHTML = ownedAssets.map(asset => `
-        <div class="glass-card p-3 flex justify-between items-center">
-          <span>${asset.name} - ${asset.value.toLocaleString('fa-IR')} تومان</span>
-          <button class="btn-secondary px-3 py-1 rounded-lg text-xs" onclick="window.sellAsset('${asset.id}', '${type}')">فروش</button>
-        </div>
-      `).join('') || '<p class="text-gray-400">شما هیچ دارایی در این دسته ندارید.</p>';
-
-      // Populate items for sale (پر کردن آیتم‌های برای فروش)
-      const buyListId = `buy-${type}-list`;
-      const buyListElement = document.getElementById(buyListId);
-      buyListElement.innerHTML = category.items.map(item => {
-        const currentPrice = calculateMarketPrice(item.basePrice);
-        const priceDifference = ((currentPrice - item.basePrice) / item.basePrice * 100).toFixed(1);
-        const priceColorClass = priceDifference >= 0 ? 'text-red-400' : 'text-green-400';
-        const priceSign = priceDifference >= 0 ? '+' : ''; // Add plus sign for positive changes (افزودن علامت مثبت برای تغییرات مثبت)
-
-        return `
-          <div class="glass-card p-4 flex flex-col sm:flex-row justify-between items-center">
-            <div>
-              <p class="font-semibold">${item.name}</p>
-              <p class="text-sm text-gray-400">قیمت: ${currentPrice.toLocaleString('fa-IR')} تومان</p>
-              <p class="text-xs ${priceColorClass}">(${priceSign}${priceDifference}%)</p>
-            </div>
-            <button class="btn-primary px-4 py-2 rounded-lg mt-2 sm:mt-0" onclick="window.buyAsset('${type}', '${item.name}', ${currentPrice})">خرید</button>
-          </div>
-        `;
-      }).join('');
-
-    };
-
-    // Buy asset function (تابع خرید دارایی)
-    window.buyAsset = function(assetType, assetName, assetPrice) {
-      if (gameState.money < assetPrice) {
-        showMessageModal(`پول کافی برای خرید ${assetName} ندارید! (نیاز به ${assetPrice.toLocaleString('fa-IR')} تومان)`);
-        return;
-      }
-
-      gameState.money -= assetPrice;
-      gameState.assets.push({ id: crypto.randomUUID(), type: assetType, name: assetName, value: assetPrice });
-      gameState.log.push({ year: gameState.year, event: `شما ${assetName} را به مبلغ ${assetPrice.toLocaleString('fa-IR')} تومان خریدید.`, type: 'finance' });
-      showMessageModal(`شما ${assetName} را خریدید.`);
-      updateUI();
-      window.showAssetCategoryPage(assetType); // Refresh the current asset page to show changes (رفرش صفحه دارایی فعلی برای نمایش تغییرات)
-      saveGame();
-    };
-
-    // Sell asset function (تابع فروش دارایی)
-    window.sellAsset = function(assetId, assetType) {
-      const assetIndex = gameState.assets.findIndex(a => a.id === assetId);
-      if (assetIndex === -1) {
-        showMessageModal('دارایی یافت نشد.');
-        return;
-      }
-
-      const asset = gameState.assets[assetIndex];
-      const sellPrice = Math.floor(asset.value * 0.9); // Sell for 90% of value (فروش با ۹۰٪ ارزش)
-      gameState.money += sellPrice;
-      gameState.assets.splice(assetIndex, 1); // Remove asset (حذف دارایی)
-      gameState.log.push({ year: gameState.year, event: `شما ${asset.name} را به مبلغ ${sellPrice.toLocaleString('fa-IR')} تومان فروختید.`, type: 'finance' });
-      showMessageModal(`شما ${asset.name} را فروختید و ${sellPrice.toLocaleString('fa-IR')} تومان دریافت کردید.`);
-      updateUI();
-      window.showAssetCategoryPage(assetType); // Refresh the current asset page to show changes (رفرش صفحه دارایی فعلی برای نمایش تغییرات)
-      saveGame();
-    }
-
-    // --- Investment Specific Functions (توابع مربوط به سرمایه‌گذاری) ---
-
-    // Function to show a specific investment category page (تابع برای نمایش صفحه مخصوص دسته‌بندی سرمایه‌گذاری)
-    window.showInvestmentCategoryPage = function(type) {
-      const category = investmentCategories[type];
-      if (!category) {
-        console.error('Invalid investment category type:', type);
-        showMessageModal('خطا: دسته سرمایه‌گذاری نامعتبر است.');
-        return;
-      }
-
-      // First, show the page.
-      window.showPage(`${type}-page`); // This calls updateUI()
-
-      // Now update the page title (به‌روزرسانی عنوان صفحه)
-      // This line is now called AFTER the page is set to display: block
-      const pageH2 = document.querySelector(`#${type}-page h2`);
-      if (pageH2) { // Add a null check for robustness
-        pageH2.textContent = `${category.emoji} ${category.name}`;
-      } else {
-        console.error(`Could not find h2 for investment page: ${type}-page`);
-      }
-
-      // Populate owned investments (پر کردن سرمایای‌گذاری‌های موجود)
-      const ownedListId = `owned-${type}-list`;
-      const ownedListElement = document.getElementById(ownedListId);
-      const ownedInvestments = gameState.investments.filter(a => a.type === type);
-      ownedListElement.innerHTML = ownedInvestments.map(investment => `
-        <div class="glass-card p-3 flex justify-between items-center">
-          <span>${investment.name} - ${investment.value.toLocaleString('fa-IR')} تومان (بازده: ${(investment.growth * 100).toFixed(1)}%)</span>
-          <button class="btn-secondary px-3 py-1 rounded-lg text-xs" onclick="window.sellInvestment('${investment.id}', '${type}')">فروش</button>
-        </div>
-      `).join('') || '<p class="text-gray-400">شما هیچ سرمایه‌گذاری در این دسته ندارید.</p>';
-
-      // Populate items for sale (پر کردن آیتم‌های برای فروش)
-      const buyListId = `buy-${type}-list`;
-      const buyListElement = document.getElementById(buyListId);
-      buyListElement.innerHTML = category.items.map(item => {
-        const currentPrice = calculateMarketPrice(item.basePrice); // Use generic market price calc for initial purchase
-        const priceDifference = ((currentPrice - item.basePrice) / item.basePrice * 100).toFixed(1);
-        const priceColorClass = priceDifference >= 0 ? 'text-red-400' : 'text-green-400';
-        const priceSign = priceDifference >= 0 ? '+' : '';
-
-        return `
-          <div class="glass-card p-4 flex flex-col sm:flex-row justify-between items-center">
-            <div>
-              <p class="font-semibold">${item.name}</p>
-              <p class="text-sm text-gray-400">قیمت: ${currentPrice.toLocaleString('fa-IR')} تومان</p>
-              <p class="text-xs ${priceColorClass}">(${priceSign}${priceDifference}%)</p>
-            </div>
-            <button class="btn-primary px-4 py-2 rounded-lg mt-2 sm:mt-0" 
-                    onclick="window.buyInvestment('${type}', '${item.name}', ${currentPrice}, ${item.minGrowth}, ${item.maxGrowth})">خرید</button>
-          </div>
-        `;
-      }).join('');
-
-    };
-
-    // Buy investment function (تابع خرید سرمایه‌گذاری)
-    window.buyInvestment = function(investmentType, investmentName, investmentPrice, minGrowth, maxGrowth) {
-      if (gameState.money < investmentPrice) {
-        showMessageModal(`پول کافی برای خرید ${investmentName} ندارید! (نیاز به ${investmentPrice.toLocaleString('fa-IR')} تومان)`);
-        return;
-      }
-
-      gameState.money -= investmentPrice;
-      const growthRate = minGrowth + (Math.random() * (maxGrowth - minGrowth)); // Random growth rate within bounds (نرخ رشد تصادفی در محدوده)
-      const categoryEmoji = investmentCategories[investmentType].emoji;
-
-      gameState.investments.push({ id: crypto.randomUUID(), type: investmentType, name: investmentName, value: investmentPrice, growth: growthRate, emoji: categoryEmoji });
-      gameState.log.push({ year: gameState.year, event: `شما ${investmentName} را به مبلغ ${investmentPrice.toLocaleString('fa-IR')} تومان خریدید.`, type: 'finance' });
-      showMessageModal(`شما ${investmentName} را خریدید.`);
-      updateUI();
-      window.showInvestmentCategoryPage(investmentType); // Refresh the current investment page to show changes (رفرش صفحه سرمایه‌گذاری فعلی برای نمایش تغییرات)
-      saveGame();
-    };
-
-    // Sell investment function (تابع فروش سرمایه‌گذاری)
-    window.sellInvestment = function(investmentId, investmentType) {
-      const investmentIndex = gameState.investments.findIndex(a => a.id === investmentId);
-      if (investmentIndex === -1) {
-        showMessageModal('سرمایه‌گذاری یافت نشد.');
-        return;
-      }
-
-      const investment = gameState.investments[investmentIndex];
-      const sellPrice = Math.floor(investment.value * 0.9); // Sell for 90% of current value (فروش با ۹۰٪ ارزش فعلی)
-      gameState.money += sellPrice;
-      gameState.investments.splice(investmentIndex, 1); // Remove investment (حذف سرمایه‌گذاری)
-      gameState.log.push({ year: gameState.year, event: `شما ${investment.name} را به مبلغ ${sellPrice.toLocaleString('fa-IR')} تومان فروختید.`, type: 'finance' });
-      showMessageModal(`شما ${investment.name} را فروختید و ${sellPrice.toLocaleString('fa-IR')} تومان دریافت کردید.`);
-      updateUI();
-      window.showInvestmentCategoryPage(investmentType); // Refresh the current investment page to show changes (رفرش صفحه سرمایای‌گذاری فعلی برای نمایش تغییرات)
-      saveGame();
-    }
-
-
-    // Save Game (ذخیره بازی)
-    function saveGame() {
-      try {
-        localStorage.setItem('iranianLifeSimState', JSON.stringify(gameState));
-      } catch (e) {
-        console.error('Error saving game to localStorage:', e);
-        showMessageModal('خطا در ذخیره بازی! ممکن است حافظه مرورگر شما پر باشد.');
-      }
-    }
-
-    // Load Game (بارگذاری بازی)
-    function loadGame() {
-      try {
-        const savedState = localStorage.getItem('iranianLifeSimState');
-        if (savedState) {
-          gameState = JSON.parse(savedState);
-          // Ensure financeHistory is an array and has at least one entry (اطمینان از اینکه financeHistory یک آرایه است و حداقل یک ورودی دارد)
-          if (!gameState.financeHistory || gameState.financeHistory.length === 0) {
-              gameState.financeHistory = [{ year: gameState.year, money: gameState.money }];
-          }
-          updateUI();
-          window.showPage('dashboard');
-          showMessageModal('بازی بارگذاری شد!');
-        } else {
-          console.log('No saved game found in localStorage.');
-          // If no saved game, stay on start screen (اگر بازی ذخیره شده‌ای نیست، در صفحه شروع بمانید)
-        }
-      } catch (e) {
-        console.error('Error loading game from localStorage:', e);
-        showMessageModal('خطا در بارگذاری بازی! فایل ذخیره شده ممکن است خراب باشد.');
-      }
-    }
-
-    // Reset Game (ریست بازی)
-    async function resetGame() {
-      const confirmed = await window.confirm('آیا مطمئن هستید که می‌خواهید بازی را ریست کنید؟ تمام پیشرفت شما از بین خواهد رفت.');
-      if (confirmed) {
-        try {
-          localStorage.removeItem('iranianLifeSimState'); // Clear local storage (حذف از حافظه محلی)
-        } catch (e) {
-          console.error('Error clearing game from localStorage:', e);
-        }
-        gameState = {
-          name: '', gender: '', province: '', familyStatus: '', age: 0, year: 2025, money: 0,
-          happiness: 50, health: 80, smarts: 50, looks: 50, spirituality: 50,
-          education: { level: 'هیچ', major: '', degreeProgress: 0 }, job: { title: 'بیکار', salary: 0, level: 0, experience: 0 },
-          relationships: [
-            { id: 'parent1', name: 'پدر', role: 'پدر', relationship: 80, respect: 70, happiness: 60, age: 40 }, 
-            { id: 'parent2', name: 'مادر', role: 'مادر', relationship: 85, respect: 75, happiness: 65, age: 38 }
-          ],
-          romanticRelationships: [], children: [], illnesses: [], assets: [], investments: [], log: [],
-        };
-        updateUI();
-        window.showPage('start-screen');
-        showMessageModal('بازی ریست شد!');
-      }
-    }
-
-    // Filter Log (فیلتر تاریخچه)
-    function filterLog(type) {
-      const logElement = document.getElementById('life-log-full'); // This is the UL
-      const scrollContainer = document.getElementById('full-log-scroll-area'); // This is the new scroll container
-
-      const filteredLogs = type === 'all' ? gameState.log : gameState.log.filter(log => log.type === type);
-      
-      logElement.innerHTML = filteredLogs.map(log => `
-        <li class="glass-card p-4">
-          <span class="font-semibold">سن ${log.year - 2025}</span>
-          <p>${log.event}</p>
-        </li>
-      `).join('');
-
-      // Auto-scroll to the bottom of the correct container (اسکرول خودکار به پایین کانتینر صحیح)
-      if (scrollContainer) {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
-      }
-
-      // Update button styles (به‌روزرسانی استایل دکمه‌ها)
-      document.querySelectorAll('#log-page .btn-primary').forEach(btn => {
-        btn.classList.remove('btn-primary');
-        btn.classList.add('btn-secondary');
-      });
-      document.getElementById(`log-filter-${type}`).classList.remove('btn-secondary');
-      document.getElementById(`log-filter-${type}`).classList.add('btn-primary');
-    }
-
-    // Function to update the life log on the dashboard (تابع برای به‌روزرسانی گزارش زندگی در داشبورد)
-    function updateLifeLogOnDashboard() {
-      const logElement = document.getElementById('life-log'); // This is the DIV containing log entries
-      // Corrected: Target the actual scrollable element for the dashboard life log
-      const mainDashboardContent = document.getElementById('main-dashboard-content'); 
-
-      if (!logElement || !mainDashboardContent) return;
-
-      // Group logs by year (گروه‌بندی گزارش‌ها بر اساس سال)
-      // Iterate in reverse to group, so when rendered, years are in descending order (پیمایش برعکس برای گروه‌بندی، بنابراین هنگام رندر شدن، سال‌ها به ترتیب نزولی قرار می‌گیرند)
-      // This ensures newer years appear at the top of the generated HTML for visual hierarchy, but the scroll then moves to the latest *event* (گروه‌بندی برعکس تضمین می‌کند که سال‌های جدیدتر در بالای HTML تولید شده برای سلسله مراتب بصری ظاهر شوند، اما اسکرول سپس به آخرین رویداد می‌رود.)
-      const logsByYear = {};
-      [...gameState.log].reverse().forEach(log => {
-        if (!logsByYear[log.year]) {
-          logsByYear[log.year] = [];
-        }
-        logsByYear[log.year].push(log.event);
-      });
-
-      let logHtml = '';
-      const initialYear = 2025; // Assuming the game starts in 2025 (فرض بر این است که بازی در سال ۲۰۲۵ شروع می‌شود)
-
-      for (const year in logsByYear) {
-        if (logsByYear.hasOwnProperty(year)) {
-          const currentAgeAtYearStart = parseInt(year) - initialYear; // Calculate age for the given year (محاسبه سن برای سال مشخص)
-          logHtml += `
-            <div class="glass-card p-4 mb-4">
-              <h4 class="text-lg font-semibold mb-2">سن ${currentAgeAtYearStart}</h4>
-              <ul class="list-disc list-inside space-y-1 text-sm">
-                ${logsByYear[year].map(event => `<li>${event}</li>`).join('')}\
-              </ul>
-            </div>
-          `;
-        }
-      }
-      logElement.innerHTML = logHtml || '<p>تاریخچه زندگی شما اینجا نمایش داده خواهد شد.</p>';
-
-      // Auto-scroll to the bottom of the CORRECT scroll container
-      // این خط کد مسئول اسکرول خودکار به پایین در بخش گزارش زندگی در داشبورد است.
-      // این تضمین می‌کند که جدیدترین رویدادها (که در پایین محتوا هستند) همیشه در دید باشند.
-      mainDashboardContent.scrollTop = mainDashboardContent.scrollHeight;
-    }
-
-    // Initial setup when the window loads (تنظیم اولیه هنگام بارگذاری پنجیره)
-    window.onload = initGame;
-  </script>
-</body>
-</html>
